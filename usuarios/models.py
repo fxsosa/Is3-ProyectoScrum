@@ -21,4 +21,4 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = ManejoUsuarios()
 
     def __str__(self):
-        return self.email
+        return str([self.email, self.nombres, self.apellidos, self.rol.nombre if self.rol is not None else None])
