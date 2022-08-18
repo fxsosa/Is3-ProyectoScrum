@@ -5,7 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from roles.models import Rol_Externo
 
 from .manager import ManejoUsuarios
-
+"""
+Este es un comentario de prueva
+"""
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
