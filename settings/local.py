@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'usuarios',
     'roles',
+    'sprints',
 ]
 
 MIDDLEWARE = [
