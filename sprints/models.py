@@ -48,7 +48,7 @@ class SprintBacklog(models.Model):
     idSprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=False)
 
     def __str__(self):
-        return str([self.idSprint.id, self.idHistoriaUsuario])
+        return str([self.idSprint.id])
 
 
 class SprintEquipo(models.Model):
