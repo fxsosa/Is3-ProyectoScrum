@@ -1,0 +1,71 @@
+Metadata-Version: 2.1
+Name: django-sphinxdoc
+Version: 2.0.0
+Summary: Easily integrate Sphinx documentation into your website.
+Home-page: https://gitlab.com/sscherfke/django-sphinxdoc
+Author: Stefan Scherfke
+Author-email: stefan@sofa-rockers.org
+License: MIT
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Django
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Utilities
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: Django (>=2.0)
+Requires-Dist: django-haystack (>=2.8.0)
+
+django-sphinxdoc – Embed your Sphinx docs into your Django site
+===============================================================
+
+This Django application allows you to integrate any
+[Sphinx](http://www.sphinx-doc.org/en/master/) documentation directly into your
+Django powered website instead of just serving the static files.
+
+Django-sphinxdoc can handle multiple Sphinx projects and offers
+a [Haystack](http://haystacksearch.org/) powered search.
+
+
+Requirements
+------------
+
+This app requires Python ≥ 3.6, Django ≥ 2.0, Sphinx ≥ 1.0 and
+Haystack ≥ 2.8.0.
+
+
+Installation
+------------
+
+Just use [PIP](https://pip.pypa.io/en/stable/):
+
+```console
+$ pip install django-sphinxdoc
+```
+
+If you want the latest development version:
+
+```console
+$ git clone git@gitlab.com:sscherfke/django-sphinxdoc.git
+$ cd django-sphinxdoc
+$ mkvirtualenv django-sphinxdoc
+$ pip install -e .
+```
+
+
+Usage
+-----
+
+The documentation can be found in the `docs/` directory or at
+https://django-sphinxdoc.readthedocs.io/en/latest/.
+
+
