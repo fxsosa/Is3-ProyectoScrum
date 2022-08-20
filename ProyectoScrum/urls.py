@@ -16,12 +16,12 @@ Including another URLconf
 # from django.contrib import admin
 from django.urls import path
 
-
 from django.urls import path
 
 from app import views as myapp_views
+from app import models
 
 urlpatterns = [
-
+    path('saludos/', models.a),
     path('', myapp_views.vue_test),
 ]
