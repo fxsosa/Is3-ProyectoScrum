@@ -40,6 +40,11 @@ INSTALLED_APPS = [
     'webpack_loader',
     'usuarios',
     'roles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +75,10 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 WSGI_APPLICATION = 'ProyectoScrum.wsgi.application'
 
@@ -153,3 +162,27 @@ WEBPACK_LOADER = {
     'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
   }
 }
+
+# Elementos necesarios para django allauth
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+
+
+
+
+
+
