@@ -13,3 +13,6 @@ run-tests:
 
 generar-usuarios:
 	bash './scripts/usuariosDePrueba.sh'
+
+borrar-usuarios:
+	bash './scripts/borrarUsuariosPrueba.sh'

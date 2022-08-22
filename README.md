@@ -30,3 +30,8 @@ metodología SCRUM
  
 
     ```make generar-usuarios```
+
+- Borrar usuarios de prueba (a nivel local)
+    
+
+    ```make borrar-usuarios```
