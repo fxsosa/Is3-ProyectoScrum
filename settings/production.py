@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'usuarios',
     'roles',
+    'sprints',
 ]
 
 MIDDLEWARE = [
