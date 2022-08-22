@@ -6,7 +6,7 @@ class Sprint(models.Model):
     """
     Representación del modelo de Sprint
 
-    ...
+
     Attributes
     ----------
     :fecha_inicio: DateField
@@ -33,7 +33,7 @@ class SprintBacklog(models.Model):
     """
           Representación del modelo de backlog de Sprint
 
-        ...
+
         Attributes
         ----------
         :idHistoriaUsuario: Historia_Usuario
@@ -55,7 +55,7 @@ class SprintEquipo(models.Model):
     """
         Representación de la lista de usuarios de un Sprint dado.
 
-        ...
+
         Attributes
         ----------
         :usuario: HistoriaUsuario
