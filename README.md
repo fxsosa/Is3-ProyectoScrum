@@ -11,23 +11,22 @@ metodología SCRUM
 ### Documentacion
 - Para generar la documentacion
 
-    
-    make init-documentacion
+
+     ```make init-documentacion```
 
 - Para visualizar la documentacion
 
 
-    make abrir-documentacion
+    ```make abrir-documentacion```
 
 ### Testeo
 - Para testear el proyecto
 
 
-    make run-tests
-
+    ```make run-tests```
 
 ### Usuarios de Prueba
 - Generar usuarios de prueba (a nivel local)
+ 
 
-    
-    make generar-usuarios
+    ```make generar-usuarios```
