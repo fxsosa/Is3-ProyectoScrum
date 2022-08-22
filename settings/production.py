@@ -164,7 +164,7 @@ WEBPACK_LOADER = {
 }
 
 # Elementos necesarios para django allauth
-SITE_ID = 3
+SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/'
 
