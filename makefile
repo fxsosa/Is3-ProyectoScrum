@@ -8,3 +8,8 @@ init-documentacion:
 abrir-documentacion:
 	bash './scripts/abrirDocumentacion.sh'
 
+run-tests:
+	pytest
+
+generar-usuarios:
+	bash './scripts/usuariosDePrueba.sh'
