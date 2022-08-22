@@ -16,3 +16,6 @@ generar-usuarios:
 
 borrar-usuarios:
 	bash './scripts/borrarUsuariosPrueba.sh'
+
+limpiar-main:
+	bash './scripts/clean_main.sh'
