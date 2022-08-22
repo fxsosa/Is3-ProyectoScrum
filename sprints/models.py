@@ -9,13 +9,13 @@ class Sprint(models.Model):
     ...
     Attributes
     ----------
-    fecha_inicio : DateField
+    :fecha_inicio: DateField
         la fecha y hora prevista para el inicio del Sprint.
-    fecha_fin : DateTime
+    :fecha_fin: DateTime
         la fecha y hora prevista para el final del Sprint.
-    capacidadEquipo : Integer
+    :capacidadEquipo: Integer
         capacidad, en horas, de trabajo asumible por el equipo del Sprint.
-    estado : Str
+    :estado: Str
         Creado, En Espera, En Ejecucion, Culminado, Cancelado
     """
 
@@ -36,10 +36,10 @@ class SprintBacklog(models.Model):
         ...
         Attributes
         ----------
-        idHistoriaUsuario : Historia_Usuario
+        :idHistoriaUsuario: Historia_Usuario
             Foreign key a una historia de usuario (la lista de historias
             es lo que forma el Backlog)
-        idSprint : Sprint
+        :idSprint: Sprint
             Foreign key del Sprint al cual está asociado este Backlog
     """
 
@@ -58,14 +58,14 @@ class SprintEquipo(models.Model):
         ...
         Attributes
         ----------
-        usuario : HistoriaUsuario
+        :usuario: HistoriaUsuario
             Foreign Key al usuario participante de este equipo
-        sprint : Sprint
+        :sprint: Sprint
             Foreign Key referenciando el Sprint al cual este usuario
             pertenece.
-        trabajo: CharField
+        :trabajo: CharField
             ??? ??? ???
-        capacidad : IntegerField
+        :capacidad: IntegerField
             Capacidad (int en horas) del Usuario participante de este equipo
     """
 
