@@ -26,12 +26,12 @@ metodología SCRUM
     ```make run-tests```
 
 ### Usuarios de Prueba
-- Generar usuarios de prueba (a nivel local)
+- Generar usuarios de prueba
  
 
     ```make generar-usuarios```
 
-- Borrar usuarios de prueba (a nivel local)
+- Borrar usuarios de prueba
     
 
     ```make borrar-usuarios```
