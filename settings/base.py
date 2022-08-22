@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -38,11 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'webpack_loader',
     'app.apps.AppConfig',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django.contrib.admin',
 ]
 
 MIDDLEWARE = [
@@ -158,7 +159,7 @@ WEBPACK_LOADER = {
 }
 
 # Elementos necesarios para django allauth
-SITE_ID = 1
+SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/'
 
