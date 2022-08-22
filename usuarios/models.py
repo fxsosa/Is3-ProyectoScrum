@@ -11,6 +11,7 @@ Este es un comentario de prueva
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
+    username = models.CharField(_('username'), max_length=80, null=True)
     nombres = models.CharField(_('user names'), max_length=80)
     apellidos = models.CharField(_('user lastnames'), max_length=80)
     rol = models.ForeignKey(RolExterno, on_delete=models.SET_NULL, null=True)
@@ -23,4 +24,4 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = ManejoUsuarios()
 
     def __str__(self):
-        return str([self.email, self.nombres, self.apellidos, self.rol.nombre if self.rol is not None else None])
+        return str([self.email, self.username, self.nombres, self.apellidos, self.rol.nombre if self.rol is not None else None])
