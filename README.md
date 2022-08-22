@@ -35,3 +35,10 @@ metodología SCRUM
     ```
     make borrar-usuarios
     ```
+
+### Limpiar rep
+
+- Limpiar la rama main (produccion) de archivos de basura
+  ```
+  make limpiar-main
+  ```
