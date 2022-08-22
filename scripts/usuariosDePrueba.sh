@@ -28,7 +28,7 @@ crearUsuario(){
   echo "Apellidos: $apellidos"
   echo "Contraseña: $contrasenha"
   echo "Rol: $rol"
-  echo "Rol: $username"
+  echo "Username: $username"
 # Abrimos el shell de python
 python3 manage.py shell<<-CONFIG
 	from django.contrib.auth import get_user_model
@@ -43,11 +43,11 @@ python3 manage.py shell<<-CONFIG
 echo "Iniciando Script..."
 
 # Creamos usuarios
-crearUsuario 'usuario1@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password1' 'None' 'username1'
-crearUsuario 'usuario2@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password2' 'None' 'username2'
-crearUsuario 'usuario3@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password3' 'None' 'username3'
-crearUsuario 'usuario4@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password4' 'None' 'username4'
-crearUsuario 'usuario5@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password5' 'None' 'username5'
-crearUsuario 'usuario6@gmail.com' 'Nombres 1 y 2' 'Apellidos 1 y 2' 'password6' 'None' 'username6'
+crearUsuario 'arturojara1999@fpuna.edu.py' 'Arturo' 'Jara' 'Arturo' 'None' 'Arturo'
+crearUsuario 'alejandroadorno00@fpuna.edu.py' 'Alejandro' 'Adorno Quevedo' 'Alejandro' 'None' 'Ale'
+crearUsuario 'jessicala182@gmail.com' 'Jessica' 'Alarcon' 'jessica' 'None' 'Jessi'
+crearUsuario 'guillepaivag@gmail.com' 'Guillermo' 'Paiva' 'guillermo' 'None' 'Guille'
+crearUsuario 'arturojeich@gmail.com' 'Arturo' 'Jara' 'arturo' 'None' 'Arturo'
+crearUsuario 'arturojara1999@gmail.com' 'Arturo Gabriel' 'Jara Eichenbrenner' 'arturo' 'None' 'Arturo'
 
 echo "Finalizando Script..."
