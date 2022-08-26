@@ -1,14 +1,11 @@
 import pytest
 from django.contrib.auth import get_user_model
-from roles.models import RolExterno
-
-
-# Obs.: Definido para acceder a la base de datos
+from roles.models import Rol
 
 
 @pytest.mark.django_db
 def test_usuario_con_rol():
-    rol = RolExterno.objects.create(nombre='Rol_Prueba')
+    rol = Rol.objects.crearRolExterno(nombre='Rol Prueba', descripcion='Descripcion de Prueba')
     User = get_user_model()
     user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', rol=rol,)
 
