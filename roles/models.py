@@ -1,9 +1,27 @@
 from django.db import models
+from django.contrib.auth.models import Group
 
 
-# Create your models here.
-class RolExterno(models.Model):
+class ManejoRol(models.Manager):
+    def crearRolExterno(self, nombre, **extra_fields):
+        grupo = Group.objects.create(name=nombre)
+        rolExterno = self.model(nombre=nombre, tipo='Externo', rolGrupo=grupo, **extra_fields)
+        rolExterno.save()
+        return rolExterno
+
+    def crearRolInterno(self, nombre, **extra_fields):
+        grupo = Group.objects.create(name=nombre)
+        rolInterno = self.model(nombre=nombre, tipo='Interno', rolGrupo=grupo, **extra_fields)
+        rolInterno.save()
+        return rolInterno
+
+class Rol(models.Model):
     nombre = models.CharField(max_length=50, null=True)
+    tipo = models.CharField(max_length=10, null=False)
+    descripcion = models.CharField(max_length=250, null=True)
+    rolGrupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
+
+    objects = ManejoRol()
 
     def __str__(self):
         return str([self.nombre])
