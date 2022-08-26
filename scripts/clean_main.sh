@@ -18,7 +18,7 @@ listaPaths=(
 )
 
 # Valor 1(false)/0(true) haces el push a master con los cambios
-actualizarBranch=1 # Por defecto, False
+actualizarBranch=0 # Por defecto, False
 
 # Branch a la cual subir los cambios
 branch="master"
