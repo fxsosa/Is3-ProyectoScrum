@@ -1,15 +1,18 @@
 from django.db import models
+import sys
+sys.path.append("..")
 from usuarios.models import Usuario
+
 # Create your models here.
 
 class Proyecto(models.Model):
     #El id se genera de forma automática
     nombre = models.CharField(max_length=80)
-    descripcion = models.TextField(max_length=200) #textField se usa para textos largos
+    descripcion = models.CharField(max_length=200) #Usado CharField para compatibilidad con el formulario html
     fechaInicio = models.DateTimeField() #Incluye minutos y segundos
     fechaFin = models.DateTimeField()
     idScrumMaster = models.ForeignKey(Usuario, on_delete=models.SET_NULL)
-    estado = model.CharField(max_length=30)
+    estado = models.CharField(max_length=30)
     # TODO: Añadir método para convertir a string
 
 
