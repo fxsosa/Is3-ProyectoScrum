@@ -1,7 +1,7 @@
 from django.db import models
-import sys
-sys.path.append("..")
-from proyectos import models
+#import sys
+#sys.path.append("..")
+from proyectos.models import Proyecto
 # Create your models here.
 class Tipo_Historia_Usuario(models.Model):
     nombre = models.CharField(max_length=80)

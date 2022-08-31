@@ -1,15 +1,24 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from . import forms # Para crear proyecto
 
 # Create your views here.
-
-def crearProyecto(request):
+# Vista con forms
+'''def crearProyecto(request):
     if request.method == 'POST':
         form = CrearProyectoForm(request.POST)
 
         if form.is_valid():
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect('proyectoCreado.html')
     else:
         form = CrearProyectoForm()
 
-    return render(request, 'crearProyecto.html', {'form': form})
+    return render(request, 'proyectos/templates/crearProyecto.html', {'form': form})
+'''
+
+
+
+
+
+
+
