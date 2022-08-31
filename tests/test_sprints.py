@@ -1,7 +1,6 @@
 import pytest
 import pytz
 
-from roles.models import Rol
 from sprints.models import Sprint, SprintEquipo, SprintBacklog
 from usuarios.models import Usuario
 from django.contrib.auth import get_user_model
@@ -29,7 +28,7 @@ def test_SprintBacklog():
 @pytest.mark.django_db
 def test_SprintEquipo():
     User = get_user_model()
-    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', nombres='Nombre1 Nombre2', username='Username 1', apellidos='Apellido1 Apellido2', rol=None,)
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', nombres='Nombre1 Nombre2', username='Username 1', apellidos='Apellido1 Apellido2',)
     auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
     auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
     sprint = Sprint.objects.create(fecha_inicio=auxDateTime1, fecha_fin=auxDateTime2, capacidadEquipo=84, estado='Creado')
