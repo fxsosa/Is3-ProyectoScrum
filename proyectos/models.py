@@ -6,20 +6,28 @@ from usuarios.models import Usuario
 
 class ManejoProyectos(models.Manager):
 
-    def crearProyecto(self, **campos_extra):
-        proyecto = self.model(nombre=nombre,descripcion=descrip ,fechaInicio=fecha_inicio,
-                              fechaFin=fecha_fin, idScrumMaster=id_scrum_master, estado=estado)
+    def crearProyecto(self, datos):
+        nombre = datos['nombre']
+        descripcion = datos['descripcion']
+        fechaInicio = datos['fechaInicio']
+        fechaFin = datos['fechaFin']
+        scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
+        #scrumMaster = datos['scrumMaster']
+        estado = datos['estado']
+        proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
+                              fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
         proyecto.save()
         return proyecto
-
+    #TODO: Añadir fecha de inicio automáticamente cuando el SM inicie el proyecto
+    #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
 
 class Proyecto(models.Model):
     #El id se genera de forma automática
     nombre = models.CharField(max_length=80)
     descripcion = models.CharField(max_length=200)
-    fechaInicio = models.DateTimeField() #Incluye minutos y segundos
-    fechaFin = models.DateTimeField()
+    fechaInicio = models.DateTimeField(null=True) #Incluye minutos y segundos
+    fechaFin = models.DateTimeField(null=True)
     scrumMaster = models.ForeignKey(Usuario, on_delete=models.PROTECT) #Evita que se borre, se soluciona cambiando de Scrum Master y luego borrando al usuario
     estado = models.CharField(max_length=30)
 

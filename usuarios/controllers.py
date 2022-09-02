@@ -6,7 +6,7 @@ from django.core import serializers
 from usuarios.models import Usuario
 
 
-class controllerUsuarios(APIView):
+class controllerProyecto(APIView):
 
     def get(self, request, format=None):
         try:
