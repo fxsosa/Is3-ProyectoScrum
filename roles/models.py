@@ -88,7 +88,7 @@ class ManejoRol(models.Manager):
         :return: None
         """
 
-        grupo = Group.objects.get(nombre=nombreRol)
+        grupo = Group.objects.get(name=nombreRol)
         assign_perm(nombrePermiso, grupo)
 
     def borrarRol(self, nombreRol):
@@ -120,6 +120,19 @@ class ManejoRol(models.Manager):
     def actualizarRol(self, campos):
         # To do
         pass
+
+    def listarPermisos(self, nombreRol):
+        """
+        Lista todos los permisos asociados un rol
+        :param nombreRol: Nombre del rol
+        :return: QuerySet de permisos
+        """
+        # rol = Rol.objects.get(nombre=nombreRol)
+        grupo = Group.objects.get(name=nombreRol)
+        if grupo is not None:
+            return grupo.permissions.all()
+        else:
+            return None
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=50, null=True, unique=True)
