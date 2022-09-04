@@ -84,16 +84,22 @@ instalandoSphinx() {
 #	-> $1 : path al archivo conf.py 
 #	-> $2 : Encabezado a agregar
 #	-> $3 : ''ext1', 'ext2', 'ext3', ...'
+# -> $4 : Tema de página
 editarConfpy(){
 	pathArchivo=$1
 	encabezado=$2
 	extensiones=$3
+  tema=$4
 
 	# Agregando encabezado
 	sed -i "1i$encabezado" "$pathArchivo/conf.py"
 	
 	# Agregando extension
 	sed -i -e "s/extensions = \[\]/extensions = \[$extensiones\]/g" "$pathArchivo/conf.py"
+
+	# Agregando theme
+  sed -i -e "s/'alabaster'/'$tema'/g" "$pathArchivo/conf.py"
+
 }
 
 
@@ -113,7 +119,9 @@ then
 	encabezado="import os\nimport sys\nimport django\nsys.path.insert(0, os.path.abspath('..'))\nos.environ['DJANGO_SETTINGS_MODULE'] = 'settings.production'\ndjango.setup()\n"
 	# Definiendo extensiones
 	extensions="'sphinx.ext.autodoc'"
-	editarConfpy './documentacion' "$encabezado" $extensions
+	# Definiendo tema
+	tema="sphinx_rtd_theme"
+	editarConfpy './documentacion' "$encabezado" $extensions $tema
 
 	
 else

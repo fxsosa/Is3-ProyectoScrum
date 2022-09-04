@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-n_fi(+vn^5mr_9uhi3)p3_8#%wj2)cy=!d&7lfyo8=#!g^+r4e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'django.contrib.admin',
     'sprints',
+    'guardian',
+    'soportepermisos'
     'proyectos',
     'historiasDeUsuario',
 ]
@@ -82,6 +84,7 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
 
 WSGI_APPLICATION = 'ProyectoScrum.wsgi.application'
