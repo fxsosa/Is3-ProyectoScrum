@@ -21,6 +21,17 @@ class ManejoProyectos(models.Manager):
     #TODO: Añadir fecha de inicio automáticamente cuando el SM inicie el proyecto
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
+    def modificarProyecto(self, datos):
+        proyecto = Proyecto.objects.get(id=int(datos['id']))
+        proyecto.nombre = datos['nombre']
+        proyecto.descripcion = datos['descripcion']
+        proyecto.fechaInicio = datos['fechaInicio']
+        proyecto.fechaFin = datos['fechaFin']
+        proyecto.scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
+        proyecto.estado = datos['estado']
+
+        proyecto.save()
+        return proyecto
 
 class Proyecto(models.Model):
     #El id se genera de forma automática
