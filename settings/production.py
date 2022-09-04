@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'django.contrib.admin',
     'sprints',
+    # Falta añadir proyectos e historiasdeUsuario
 ]
 
 MIDDLEWARE = [
