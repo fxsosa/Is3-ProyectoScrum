@@ -1,12 +1,11 @@
 from app import views as myapp_views
 from django.urls import path, include
-from roles.controllers import ListaRoles, RolExterno, RolInterno
+from roles.controllers import ListaRoles, Rol
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('/listarrol', ListaRoles.as_view(), name="listarrol"),
-    path('/interno', RolInterno.as_view(), name="interno"),
-    path('/externo', RolExterno.as_view(), name="externo"),
+    path('/listar', ListaRoles.as_view(), name="listar"),
+    path('', Rol.as_view(), name="crear"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

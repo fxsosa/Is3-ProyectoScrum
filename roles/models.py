@@ -127,7 +127,7 @@ class ManejoRol(models.Manager):
         :param nombreRol: Nombre del rol
         :return: QuerySet de permisos
         """
-        # rol = Rol.objects.get(nombre=nombreRol)
+
         grupo = Group.objects.get(name=nombreRol)
         if grupo is not None:
             return grupo.permissions.all()
