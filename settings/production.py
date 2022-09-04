@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'sprints',
     'guardian',
     'soportepermisos',
+    # Falta añadir proyectos e historiasdeUsuario
 ]
 
 MIDDLEWARE = [
