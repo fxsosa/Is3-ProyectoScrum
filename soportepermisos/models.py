@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from roles.models import Rol
 
 
 class ManejoSoportePermisos(models.Manager):
@@ -12,6 +13,28 @@ class ManejoSoportePermisos(models.Manager):
         """
         content_type = ContentType.objects.get_for_model(SoportePermisos)
         listaPermisos = Permission.objects.filter(content_type=content_type)
+        return listaPermisos
+
+    def listarPermisosRolExterno(self):
+        """
+        Retorna una lista de permisos de modelo de rol externo
+        :return: QuerySet de lista de permisos
+        """
+
+        content_type = ContentType.objects.get_for_model(Rol)
+        listaPermisos = Permission.objects.filter(content_type=content_type)
+        listaPermisos = listaPermisos.exclude(codename__icontains='interno')
+        return listaPermisos
+
+    def listarPermisosRolInterno(self):
+        """
+        Retorna una lista de permisos de modelo de rol interno
+        :return: QuerySet de lista de permisos
+        """
+
+        content_type = ContentType.objects.get_for_model(Rol)
+        listaPermisos = Permission.objects.filter(content_type=content_type)
+        listaPermisos = listaPermisos.exclude(codename__icontains='externo')
         return listaPermisos
 
 
@@ -27,11 +50,5 @@ class SoportePermisos(models.Model):
         default_permissions = ()  # deshabilitamos add/change/delete/view
 
         permissions = (
-            ('listar_roles', 'Listar los roles del sistema'),
-            ('listar_roles_internos', 'Listar todos los roles internos del sistema'),
-            ('listar_roles_externos', 'Listar todos los roles externos del sistema'),
-            ('crear_rol_interno', 'Crear un nuevo rol interno'),
-            ('crear_rol_externo', 'Crear nuevo rol externo'),
-            ('actualizar_rol_interno', 'Actualizar un rol interno'),
-            ('actualizar_rol_externo', 'Actualizar un rol externo'),
+            ('listar_permisos', 'Listar/ver permisos del sistema'),
         )

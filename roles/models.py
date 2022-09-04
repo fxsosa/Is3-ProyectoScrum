@@ -3,6 +3,18 @@ from django.contrib.auth.models import Group
 from usuarios.models import Usuario
 from guardian.shortcuts import assign_perm
 
+# TO-DO: Arreglar esto
+permisosExternos = [
+    'soportepermisos.listar_permisos',
+    'roles.listar_roles_internos', 'roles.listar_roles_externos',
+    'roles.crear_rol_interno', 'roles.crear_rol_interno', 'roles.actualizar_rol_interno',
+    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno', 'roles.borrar_rol_externo',
+]
+
+permisosInternos = [
+    'roles.listar_roles_internos', 'roles.crear_rol_interno',
+    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
+]
 
 class ManejoRol(models.Manager):
 
@@ -77,6 +89,9 @@ class ManejoRol(models.Manager):
         grupo = Group.objects.get(name=nombreRol)
         assign_perm(nombrePermiso, grupo, nombreObjeto)
 
+    def agregarListaPermisoDeObjeto(self, nombreRol, nombrePermiso, nombreObjeto):
+        pass
+
     def agregarPermisoGlobal(self, nombreRol, nombrePermiso):
         """
         Agrega permisos globales al rol
@@ -90,6 +105,27 @@ class ManejoRol(models.Manager):
 
         grupo = Group.objects.get(name=nombreRol)
         assign_perm(nombrePermiso, grupo)
+
+    def agregarListaPermisoGlobal(self, r, lista):
+        """
+        Agrega una lista de permisos al Rol actual (self)
+        :param lista: lista de json objects. Tiene el siguiente formato
+        '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
+        :param r: Rol al cual agregar permisos
+        :return: None
+        """
+
+        grupo = Group.objects.get(name=r.nombre)
+        tipo = r.tipo
+        if tipo == 'Interno':
+            for p in lista:
+                if p in permisosInternos:
+                    assign_perm(p, grupo)
+        elif tipo == 'Externo':
+            for p in lista:
+                if p in permisosExternos:
+                    assign_perm(p, grupo)
+
 
     def borrarRol(self, nombreRol):
         """
@@ -134,6 +170,7 @@ class ManejoRol(models.Manager):
         else:
             return None
 
+
 class Rol(models.Model):
     nombre = models.CharField(max_length=50, null=True, unique=True)
     tipo = models.CharField(max_length=10, null=False)
@@ -141,6 +178,21 @@ class Rol(models.Model):
     rolGrupo = models.ForeignKey(Group, on_delete=models.CASCADE, null=True)
 
     objects = ManejoRol()
+
+    class Meta:
+        default_permissions = ()  # deshabilitamos add/change/delete/view
+
+        permissions = (
+            ('listar_roles_internos', 'Listar todos los roles internos del sistema'),
+            ('listar_roles_externos', 'Listar todos los roles externos del sistema'),
+            ('crear_rol_interno', 'Crear un nuevo rol interno'),
+            ('crear_rol_externo', 'Crear nuevo rol externo'),
+            ('actualizar_rol_interno', 'Actualizar un rol interno'),
+            ('actualizar_rol_externo', 'Actualizar un rol externo'),
+            ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
+            ('borrar_rol_externo', 'Borrar un rol externo del sistema'),
+        )
+
 
     def __str__(self):
         return str([self.nombre])

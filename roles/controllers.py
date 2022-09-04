@@ -7,9 +7,6 @@ from django.core import serializers
 
 import roles
 from roles.models import Rol
-from django.contrib.auth.decorators import login_required, permission_required
-from django.utils.decorators import method_decorator
-from guardian.shortcuts import get_perms
 from usuarios.models import Usuario
 from itertools import chain
 
@@ -34,17 +31,17 @@ class ListaRoles(APIView, CreateView):
         try:
             tipo = request.data['tipo']
             if tipo == 'Internos':
-                if user.has_perm('soportepermisos.listar_roles_internos', None):
+                if user.has_perm('roles.listar_roles_internos', None):
                     listaRoles = roles.models.Rol.objects.listarRolesInternos()
                 else:
                     return HttpResponse("No se tienen los permisos para listar roles internos", status=403)
             elif tipo == 'Externos':
-                if user.has_perm('soportepermisos.listar_roles_externos', None):
+                if user.has_perm('roles.listar_roles_externos', None):
                     listaRoles = roles.models.Rol.objects.listarRolesExternos()
                 else:
                     return HttpResponse("No se tienen los permisos para listar roles externos", status=403)
             elif tipo == 'Todos':
-                if user.has_perm('soportepermisos.listar_roles_internos', None) and user.has_perm('soportepermisos.listar_roles_externos', None):
+                if user.has_perm('roles.listar_roles_internos', None) and user.has_perm('soportepermisos.listar_roles_externos', None):
                     listaRoles = roles.models.Rol.objects.listarRoles()
                 else:
                     return HttpResponse("No se tienen los permisos para listar todos los roles", status=403)
@@ -83,11 +80,11 @@ class Rol(APIView, CreateView):
                 listaPermisos = roles.models.Rol.objects.listarPermisos(nombreRol=nombreRol)
                 tipoRol = rol.tipo
                 if tipoRol == 'Externo':
-                    if not user.has_perm('soportepermisos.listar_roles_externos', None):
+                    if not user.has_perm('roles.listar_roles_externos', None):
                         # Tipo de rol externo y el user no tiene permiso para rol externo
                         return HttpResponse("No se tiene permiso para obtener roles externos", status=403)
                 elif tipoRol=='Interno':
-                    if not user.has_perm('soportepermisos.listar_roles_internos', None):
+                    if not user.has_perm('roles.listar_roles_internos', None):
                         # Tipo de rol interno y el user no tiene permiso para rol interno
                         return HttpResponse("No se tiene permiso para obtener roles internos", status=403)
 
@@ -132,15 +129,19 @@ class Rol(APIView, CreateView):
             else:
                 # Crear y guardar el rol
                 if datosRol['tipo'] == 'Externo':
-                    if user.has_perm("soportepermisos.crear_rol_externo"):
+                    if user.has_perm("roles.crear_rol_externo"):
                         nuevoRol = roles.models.Rol.objects.crearRolExterno(nombre=datosRol['nombre'], descripcion=datosRol['descripcion'])
                         nuevoRol.save()
+                        listaPermisos = request.data['permisos']
+                        roles.models.Rol.objects.agregarListaPermisoGlobal(nuevoRol, listaPermisos)
                     else:
                         return HttpResponse("No se tiene permiso para crear rol externos!", status=403)
                 elif datosRol['tipo'] == 'Interno':
-                    if user.has_perm("soportepermisos.crear_rol_interno"):
+                    if user.has_perm("roles.crear_rol_interno"):
                         nuevoRol = roles.models.Rol.objects.crearRolInterno(nombre=datosRol['nombre'], descripcion=datosRol['descripcion'])
                         nuevoRol.save()
+                        listaPermisos = request.data['permisos']
+                        roles.models.Rol.objects.agregarListaPermisoGlobal(nuevoRol, listaPermisos)
                     else:
                         return HttpResponse("No se tiene permiso para crear rol internos!", status=403)
                 else:
@@ -155,7 +156,13 @@ class Rol(APIView, CreateView):
 
 
     def put(self, request):
-        # Obtenemos los datos dle token
+        """
+        Método put para actualizar un Rol
+        :param request: Request
+        :return: HttpResponse
+        """
+
+        # Obtenemos los datos del token
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -168,13 +175,66 @@ class Rol(APIView, CreateView):
         except Usuario.DoesNotExist as e:
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
-
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
         try:
-            # To-do
-            usuarioActualizado = ""
-            return HttpResponse(usuarioActualizado, content_type='application/json', status=200)
+            datosRol = body
+            # Crear y guardar el rol
+            if datosRol['tipo'] == 'Externo':
+                if user.has_perm("roles.actualizar_rol_externo"):
+                    try:
+                        actualizarRol = roles.models.Rol.objects.get(nombre=datosRol['nombreViejo'], tipo='Externo')
+                    except roles.models.Rol.DoesNotExist as e:
+                        return HttpResponse("No existe el rol externo a actualizar! " + str(e), status=400)
+
+                    if datosRol['nombreNuevo'] != '':
+                        actualizarRol.nombre = datosRol['nombreNuevo']
+
+                    if datosRol['descripcionNueva'] != '':
+                        actualizarRol.descripcion = datosRol['descripcionNueva']
+
+                    if datosRol['permisos'] != []:
+                        listaPermisos = request.data['permisos']
+                        roles.models.Rol.objects.agregarListaPermisoGlobal(actualizarRol, listaPermisos)
+
+                    actualizarRol.save()
+                else:
+                    return HttpResponse("No se tiene permiso para actualizar rol externo!", status=403)
+            elif datosRol['tipo'] == 'Interno':
+                if user.has_perm("roles.actualizar_rol_interno"):
+                    try:
+                        actualizarRol = roles.models.Rol.objects.get(nombre=datosRol['nombreViejo'],
+                                                                     tipo='Interno')
+                    except roles.models.Rol.DoesNotExist as e:
+                        return HttpResponse("No existe el rol interno a actualizar! " + str(e), status=400)
+
+
+                    if datosRol['nombreNuevo'] != '':
+                        actualizarRol.nombre = datosRol['nombreNuevo']
+
+                    if datosRol['descripcionNueva'] != '':
+                        actualizarRol.descripcion = datosRol['descripcionNueva']
+
+                    if datosRol['permisos'] != []:
+                        listaPermisos = request.data['permisos']
+                        roles.models.Rol.objects.agregarListaPermisoGlobal(actualizarRol, listaPermisos)
+
+                    actualizarRol.save()
+                else:
+                    return HttpResponse("No se tiene permiso para actualizar rol interno!", status=403)
+            else:
+                return HttpResponse("El Tipo de rol \"" + datosRol['tipo'] + "\" es invalido!", status=400)
+
+            # Retornar el rol actualizado (sin los permisos)
+            if datosRol['nombreNuevo'] != '':
+                resultadoQueryRol = roles.models.Rol.objects.filter(nombre=datosRol['nombreNuevo'])
+            else:
+                resultadoQueryRol = roles.models.Rol.objects.filter(nombre=datosRol['nombreViejo'])
+
+            queryRol_json = serializers.serialize('json', resultadoQueryRol)
+            return HttpResponse(queryRol_json, content_type='application/json', status=201)
         except Exception as e:
-            return HttpResponse("Algo salio mal " + str(e), status=500)
+            return HttpResponse("Error al actualizar el rol - " + str(e), status=500)
 
 
 def obtenerUsuarioConToken(token):
