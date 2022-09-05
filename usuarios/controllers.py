@@ -34,8 +34,6 @@ class controllerProyecto(APIView):
                 password=datosUsuario['password'],
                 nombres=datosUsuario['nombres'],
                 apellidos=datosUsuario['apellidos'],
-                rol=datosUsuario['rol'],
-                groups= [],
                 username=datosUsuario['username'])
             user.save()
 
