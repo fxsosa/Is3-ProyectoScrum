@@ -65,16 +65,27 @@ class ManejoRol(models.Manager):
 
         return listaRoles
 
-    def asignarRolaUsuario(self, nombreRol, user):
+    def asignarRolaUsuario(self, idRol, user):
         """
         Asigna un rol a un usuario dado
-        :param nombreRol: Nombre del rol a asignar
+        :param idRol: id del rol a asignar
         :param user: Usuario a recibir el rol
         :return: None
         """
 
-        grupo = Group.objects.get(name=nombreRol)
+        grupo = Group.objects.get(id=idRol)
         grupo.user_set.add(user)
+
+    def eliminarRolaUsuario(self, idRol, user):
+        """
+        Elimina un rol a un usuario dado
+        :param idRol: id del rol a eliminar
+        :param user: Usuario a eliminar el rol
+        :return: None
+        """
+
+        grupo = Group.objects.get(id=idRol)
+        grupo.user_set.remove(user)
 
     def existeRol(self, nombreRol):
         """

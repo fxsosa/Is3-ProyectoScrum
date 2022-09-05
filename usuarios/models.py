@@ -23,3 +23,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str([self.email, self.username, self.nombres, self.apellidos])
+
+    class Meta:
+
+        permissions = (
+            ('modificar_roles_externos_de_usuario', 'Permiso para el administrador de editar roles externos'),
+        )

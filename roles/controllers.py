@@ -29,7 +29,7 @@ class ListaRoles(APIView, CreateView):
 
         # Procesamos el request
         try:
-            tipo = request.data['tipo']
+            tipo = request.GET.get('tipo', '')
             if tipo == 'Internos':
                 if user.has_perm('roles.listar_roles_internos', None):
                     listaRoles = roles.models.Rol.objects.listarRolesInternos()
@@ -72,8 +72,9 @@ class Rol(APIView, CreateView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         body = request.data
+        nombreRol = request.GET.get('nombreRol', '')
         try:
-            nombreRol=body['nombreRol']
+            #nombreRol=body['nombreRol']
             if roles.models.Rol.objects.existeRol(nombreRol=nombreRol):
                 # Obtenemos Rol y su lista de permisos
                 rol = roles.models.Rol.objects.get(nombre=nombreRol)
@@ -242,6 +243,7 @@ def obtenerUsuarioConToken(token):
     decoded = jwt.decode(token, options={"verify_signature": False})  # works in PyJWT >= v2.0
 
     # Verificamos la validez del token
+    print("que ta pasandoooooooooooooooooooooooooooooooooo")
 
     # Creamos los campos
     datosUsuario['email'] = decoded['email']
