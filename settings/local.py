@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'sprints',
     'guardian',
-    'soportepermisos'
+    'soportepermisos',
     'proyectos',
     'historiasDeUsuario',
 ]
