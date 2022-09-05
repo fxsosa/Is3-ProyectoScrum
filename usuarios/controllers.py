@@ -4,7 +4,7 @@ import jwt
 from django.contrib.auth import get_user_model
 from django.core import serializers
 from usuarios.models import Usuario
-
+from roles.models import Rol
 
 class controllerProyecto(APIView):
 
@@ -41,6 +41,7 @@ class controllerProyecto(APIView):
                 nombres=datosUsuario['nombres'],
                 apellidos=datosUsuario['apellidos'],
                 rol=datosUsuario['rol'],
+                groups= [],
                 username=datosUsuario['username'])
             user.save()
 
@@ -56,9 +57,18 @@ class controllerProyecto(APIView):
 
     def put(self, request, format=None):
         try:
+            body = request.data
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            datosUsuario = obtenerUsuarioConToken(token)
 
-            usuarioActualizado = ""
-            return HttpResponse(usuarioActualizado, content_type='application/json', status=200)
+            if body['groups']:
+                usuario = Usuario.objects.get(email=datosUsuario['email'])
+                for nombreGrupo in body['groups']:
+                    Rol.objects.asignarRolaUsuario(nombreRol=nombreGrupo, user=usuario)
+
+            resultadoQueryUsuario = Usuario.objects.filter(email=datosUsuario['email'])
+            queryUsuario_json = serializers.serialize('json', resultadoQueryUsuario)
+            return HttpResponse(queryUsuario_json, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
