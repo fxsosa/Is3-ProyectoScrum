@@ -56,6 +56,15 @@ class ManejoRol(models.Manager):
 
         return Rol.objects.all()
 
+    def listarRolesPorUsuario(self, userEmail):
+        user = Usuario.objects.get(email=userEmail)
+        listaQuery = Group.objects.filter(user=user).values('name')
+        listaRoles = []
+        for i in range(len(listaQuery)):
+            listaRoles.append(listaQuery[i]['name'])
+
+        return listaRoles
+
     def asignarRolaUsuario(self, nombreRol, user):
         """
         Asigna un rol a un usuario dado
