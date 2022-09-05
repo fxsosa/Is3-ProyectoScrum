@@ -92,10 +92,11 @@ class ManejoRol(models.Manager):
     def asignarRolaUsuario(self, idRol, user):
         """
         Asigna un rol a un usuario dado
-        :param nombreRol: Nombre del rol a asignar
+        :param idRol: id del rol a asignar
         :param user: Usuario a recibir el rol
         :return: None
         """
+        
         rol = Rol.objects.get(id=idRol)
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
         print(nombreGrupo + "+++++++++")
@@ -103,6 +104,22 @@ class ManejoRol(models.Manager):
         grupo.user_set.add(user)
 
     def existeRolNombre(self, nombreRol):
+
+        grupo = Group.objects.get(id=idRol)
+        grupo.user_set.add(user)
+
+    def eliminarRolaUsuario(self, idRol, user):
+        """
+        Elimina un rol a un usuario dado
+        :param idRol: id del rol a eliminar
+        :param user: Usuario a eliminar el rol
+        :return: None
+        """
+
+        grupo = Group.objects.get(id=idRol)
+        grupo.user_set.remove(user)
+
+    def existeRol(self, nombreRol):
         """
         Verifica si un Rol existe o no en la base de datos
         :param nombreRol: Nombre del rol a verificar

@@ -4,17 +4,11 @@ import jwt
 from django.contrib.auth import get_user_model
 from django.core import serializers
 from usuarios.models import Usuario
-
+from roles.models import Rol
 
 class controllerProyecto(APIView):
 
-    def get(self, request, format=None):
-        try:
-            usuarios = Usuario.objects.all()
-            serializer = serializers.serialize('json', usuarios)
-            return HttpResponse(serializer, content_type='application/json', status=200)
-        except Exception as e:
-            return HttpResponse("Algo salio mal "+ str(e), status=200)
+
 
     def post(self, request, format=None):
         try:
@@ -41,6 +35,7 @@ class controllerProyecto(APIView):
                 nombres=datosUsuario['nombres'],
                 apellidos=datosUsuario['apellidos'],
                 rol=datosUsuario['rol'],
+                groups= [],
                 username=datosUsuario['username'])
             user.save()
 
@@ -54,14 +49,61 @@ class controllerProyecto(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
 
-    def put(self, request, format=None):
-        try:
 
-            usuarioActualizado = ""
-            return HttpResponse(usuarioActualizado, content_type='application/json', status=200)
+
+
+class ControllerUsuarioAdministracion(APIView):
+    def get(self, request, format=None):
+        """
+        Funcion para listar todos los usuarios del sistema
+        :param request:
+        :param format:
+        :return:
+        """
+        try:
+            usuarios = Usuario.objects.all()
+            serializer = serializers.serialize('json', usuarios)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal "+ str(e), status=200)
+
+    def put(self, request, format=None):
+        """
+        Funcion para actualizar datos de un usuario por parte de un admin
+        :param request:
+        :param format:
+        :return:
+        """
+        try:
+            body = request.data
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            datosUsuario = obtenerUsuarioConToken(token)
+            try:
+                usuarioSolicitante = Usuario.objects.get(email=datosUsuario['email'])
+            except Exception as e:
+                return HttpResponse("Algo salio mal al buscar el usuario " + str(e), status=500)
+
+            if not usuarioSolicitante.has_perm('usuarios.modificar_roles_externos_de_usuario', None):
+                return HttpResponse("No tienes los permisos para cambiar roles externos", status=400)
+
+
+            if body['accion'] == 'agregar':
+                if body['groups']:
+                    usuario = Usuario.objects.get(email=body['email'])
+                    for idRol in body['groups']:
+                        Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
+            elif body['accion'] == 'eliminar':
+                print("Entro elif")
+                if body['groups']:
+                    usuario = Usuario.objects.get(email=body['email'])
+                    for idRol in body['groups']:
+                        Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
+
+            resultadoQueryUsuario = Usuario.objects.filter(email=body['email'])
+            queryUsuario_json = serializers.serialize('json', resultadoQueryUsuario)
+            return HttpResponse(queryUsuario_json, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
-
 
 
 def obtenerUsuarioConToken(token):
