@@ -74,11 +74,12 @@ class Rol(APIView, CreateView):
         body = request.data
         nombreRol = request.GET.get('nombreRol', '')
         try:
-            idRol=body['id']
+            idRol=request.GET.get('id', '')
             if roles.models.Rol.objects.existeRolId(id=idRol):
                 # Obtenemos Rol y su lista de permisos
                 rol = roles.models.Rol.objects.get(id=idRol)
                 listaPermisos = roles.models.Rol.objects.listarPermisos(id=idRol)
+                print("PERMISOS SSSSSSSSSSS ", listaPermisos)
                 tipoRol = rol.tipo
                 if tipoRol == 'Externo':
                     if not user.has_perm('roles.listar_roles_externos', None):
@@ -98,9 +99,9 @@ class Rol(APIView, CreateView):
                 jsonRespuesta = serializers.serialize('json', rolPermisos)
                 return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
             else:
-                return HttpResponse("No existe el rol buscado!", status=400)
+                return HttpResponse("No existe el rol buscado!" + str(idRol), status=400)
         except Exception as e:
-            return HttpResponse("No se pudo obtener el rol!", status=500)
+            return HttpResponse("No se pudo obtener el rol! " + str(e), status=500)
 
 
     def post(self, request, format=None):
@@ -176,12 +177,13 @@ class Rol(APIView, CreateView):
             datosRol = body
             # Crear y guardar el rol
             if datosRol['tipo'] == 'Externo':
-                if user.has_perm("roles.actualizar_rol_externo"):
+                if not user.has_perm("roles.actualizar_rol_externo"):
                     try:
-                        actualizarRol = roles.models.Rol.objects.get(id=datosRol['idProyecto'], tipo='Externo')
+                        print("asc 1")
+                        actualizarRol = roles.models.Rol.objects.get(id=datosRol['id'], tipo='Externo')
                     except roles.models.Rol.DoesNotExist as e:
                         return HttpResponse("No existe el rol externo a actualizar! " + str(e), status=400)
-
+                    print("asc 2")
                     if datosRol['nombreNuevo'] != '':
                         actualizarRol.nombre = datosRol['nombreNuevo']
 
@@ -189,8 +191,12 @@ class Rol(APIView, CreateView):
                         actualizarRol.descripcion = datosRol['descripcionNueva']
 
                     if datosRol['permisos'] != []:
-                        listaPermisos = request.data['permisos']
-                        roles.models.Rol.objects.agregarListaPermisoGlobal(actualizarRol, listaPermisos)
+                        if datosRol['accion'] == "agregar":
+                            listaPermisos = request.data['permisos']
+                            roles.models.Rol.objects.agregarListaPermisoGlobal(actualizarRol, listaPermisos)
+                        elif datosRol['accion'] == "eliminar":
+                            listaPermisos = request.data['permisos']
+                            roles.models.Rol.objects.borrarListaPermisoGlobal(actualizarRol, listaPermisos)
 
                     actualizarRol.save()
                 else:
@@ -226,12 +232,40 @@ class Rol(APIView, CreateView):
                 return HttpResponse("El Tipo de rol \"" + datosRol['tipo'] + "\" es invalido!", status=400)
 
             # Retornar el rol actualizado (sin los permisos)
-            resultadoQueryRol = roles.models.Rol.objects.filter(id=datosRol['idRol'])
+            resultadoQueryRol = roles.models.Rol.objects.filter(id=datosRol['id'])
 
             queryRol_json = serializers.serialize('json', resultadoQueryRol)
             return HttpResponse(queryRol_json, content_type='application/json', status=201)
         except Exception as e:
             return HttpResponse("Error al actualizar el rol - " + str(e), status=500)
+
+
+class usuarioRoles(APIView):
+    def get(self,request):
+        # Obtenemos los datos del token
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        """
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        """
+
+        try:
+            listaIdRoles = roles.models.Rol.objects.listarRolesPorUsuario(userEmail=usuarioJSON['email'])
+            print(listaIdRoles)
+            listaIdRoles_json = json.dumps(listaIdRoles)
+            print("listaIdRoles_json ",listaIdRoles_json)
+            return HttpResponse(listaIdRoles_json, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Error al obtener el rol - " + str(e), status=500)
+
 
 
 def obtenerUsuarioConToken(token):

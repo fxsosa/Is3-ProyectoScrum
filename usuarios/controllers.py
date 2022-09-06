@@ -81,20 +81,21 @@ class ControllerUsuarioAdministracion(APIView):
             except Exception as e:
                 return HttpResponse("Algo salio mal al buscar el usuario " + str(e), status=500)
 
+            """
             if not usuarioSolicitante.has_perm('usuarios.modificar_roles_externos_de_usuario', None):
                 return HttpResponse("No tienes los permisos para cambiar roles externos", status=400)
+            """
 
+            usuario = Usuario.objects.get(email=body['email'])
 
             if body['accion'] == 'agregar':
-                if body['groups']:
-                    usuario = Usuario.objects.get(email=body['email'])
-                    for idRol in body['groups']:
+                if body['roles']:
+                    for idRol in body['roles']:
                         Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
             elif body['accion'] == 'eliminar':
                 print("Entro elif")
-                if body['groups']:
-                    usuario = Usuario.objects.get(email=body['email'])
-                    for idRol in body['groups']:
+                if body['roles']:
+                    for idRol in body['roles']:
                         Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
 
             resultadoQueryUsuario = Usuario.objects.filter(email=body['email'])
