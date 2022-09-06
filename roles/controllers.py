@@ -239,6 +239,42 @@ class Rol(APIView, CreateView):
         except Exception as e:
             return HttpResponse("Error al actualizar el rol - " + str(e), status=500)
 
+    def delete(self, request):
+        # Obtenemos los datos del token
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+            idRol=request.GET.get('id', '')
+            print(idRol)
+            if roles.models.Rol.objects.existeRolId(id=idRol):
+                tipoRol = request.GET.get('tipoRol', '')
+
+                if tipoRol == 'Interno':
+                    if not user.has_perm("roles.borrar_rol_interno"):
+                        return HttpResponse("No tiene los permisos para borrar rol interno", status=400)
+                elif tipoRol == 'Externo':
+                    if not user.has_perm("roles.borrar_rol_externo"):
+                        return HttpResponse("No tiene los permisos para borrar rol externo", status=400)
+                else:
+                    return HttpResponse("Debe especificar el tipo rol", status=400)
+                roles.models.Rol.objects.borrarRol(idRol=idRol)
+
+                return HttpResponse('Rol Eliminado', status=200)
+            else:
+                return HttpResponse("No existe el rol buscado!" + str(idRol), status=400)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener el rol! " + str(e), status=500)
+
 
 class usuarioRoles(APIView):
     def get(self,request):
