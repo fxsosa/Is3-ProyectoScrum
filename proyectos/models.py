@@ -11,9 +11,8 @@ class ManejoProyectos(models.Manager):
         descripcion = datos['descripcion']
         fechaInicio = datos['fechaInicio']
         fechaFin = datos['fechaFin']
-        scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
-        #scrumMaster = datos['scrumMaster']
-        estado = datos['estado']
+        scrumMaster = Usuario.objects.get(email=datos['scrumMaster']) # Obtenemos el usuario Scrum Master por su id, que es su correo
+        estado = "planificación"
         proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
                               fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
         proyecto.save()
@@ -28,10 +27,35 @@ class ManejoProyectos(models.Manager):
         proyecto.fechaInicio = datos['fechaInicio']
         proyecto.fechaFin = datos['fechaFin']
         proyecto.scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
-        proyecto.estado = datos['estado']
+        # El estado del proyecto no se modifica manualmente, sino automáticamente
 
         proyecto.save()
         return proyecto
+
+class ManejoParticipantes(models.Manager):
+    def crearParticipante(self, datos):
+        proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
+        usuario = Usuario.objects.get(id=int(datos['idUsuario']))
+
+        participante = self.model(idProyecto=proyecto, idUsuario=usuario)
+        participante.save()
+
+        return participante
+
+    # Falta corregir este método para el put, no funciona
+    '''
+    def modificarParticipante(self, datos):
+        particip = participante.objects.get(id=int(datos['idParticipante']))
+        particip.proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
+        #particip.usuario = Usuario.objects.get(id=int(datos['idUsuario'])) # Busca con id
+        particip.usuario = Usuario.objects.get(email=datos['mailUsuario'])
+        # El estado del proyecto no se modifica manualmente, sino automáticamente
+
+        proyecto.save()
+        return proyecto
+    '''
+
+
 
 class Proyecto(models.Model):
     #El id se genera de forma automática
@@ -49,16 +73,15 @@ class Proyecto(models.Model):
 
 
 # Participante de un proyecto (separado de usuario)
-class Participante(models.Model):
+class participante(models.Model):
     # El id se genera de modo automático
-    idProyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE) # Se elimina el proyecto, se eliminan sus participantes
-    idUsuario = models.ForeignKey(Usuario, on_delete=models.CASCADE) # Si borramos el usuario, se borran todas sus participaciones
+    proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE) # Se elimina el proyecto, se eliminan sus participantes
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE) # Si borramos el usuario, se borran todas sus participaciones
     #rol = models.ForeignKey(Rol_Interno, on_delete=models.PROTECT) Si borramos un rol interno, ¿qué ocurre con los usuarios que tienen ese rol?
 #TODO: Combinar modelo de participante con roles
+    objects=ManejoParticipantes()
     def __str__(self):
         return str([self.idProyecto, self.idUsuario])
-
-
 
 
 
