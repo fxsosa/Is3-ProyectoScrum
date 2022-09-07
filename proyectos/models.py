@@ -47,6 +47,19 @@ class Proyecto(models.Model):
         return str([self.nombre, self.descripcion,self.fechaInicio, self.fechaFin,
                     self.scrumMaster.id, self.estado])
 
+    class Meta:
+        #default_permissions = ()  # ?deshabilitamos add/change/delete/view
+
+        permissions = (
+            ('crear_proyecto', 'Crear un nuevo proyecto'),
+            ('eliminar_proyecto', 'Eliminar un proyecto'),
+            ('actualizar_proyecto', 'Actualizar los parametros iniciales de un proyecto'),
+            ('archivar_proyecto', 'Archivar un proyecto'),
+            ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto')
+        )
+
+
+
 
 # Participante de un proyecto (separado de usuario)
 class Participante(models.Model):
@@ -54,19 +67,6 @@ class Participante(models.Model):
     idProyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE) # Se elimina el proyecto, se eliminan sus participantes
     idUsuario = models.ForeignKey(Usuario, on_delete=models.CASCADE) # Si borramos el usuario, se borran todas sus participaciones
     #rol = models.ForeignKey(Rol_Interno, on_delete=models.PROTECT) Si borramos un rol interno, ¿qué ocurre con los usuarios que tienen ese rol?
-#TODO: Combinar modelo de participante con roles
+    #TODO: Combinar modelo de participante con roles
     def __str__(self):
         return str([self.idProyecto, self.idUsuario])
-
-
-
-
-
-
-
-
-
-
-
-
-
