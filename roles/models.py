@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import assign_perm, remove_perm, get_group_perms
 
 # TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
@@ -47,11 +47,9 @@ class ManejoRol(models.Manager):
         :return: String con el nombre del grupo asociado al rol
         """
         if rol.tipo == "Interno":
-            print("ZZZZZZ")
             p = rol.proyecto
             return str(str(rol.id) + "_" + str(p.id))
         elif rol.tipo == "Externo":
-            print("AAAAAA")
             return str(rol.id)
 
 
@@ -101,7 +99,15 @@ class ManejoRol(models.Manager):
         :param nombreRol: Nombre del Rol a buscar
         :return: QuerySet de Usuario
         """
-        return Usuario.objects.filter(groups__name=nombreRol)
+
+        try:
+            rol = Rol.objects.get(nombre=nombreRol)
+        except Rol.DoesNotExist as e:
+            print("No existe el rol buscado! " + str(e))
+            return None
+
+        nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
+        return Usuario.objects.filter(groups__name=nombreGrupo)
 
     def listarRoles(self):
         """
@@ -391,7 +397,17 @@ class ManejoRol(models.Manager):
             nombreGrupo =  Rol.objects.obtenerNombreGrupo(rol)
             grupo = Group.objects.get(name=nombreGrupo)
             if grupo is not None:
-                return grupo.permissions.all()
+                if rol.tipo == 'Externo':
+                    print(grupo.permissions.all())
+                    return grupo.permissions.all()
+                elif rol.tipo == 'Interno':
+                    lista = get_group_perms(grupo, rol.proyecto)
+                    print(lista)
+                    listaPermisos = []
+                    for p in lista:
+                        print(p)
+                        listaPermisos.append(Permission.objects.get(codename=p))
+                    return listaPermisos
             else:
                 return None
         except Rol.DoesNotExist as e:
@@ -424,4 +440,4 @@ class Rol(models.Model):
 
 
     def __str__(self):
-        return str([self.nombre])
+        return str([self.nombre, self.tipo, self.descripcion, self.proyecto.id if self.tipo == 'Interno' else None])
