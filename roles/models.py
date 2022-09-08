@@ -354,13 +354,16 @@ class ManejoRol(models.Manager):
         except Rol.DoesNotExist as e:
             print("No existe el rol con id = " + idRol)
 
-    def listarRolesInternos(self):
+    def listarRolesInternos(self, idProyecto):
         """
         Lista todos los roles Internos
         :return: QuerySet de Roles Internos
         """
-
-        return Rol.objects.filter(tipo='Interno')
+        if idProyecto != None:
+            print("Llego muy lejooooooooooo")
+            return Rol.objects.filter(tipo='Interno',proyecto=idProyecto)
+        else:
+            return Rol.objects.filter(tipo='Interno')
 
     def listarRolesExternos(self):
         """
