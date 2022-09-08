@@ -35,7 +35,7 @@ class ListaRoles(APIView, CreateView):
             if tipo == 'Internos':
                 #if user.has_perm('roles.listar_roles_internos', None):
                 if idproyecto != None:
-                    listaRoles = roles.models.Rol.objects.listarRolesInternos(idproyecto)
+                    listaRoles = roles.models.Rol.objects.listarRolesInternos(idProyecto=idproyecto)
                 else:
                     listaRoles = roles.models.Rol.objects.listarRolesInternos(None)
 
