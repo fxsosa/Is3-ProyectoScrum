@@ -3,19 +3,6 @@ from django.db import models
 #sys.path.append("..")
 from usuarios.models import Usuario
 
-class ManejoParticipantes(models.Manager):
-    def listarProyectosdeParticipante(self, id):
-
-        proyectos = Participante.objects.filter(idUsuario=id)
-
-        if len(proyectos) == 0:
-            return proyectos
-
-        return proyectos
-
-
-
-
 class ManejoProyectos(models.Manager):
 
     def crearProyecto(self, datos):
@@ -56,6 +43,17 @@ class ManejoParticipantes(models.Manager):
         participante.save()
 
         return participante
+
+    def listarProyectosdeParticipante(self, id):
+
+        proyectosID = participante.objects.filter(usuario_id=id).values_list('proy')
+
+        if len(proyectosID) == 0:
+            return proyectosID
+
+        proyectos = Proyecto.objects.get(id=int(id))
+
+        return proyectos
 
     # Falta corregir este método para el put, no funciona
     '''
