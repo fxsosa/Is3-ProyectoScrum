@@ -417,4 +417,4 @@ class Rol(models.Model):
 
 
     def __str__(self):
-        return str([self.nombre])
+        return str([self.nombre, self.tipo, self.descripcion, self.proyecto.id if self.tipo == 'Interno' else None])
