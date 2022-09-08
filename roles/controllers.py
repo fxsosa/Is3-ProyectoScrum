@@ -1,4 +1,5 @@
 import jwt
+from django.contrib.auth.models import Permission
 from django.http import HttpResponse
 from django.views.generic import CreateView
 from rest_framework.utils import json
@@ -79,7 +80,6 @@ class Rol(APIView, CreateView):
                 # Obtenemos Rol y su lista de permisos
                 rol = roles.models.Rol.objects.get(id=idRol)
                 listaPermisos = roles.models.Rol.objects.listarPermisos(id=idRol)
-                print("PERMISOS SSSSSSSSSSS ", listaPermisos)
                 tipoRol = rol.tipo
                 if tipoRol == 'Externo':
                     if not user.has_perm('roles.listar_roles_externos', None):
@@ -92,9 +92,7 @@ class Rol(APIView, CreateView):
 
                 # Si el usuario tiene el tipo de permiso para el tipo de rol obtenido:
                 # Juntamos los datos del rol y su lista de permisos asociados
-
                 rolPermisos = list(chain([rol, ], listaPermisos))
-
                 # Convertimos a json
                 jsonRespuesta = serializers.serialize('json', rolPermisos)
                 return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
