@@ -2,6 +2,7 @@
 from django.urls import path, include
 from app import views as myapp_views
 from django.contrib import admin
+# from django.contrib import admin
 
 urlpatterns = [
     path('api/v1/usuario', include('usuarios.urls')),
@@ -12,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/tipoHistoriaUsuario', include('historiasDeUsuario.urls')),
     path('api/v1/participantes', include('proyectos.urls3'))
+    path('api/v1/rol', include('roles.urls')),
 ]
 
 
