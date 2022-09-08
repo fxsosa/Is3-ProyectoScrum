@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core import serializers
 from usuarios.models import Usuario
 from roles.models import Rol
-from proyectos.models import Participante
+from proyectos.models import participante
 import json
 
 class controllerProyecto(APIView):

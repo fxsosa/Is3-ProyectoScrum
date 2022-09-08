@@ -17,7 +17,8 @@ permisosExternos = [
     'roles.borrar_rol_interno',
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
-    'usuarios.modificar_roles_externos_de_usuario'
+    'usuarios.modificar_roles_externos_de_usuario',
+    'proyectos.listar_proyectos'
 ]
 
 permisosInternos = [
@@ -26,9 +27,9 @@ permisosInternos = [
     'roles.listar_roles_proyecto', 'proyectos.crear_proyecto',
     'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
     'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
-    'listar_roles_proyecto', 'crear_proyecto',
-    'eliminar_proyecto', 'actualizar_proyecto',
-    'archivar_proyecto', 'cambiar_estado_proyecto'
+    'permisos.ver_proyecto', 'participante.agregar_participante',
+    'participante.modificar_participante', 'participante.borrar_participante',
+    'participante.listar_participante'
 ]
 
 
