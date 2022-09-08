@@ -32,7 +32,6 @@ class controllerProyecto(APIView):
 
 
             serializer = serializers.serialize('json', listaProyectos)
-            print("serializer",serializer)
             return HttpResponse(serializer, content_type='application/json', status=200)
 
         except Exception as e:

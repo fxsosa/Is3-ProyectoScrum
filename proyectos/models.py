@@ -18,7 +18,6 @@ class ManejoProyectos(models.Manager):
         estado = "planificación"
         proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
                               fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
-
         proyecto.save()
 
 
@@ -99,7 +98,8 @@ class Proyecto(models.Model):
             ('eliminar_proyecto', 'Eliminar un proyecto'),
             ('actualizar_proyecto', 'Actualizar los parametros iniciales de un proyecto'),
             ('archivar_proyecto', 'Archivar un proyecto'),
-            ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto')
+            ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto'),
+            ('listar_proyectos', 'Listar uno o varios proyectos'),
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
@@ -112,6 +112,16 @@ class participante(models.Model):
     def __str__(self):
         return str([self.proyecto, self.usuario])
 
+    class Meta:
+        #default_permissions = ()  # ?deshabilitamos add/change/delete/view
+
+        permissions = (
+            ('agregar_participante', 'Agregar un usuario a un proyecto'),
+            ('modificar_participante', 'Modificar un participante'),
+            ('borrar_participante', 'Borrar participante'),
+            ('listar_participante', 'Lista un participante individual')
+
+        )
 
 
 
