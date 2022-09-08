@@ -122,7 +122,6 @@ class ControllerUsuarioAdministracion(APIView):
                     for idRol in body['roles']:
                         Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
             elif body['accion'] == 'eliminar':
-                print("Entro elif")
                 if body['roles']:
                     for idRol in body['roles']:
                         Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
