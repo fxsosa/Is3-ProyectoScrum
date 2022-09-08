@@ -8,13 +8,9 @@ from guardian.shortcuts import assign_perm, remove_perm
 # TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
     'soportepermisos.listar_permisos',
-    'roles.listar_roles_internos',
     'roles.listar_roles_externos',
-    'roles.crear_rol_interno',
     'roles.crear_rol_externo',
-    'roles.actualizar_rol_interno',
     'roles.actualizar_rol_externo',
-    'roles.borrar_rol_interno',
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
     'usuarios.modificar_roles_externos_de_usuario',
@@ -23,14 +19,17 @@ permisosExternos = [
 ]
 
 permisosInternos = [
-    'roles.listar_roles_internos', 'roles.crear_rol_interno',
-    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
-    'roles.listar_roles_proyecto',
-    'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
-    'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
-    'proyectos.listar_proyectos',
-    'permisos.ver_proyecto', 'participante.agregar_participante',
-    'participante.modificar_participante', 'participante.borrar_participante',
+    'roles.listar_roles_internos',
+    'roles.crear_rol_interno',
+    'roles.actualizar_rol_interno',
+    'roles.borrar_rol_interno',
+    'proyectos.eliminar_proyecto',
+    'proyectos.actualizar_proyecto',
+    'proyectos.archivar_proyecto',
+    'proyectos.cambiar_estado_proyecto',
+    'participante.agregar_participante',
+    'participante.modificar_participante',
+    'participante.borrar_participante',
     'participante.listar_participante'
 ]
 
@@ -47,11 +46,9 @@ class ManejoRol(models.Manager):
         :return: String con el nombre del grupo asociado al rol
         """
         if rol.tipo == "Interno":
-            print("ZZZZZZ")
             p = rol.proyecto
             return str(str(rol.id) + "_" + str(p.id))
         elif rol.tipo == "Externo":
-            print("AAAAAA")
             return str(rol.id)
 
 
@@ -221,16 +218,18 @@ class ManejoRol(models.Manager):
         grupo = Group.objects.get(name=nombreGrupo)
         try:
             for per in lista:
-                print(per)
+                print('per',per)
                 # Verificamos que los campos no sean null
                 if per['nombre'] != "" and per['idObjeto'] is not None:
                     try:
                         idObjeto = per['idObjeto']
                         proyecto = Proyecto.objects.get(id=idObjeto)
+
                         if r.tipo == 'Interno':
                             if per['nombre'] in permisosInternos:
                                 print("Permiso: " + per['nombre'])
                                 assign_perm(per['nombre'], grupo, proyecto)
+
                         elif r.tipo == 'Externo':
                             if per['nombre'] in permisosExternos:
                                 assign_perm(per['nombre'], grupo, proyecto)

@@ -33,11 +33,11 @@ class controllerProyecto(APIView):
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
             proyecto = Proyecto.objects.get(id=int(id))
-            if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
-                serializer = serializers.serialize('json', [proyecto, ])
-                return HttpResponse(serializer, content_type='application/json', status=200)
-            else:
-                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            #if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
+            serializer = serializers.serialize('json', [proyecto, ])
+            return HttpResponse(serializer, content_type='application/json', status=200)
+            #else:
+              #  return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -185,11 +185,11 @@ class controllerParticipantes(APIView):
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Usuario no existe:" + str(e), status=400)
 
-            if user.has_perm('participante.crear_participante', obj=proyecto):
-                particip = participante.objects.crearParticipante(datos)
-                return HttpResponse(particip, content_type='application/json', status=200)
-            else:
-                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            #if user.has_perm('participante.crear_participante', obj=proyecto):
+            particip = participante.objects.crearParticipante(datos)
+            return HttpResponse(particip, content_type='application/json', status=200)
+            #else:
+             #   return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -204,7 +204,27 @@ class controllerParticipantes(APIView):
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
     '''
+class ControllerProyectoParticipantes(APIView):
+    def get(self, request):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+            idProyecto=request.GET.get('idproyecto', '')
+            participantes = participante.objects.listarParticipantedeProyectos(idProyecto=idProyecto)
+            serializer = serializers.serialize('json', participantes)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
 
 
 def obtenerUsuarioConToken(token):

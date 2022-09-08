@@ -32,15 +32,15 @@ class ListaRoles(APIView, CreateView):
             tipo = request.GET.get('tipo', '')
             idproyecto = request.GET.get('idproyecto', '')
             if tipo == 'Internos':
-                if user.has_perm('roles.listar_roles_internos', None):
-                    if idproyecto != None:
-                        listaRoles = roles.models.Rol.objects.listarRolesInternos(idproyecto)
-                    else:
-                        listaRoles = roles.models.Rol.objects.listarRolesInternos(None)
-
-
+                #if user.has_perm('roles.listar_roles_internos', None):
+                if idproyecto != None:
+                    listaRoles = roles.models.Rol.objects.listarRolesInternos(idproyecto)
                 else:
-                   return HttpResponse("No se tienen los permisos para listar roles internos", status=403)
+                    listaRoles = roles.models.Rol.objects.listarRolesInternos(None)
+
+
+                #else:
+                 #  return HttpResponse("No se tienen los permisos para listar roles internos", status=403)
             elif tipo == 'Externos':
                 if user.has_perm('roles.listar_roles_externos', None):
                     listaRoles = roles.models.Rol.objects.listarRolesExternos()
@@ -89,10 +89,10 @@ class Rol(APIView, CreateView):
                     if not user.has_perm('roles.listar_roles_externos', None):
                         # Tipo de rol externo y el user no tiene permiso para rol externo
                         return HttpResponse("No se tiene permiso para obtener roles externos", status=403)
-                elif tipoRol=='Interno':
-                    if not user.has_perm('roles.listar_roles_internos', None):
+                #elif tipoRol=='Interno':
+                   # if not user.has_perm('roles.listar_roles_internos', None):
                         # Tipo de rol interno y el user no tiene permiso para rol interno
-                        return HttpResponse("No se tiene permiso para obtener roles internos", status=403)
+                    #    return HttpResponse("No se tiene permiso para obtener roles internos", status=403)
 
                 # Si el usuario tiene el tipo de permiso para el tipo de rol obtenido:
                 # Juntamos los datos del rol y su lista de permisos asociados
@@ -209,7 +209,7 @@ class Rol(APIView, CreateView):
                 else:
                     return HttpResponse("No se tiene permiso para actualizar rol externo!", status=403)
             elif datosRol['tipo'] == 'Interno':
-                if user.has_perm("roles.actualizar_rol_interno"):
+                #if user.has_perm("roles.actualizar_rol_interno"):
                     try:
                         actualizarRol = roles.models.Rol.objects.get(id=datosRol['id'], tipo='Interno')
                     except roles.models.Rol.DoesNotExist as e:
@@ -222,7 +222,8 @@ class Rol(APIView, CreateView):
 
                     if datosRol['permisos'] != []:
                         if datosRol['accion'] == "agregar":
-                            idProyecto = actualizarRol.proyecto.id
+                            idProyecto = datosRol['idProyecto']
+
                             lista = request.data['permisos']
                             listaPermisos = []
                             for p in lista:
@@ -239,8 +240,8 @@ class Rol(APIView, CreateView):
                             roles.models.Rol.objects.borrarListaPermisoObjeto(actualizarRol, listaPermisos)
 
                     actualizarRol.save()
-                else:
-                    return HttpResponse("No se tiene permiso para actualizar rol interno!", status=403)
+                #else:
+                 #   return HttpResponse("No se tiene permiso para actualizar rol interno!", status=403)
             else:
                 return HttpResponse("El Tipo de rol \"" + datosRol['tipo'] + "\" es invalido!", status=400)
 
