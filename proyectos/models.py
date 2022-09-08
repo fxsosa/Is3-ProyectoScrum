@@ -6,12 +6,11 @@ from usuarios.models import Usuario
 class ManejoParticipantes(models.Manager):
     def listarProyectosdeParticipante(self, id):
 
-        proyectos = Participante.objects.filter(idProyecto__participante=id)
+        proyectos = Participante.objects.filter(idUsuario=id)
 
         if len(proyectos) == 0:
             return proyectos
 
-        proyectos = proyectos.values_list('idProyecto')
         return proyectos
 
 
@@ -29,6 +28,7 @@ class ManejoProyectos(models.Manager):
         estado = datos['estado']
         proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
                               fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
+
         proyecto.save()
 
 
