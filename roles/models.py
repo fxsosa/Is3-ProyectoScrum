@@ -28,7 +28,7 @@ permisosInternos = [
     'roles.listar_roles_proyecto',
     'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
     'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
-    'proyectos.listar_proyectos',
+    'proyectos.listar_proyectos', 'proyectos.iniciar_proyecto',
     'permisos.ver_proyecto', 'participante.agregar_participante',
     'participante.modificar_participante', 'participante.borrar_participante',
     'participante.listar_participante'

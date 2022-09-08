@@ -37,6 +37,17 @@ class ManejoProyectos(models.Manager):
         proyecto.save()
         return proyecto
 
+    def iniciarProyecto(self, datos):
+        proyecto = Proyecto.objects.get(id=int(datos['id']))
+        proyecto.estado = "iniciado"
+
+        proyecto.save()
+        return proyecto
+
+
+
+
+
 class ManejoParticipantes(models.Manager):
     def crearParticipante(self, datos):
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
@@ -100,6 +111,7 @@ class Proyecto(models.Model):
             ('archivar_proyecto', 'Archivar un proyecto'),
             ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto'),
             ('listar_proyectos', 'Listar uno o varios proyectos'),
+            ('iniciar_proyecto', 'Marcar un proyecto como iniciado')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
