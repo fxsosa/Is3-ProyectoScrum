@@ -5,7 +5,7 @@ from proyectos.models import Proyecto
 from usuarios.models import Usuario
 from guardian.shortcuts import assign_perm, remove_perm
 
-# TO-DO: Arreglar esto
+# TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
     'soportepermisos.listar_permisos',
     'roles.listar_roles_internos',
@@ -23,20 +23,32 @@ permisosExternos = [
 permisosInternos = [
     'roles.listar_roles_internos', 'roles.crear_rol_interno',
     'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
+    'roles.listar_roles_proyecto', 'proyectos.crear_proyecto',
+    'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
+    'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
+    'listar_roles_proyecto', 'crear_proyecto',
+    'eliminar_proyecto', 'actualizar_proyecto',
+    'archivar_proyecto', 'cambiar_estado_proyecto'
 ]
 
-class ManejoRol(models.Manager):
 
+class ManejoRol(models.Manager):
+    """
+        Manager del modelo de roles
+    """
 
     def obtenerNombreGrupo(self, rol):
-        print("aaaaaaaaaaaaaaa")
-        print("rol.tipo ", rol.tipo)
+        """
+        Retorna el nombre del grupo al cual pertenece un rol
+        :param rol: Instancia Rol
+        :return: String con el nombre del grupo asociado al rol
+        """
         if rol.tipo == "Interno":
-            print("aca no deberia")
+            print("ZZZZZZ")
             p = rol.proyecto
             return str(str(rol.id) + "_" + str(p.id))
         elif rol.tipo == "Externo":
-            print("eeeeeeeeeeeee")
+            print("AAAAAA")
             return str(rol.id)
 
 
@@ -61,7 +73,7 @@ class ManejoRol(models.Manager):
         """
         Crear un Rol Interno y registrar el modelo en la base de datos
 
-        :param nombre: Nombre del rol a registrar
+        :param idProyecto: Id del proyecto a registrar
         :param extra_fields: Campos extra del modelo (descripcion)
         :return: Objeto Rol
         """
@@ -81,6 +93,11 @@ class ManejoRol(models.Manager):
         return rolInterno
 
     def listarUsuarios(self, nombreRol):
+        """
+        Genera una lista de usuarios que se encuentran asociados a un rol
+        :param nombreRol: Nombre del Rol a buscar
+        :return: QuerySet de Usuario
+        """
         return Usuario.objects.filter(groups__name=nombreRol)
 
     def listarRoles(self):
@@ -92,6 +109,12 @@ class ManejoRol(models.Manager):
         return Rol.objects.all()
 
     def listarRolesPorUsuario(self, userEmail):
+        """
+        Lista los roles que tiene un usuario
+        :param userEmail: Email del usuario a listar sus roles
+        :return: QuerySet de Rol
+        """
+
         user = Usuario.objects.get(email=userEmail)
         listaQuery = Group.objects.filter(user=user).values('name')
         print("listaQuery = ",listaQuery)
@@ -117,35 +140,44 @@ class ManejoRol(models.Manager):
         """
         
         rol = Rol.objects.get(id=idRol)
-        print("aquisssssssssssss")
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
-        print(nombreGrupo + "+++++++++")
         grupo = Group.objects.get(name=nombreGrupo)
         grupo.user_set.add(user)
 
     def eliminarRolaUsuario(self, idRol, user):
         """
         Elimina un rol a un usuario dado
-        :param idRol: id del rol a eliminar
+        :param idRol: id del rol a eliminar de un usuario
         :param user: Usuario a eliminar el rol
         :return: None
         """
+        try:
+            rol = Rol.objects.get(id=idRol)
+        except Rol.DoesNotExist as e:
+            print("Rol a eliminar no existe!")
+            return None
 
-        grupo = Group.objects.get(id=idRol)
+        nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
+        grupo = Group.objects.get(id=nombreGrupo)
         grupo.user_set.remove(user)
 
     def existeRol(self, nombreRol):
         """
         Verifica si un Rol existe o no en la base de datos
         :param nombreRol: Nombre del rol a verificar
-        :return: True si el objeto existe, False en caso contrario
+        :return: Boolean True/Existe, False/No existe
         """
 
         return Rol.objects.filter(nombre=nombreRol).exists()
 
 
     def existeRolId(self, id):
-        print('Probamos con get')
+        """
+        Verificar si un rol existe o no en la base de datos
+        :param id: ID del rol a verificar
+        :return: Boolean True/Existe, False/No existe
+        """
+
         try:
             rol = Rol.objects.get(id=id)
         except Rol.DoesNotExist as e:
@@ -153,13 +185,13 @@ class ManejoRol(models.Manager):
             return False
         return True
 
-    def agregarPermisoDeObjeto(self, idRol, nombrePermiso, nombreObjeto):
+    def agregarPermisoDeObjeto(self, idRol, nombrePermiso, objeto):
         """
         Agrega permiso a operar en el objeto dado, al Rol referenciado
 
-        :param nombreRol: Nombre del Rol referenciado
+        :param idRol: ID del rol referenciado
         :param nombrePermiso: Nombre del permiso a otorgar
-        :param nombreObjeto: Objeto del cual damos el permiso
+        :param objeto: Instancia Objeto del cual damos el permiso
         :return: None
         """
 
@@ -167,12 +199,43 @@ class ManejoRol(models.Manager):
             rol = Rol.objects.get(id=idRol)
             nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
             grupo = Group.objects.get(name=nombreGrupo)
-            assign_perm(nombrePermiso, grupo, nombreObjeto)
+            assign_perm(nombrePermiso, grupo, obj=objeto)
         except Rol.DoesNotExist as e:
             print("No existe el rol con id = " + idRol)
 
-    def agregarListaPermisoDeObjeto(self, nombreRol, nombrePermiso, nombreObjeto):
-        pass
+    def agregarListaPermisoObjeto(self, r, lista):
+        """
+        Agrega la lista de permisos de objeto de un Rol
+        :param r: Instancia Rol
+        :param lista: Lista de permisos a agregar
+                [   {"nombre": "NombrePermiso1", "idObjeto": "idObjeto1"},
+                    {"nombre": "NombrePermiso2", "idObjeto": "idObjeto2"}, ...
+                ]
+        :return: None
+        """
+
+        nombreGrupo = Rol.objects.obtenerNombreGrupo(r)
+        grupo = Group.objects.get(name=nombreGrupo)
+        try:
+            for per in lista:
+                print(per)
+                # Verificamos que los campos no sean null
+                if per['nombre'] != "" and per['idObjeto'] is not None:
+                    try:
+                        idObjeto = per['idObjeto']
+                        proyecto = Proyecto.objects.get(id=idObjeto)
+                        if r.tipo == 'Interno':
+                            if per['nombre'] in permisosInternos:
+                                print("Permiso: " + per['nombre'])
+                                assign_perm(per['nombre'], grupo, proyecto)
+                        elif r.tipo == 'Externo':
+                            if per['nombre'] in permisosExternos:
+                                assign_perm(per['nombre'], grupo, proyecto)
+                    except Proyecto.DoesNotExist as e:
+                        print("El proyecto no existe! " + str(e))
+        except Exception as e:
+            print("No se pudo agregar lista de permisos + " + str(e))
+            return None
 
     def agregarPermisoGlobal(self, idRol, nombrePermiso):
         """
@@ -180,12 +243,17 @@ class ManejoRol(models.Manager):
         Estos permisos globales son similares a los permisos de clase (afectan a todas
         las instancias de una clase)
 
-        :param nombreRol: Nombre del rol al cual asignar los permisos
+        :param idRol: Nombre del rol al cual asignar los permisos
         :param nombrePermiso: Nombre del permiso global a asignar
         :return: None
         """
 
-        rol = Rol.objects.get(id=idRol)
+        try:
+            rol = Rol.objects.get(id=idRol)
+        except Rol.DoesNotExist as e:
+            print("No existe rol")
+            return None
+
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
         grupo = Group.objects.get(name=nombreGrupo)
         assign_perm(nombrePermiso, grupo)
@@ -195,7 +263,7 @@ class ManejoRol(models.Manager):
         Agrega una lista de permisos al Rol actual (self)
         :param lista: lista de json objects. Tiene el siguiente formato
         '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
-        :param r: Rol al cual agregar permisos
+        :param r: Instancia Rol al cual agregar permisos
         :return: None
         """
 
@@ -216,7 +284,7 @@ class ManejoRol(models.Manager):
         Elimina una lista de permisos al Rol actual (self)
         :param lista: lista de json objects. Tiene el siguiente formato
         '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
-        :param r: Rol al cual elimina permisos
+        :param r: Instancia Rol al cual elimina permisos
         :return: None
         """
 
@@ -232,11 +300,44 @@ class ManejoRol(models.Manager):
                 if p in permisosExternos:
                     remove_perm(p, grupo, None)
 
+    def borrarListaPermisoObjeto(self, r, lista):
+        """
+        Elimina la lista de permisos de objeto de un Rol
+        :param r: Instancia Rol
+        :param lista: Lista de permisos a eliminar
+                [   {"nombre": "NombrePermiso1", "idObjeto": "idObjeto1"},
+                    {"nombre": "NombrePermiso2", "idObjeto": "idObjeto2"}, ...
+                ]
+        :return: None
+        """
+
+        nombreGrupo = Rol.objects.obtenerNombreGrupo(r)
+        grupo = Group.objects.get(name=nombreGrupo)
+        try:
+            for per in lista:
+                # Verificamos que los campos no sean null
+                if per['nombre'] != "" and per['idObjeto'] != "":
+                    try:
+                        idObjeto = per['idObjeto']
+                        proyecto = Proyecto.objects.get(id=idObjeto)
+
+                        if r.tipo == 'Interno':
+                            if per['nombre'] in permisosInternos:
+                                remove_perm(per['nombre'], grupo, proyecto)
+                        elif r.tipo == 'Externo':
+                            if per['nombre'] in permisosExternos:
+                                remove_perm(per['nombre'], grupo, proyecto)
+                    except Proyecto.DoesNotExist as e:
+                        print("El proyecto no existe! " + str(e))
+        except Exception as e:
+            print("No se pudo borrar lista de permisos + " + str(e))
+            return None
+
 
     def borrarRol(self, idRol):
         """
         Borra el rol
-        :param nombreRol: Nombre del rol a borrar
+        :param idRol: ID del rol a borrar
         :return: None
         """
 
@@ -252,6 +353,7 @@ class ManejoRol(models.Manager):
 
         except Rol.DoesNotExist as e:
             print("No existe el rol con id = " + idRol)
+
     def listarRolesInternos(self):
         """
         Lista todos los roles Internos
@@ -268,14 +370,11 @@ class ManejoRol(models.Manager):
 
         return Rol.objects.filter(tipo='Externo')
 
-    def actualizarRol(self, campos):
-        # To do
-        pass
 
     def listarPermisos(self, id):
         """
         Lista todos los permisos asociados un rol
-        :param nombreRol: Nombre del rol
+        :param id: ID del rol
         :return: QuerySet de permisos
         """
 

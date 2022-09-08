@@ -5,11 +5,43 @@ from django.contrib.auth import get_user_model
 from django.core import serializers
 from usuarios.models import Usuario
 from roles.models import Rol
+from proyectos.models import participante, Proyecto
+import json
 
 class controllerProyecto(APIView):
 
+    def get(self, request):
+        try:
+            # Obtenemos el cuerpo de la peticion
+            body = request.data
+
+            # Obtenemos el token de la cabecera y decodificamos
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+
+            datosUsuario = obtenerUsuarioConToken(token)
 
 
+            # Preguntar si ya existe el usuario y obtenemos la id
+            resultadoQueryUsuario = Usuario.objects.filter(email=datosUsuario['email']).values('id')
+            idUsuario = resultadoQueryUsuario[0]
+            idUsuario = idUsuario['id']
+
+            listaProyectos = participante.objects.listarProyectosdeParticipante(id=idUsuario)
+
+            print('listaProyectos', listaProyectos)
+
+
+            serializer = serializers.serialize('json', listaProyectos)
+            print("serializer",serializer)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
+
+
+
+class ControllerUsuario(APIView):
     def post(self, request, format=None):
         try:
             # Obtenemos el cuerpo de la peticion
@@ -45,9 +77,6 @@ class controllerProyecto(APIView):
         except Exception as e:
             print(e)
             return HttpResponse("Algo salio mal " + str(e), status=500)
-
-
-
 
 
 class ControllerUsuarioAdministracion(APIView):
@@ -103,6 +132,38 @@ class ControllerUsuarioAdministracion(APIView):
             return HttpResponse(queryUsuario_json, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
+
+
+
+
+class ControllerUsuarioIndividualAdmin(APIView):
+    def get(self,request):
+        """
+                Funcion para obtener roles de un usuario por parte del admin
+                :param request:
+                :param format:
+                :return:
+                """
+        try:
+            # Obtenemos el cuerpo de la peticion
+            body = request.data
+
+            # Obtenemos el token de la cabecera y decodificamos
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+
+            datosUsuario = obtenerUsuarioConToken(token)
+            # Preguntar si ya existe el usuario
+
+
+
+            resultadoQueryRoles = Rol.objects.listarRolesPorUsuario(userEmail=request.GET.get('email', ''))
+
+            print('resultadoQueryRoles',resultadoQueryRoles)
+            serializer = json.dumps(resultadoQueryRoles)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+
+        except Exception as e:
+            return HttpResponse("Algo salio mal al buscar los roles de usuarios " + str(e), status=500)
 
 
 def obtenerUsuarioConToken(token):
