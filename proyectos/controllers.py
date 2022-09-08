@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from django.core import serializers
-from proyectos.models import Proyecto
+from proyectos.models import Proyecto, participante
 
 
 from proyectos.models import Proyecto
@@ -28,7 +28,7 @@ class controllerProyecto(APIView):
         except Exception as e:
             return HttpResponse("Algo salio mal aaaaaaaaa " + str(e), status=500)
 
-    # TODO: Crear función de actualizar proyecto
+
     def put(self, request):
         try:
             datos = request.data
@@ -49,5 +49,41 @@ class controllerProyectos(APIView):
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
+
+# Para manejo de los participantes
+class controllerParticipantes(APIView):
+
+    def get(self, request):
+        try:
+            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            particip = participante.objects.get(id=int(id))
+            serializer = serializers.serialize('json', [particip, ])
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
+    def post(self, request):
+        try:
+            datos = request.data
+            particip = participante.objects.crearParticipante(datos)
+
+            return HttpResponse(particip, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
+    # Falta corregir el put
+    '''
+    def put(self, request):
+        try:
+            datos = request.data
+            particip = participante.objects.modificarParticipante(datos)
+
+            return HttpResponse(particip, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+    '''
+
+
+
 
 
