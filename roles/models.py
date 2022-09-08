@@ -18,15 +18,17 @@ permisosExternos = [
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
     'usuarios.modificar_roles_externos_de_usuario',
-    'proyectos.listar_proyectos'
+    'proyectos.listar_proyectos',
+    'proyectos.crear_proyecto',
 ]
 
 permisosInternos = [
     'roles.listar_roles_internos', 'roles.crear_rol_interno',
     'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
-    'roles.listar_roles_proyecto', 'proyectos.crear_proyecto',
+    'roles.listar_roles_proyecto',
     'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
     'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
+    'proyectos.listar_proyectos',
     'permisos.ver_proyecto', 'participante.agregar_participante',
     'participante.modificar_participante', 'participante.borrar_participante',
     'participante.listar_participante'
@@ -267,7 +269,6 @@ class ManejoRol(models.Manager):
         :param r: Instancia Rol al cual agregar permisos
         :return: None
         """
-
         nombreGrupo = Rol.objects.obtenerNombreGrupo(r)
         grupo = Group.objects.get(name=nombreGrupo)
         tipo = r.tipo
@@ -279,6 +280,9 @@ class ManejoRol(models.Manager):
             for p in lista:
                 if p in permisosExternos:
                     assign_perm(p, grupo)
+                    print(p)
+                #print(p)
+        grupo.save()
 
     def borrarListaPermisoGlobal(self, r, lista):
         """

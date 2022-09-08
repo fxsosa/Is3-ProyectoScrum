@@ -33,7 +33,7 @@ class controllerProyecto(APIView):
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
             proyecto = Proyecto.objects.get(id=int(id))
-            if user.has_perm('proyectos.ver_proyecto', obj=proyecto):
+            if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
                 serializer = serializers.serialize('json', [proyecto, ])
                 return HttpResponse(serializer, content_type='application/json', status=200)
             else:
