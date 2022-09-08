@@ -61,6 +61,16 @@ class Tipo_Historia_Usuario(models.Model):
     def __str__(self):
         return str([self.nombre, self.fechaCreacion, self.proyectos])
 
+    '''
+    class Meta:
+        #default_permissions = ()  # ?deshabilitamos add/change/delete/view
+
+        permissions = (
+            ('crear_tipo_HU', 'Crear un nuevo tipo de Historia de Usuario'),
+            ('borrar_tipo_HU', 'Borrar un tipo de HU')
+        )
+    '''
+
 
 class Columna_Tipo_Historia_Usuario(models.Model):
     tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.PROTECT) #Evita que se borre, se soluciona borrando el tipo de Historia de Usuario
@@ -71,3 +81,7 @@ class Columna_Tipo_Historia_Usuario(models.Model):
 
     def __str__(self):
         return str([self.idTipoHU, self.nombre, self.orden])
+
+
+
+

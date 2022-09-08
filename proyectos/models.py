@@ -111,7 +111,9 @@ class Proyecto(models.Model):
             ('archivar_proyecto', 'Archivar un proyecto'),
             ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto'),
             ('listar_proyectos', 'Listar uno o varios proyectos'),
-            ('iniciar_proyecto', 'Marcar un proyecto como iniciado')
+            ('iniciar_proyecto', 'Marcar un proyecto como iniciado'),
+            ('crear_tipo_HU', 'Crear un nuevo tipo de Historia de Usuario'),
+            ('borrar_tipo_HU', 'Borrar un tipo de HU')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):

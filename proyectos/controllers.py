@@ -182,7 +182,7 @@ class controllerParticipantes(APIView):
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             try:
                 usuario = Usuario.objects.get(id=int(datos['idUsuario']))
-            except Proyecto.DoesNotExist as e:
+            except Proyecto.DoesNotExist as e: # Corregir y ponerle "usuario" en vez de proyecto
                 return HttpResponse("Usuario no existe:" + str(e), status=400)
 
             if user.has_perm('participante.crear_participante', obj=proyecto):

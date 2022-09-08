@@ -31,7 +31,8 @@ permisosInternos = [
     'proyectos.listar_proyectos', 'proyectos.iniciar_proyecto',
     'permisos.ver_proyecto', 'participante.agregar_participante',
     'participante.modificar_participante', 'participante.borrar_participante',
-    'participante.listar_participante'
+    'participante.listar_participante', 'proyectos.crear_tipo_HU',
+    'proyectos.borrar_tipo_HU'
 ]
 
 
