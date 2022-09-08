@@ -118,12 +118,11 @@ class ManejoRol(models.Manager):
         """
         Lista los roles que tiene un usuario
         :param userEmail: Email del usuario a listar sus roles
-        :return: QuerySet de Rol
+        :return: Lista de id de los Roles
         """
 
         user = Usuario.objects.get(email=userEmail)
         listaQuery = Group.objects.filter(user=user).values('name')
-        print("listaQuery = ",listaQuery)
         listaRoles = []
         for i in range(len(listaQuery)):
             idRol = listaQuery[i]['name']
@@ -133,7 +132,6 @@ class ManejoRol(models.Manager):
             except:
                 nombreRol = idRol
             listaRoles.append(nombreRol)
-            print(listaRoles)
 
         return listaRoles
 
