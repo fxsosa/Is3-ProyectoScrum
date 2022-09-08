@@ -125,13 +125,13 @@ class Rol(APIView, CreateView):
             datosRol = body
             # Crear y guardar el rol
             if datosRol['tipo'] == 'Externo':
-                if user.has_perm("roles.crear_rol_externo"):
-                    nuevoRol = roles.models.Rol.objects.crearRolExterno(nombre=datosRol['nombre'], descripcion=datosRol['descripcion'])
-                    nuevoRol.save()
-                    listaPermisos = request.data['permisos']
-                    roles.models.Rol.objects.agregarListaPermisoGlobal(nuevoRol, listaPermisos)
-                else:
-                    return HttpResponse("No se tiene permiso para crear rol externos!", status=403)
+                # if user.has_perm("roles.crear_rol_externo"):
+                nuevoRol = roles.models.Rol.objects.crearRolExterno(nombre=datosRol['nombre'], descripcion=datosRol['descripcion'])
+                nuevoRol.save()
+                listaPermisos = request.data['permisos']
+                roles.models.Rol.objects.agregarListaPermisoGlobal(nuevoRol, listaPermisos)
+                #else:
+                #    return HttpResponse("No se tiene permiso para crear rol externos!", status=403)
             elif datosRol['tipo'] == 'Interno':
                 if user.has_perm("roles.crear_rol_interno"):
                     nuevoRol = roles.models.Rol.objects.crearRolInterno(nombre=datosRol['nombre'], idProyecto=datosRol['idProyecto'], descripcion=datosRol['descripcion'])
@@ -177,7 +177,7 @@ class Rol(APIView, CreateView):
             datosRol = body
             # Crear y guardar el rol
             if datosRol['tipo'] == 'Externo':
-                if not user.has_perm("roles.actualizar_rol_externo"):
+                if user.has_perm("roles.actualizar_rol_externo"):
                     try:
                         print("asc 1")
                         actualizarRol = roles.models.Rol.objects.get(id=datosRol['id'], tipo='Externo')
