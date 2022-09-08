@@ -1,7 +1,11 @@
+import json
+
 from django.db import models
 #import sys
 #sys.path.append("..")
 from usuarios.models import Usuario
+from django.core import serializers
+import itertools
 
 class ManejoProyectos(models.Manager):
 
@@ -14,7 +18,6 @@ class ManejoProyectos(models.Manager):
         estado = "planificación"
         proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
                               fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
-
         proyecto.save()
 
 
@@ -39,19 +42,22 @@ class ManejoParticipantes(models.Manager):
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
-        participante = self.model(idProyecto=proyecto, idUsuario=usuario)
+        participante = self.model(proyecto=proyecto, usuario=usuario)
         participante.save()
 
         return participante
 
     def listarProyectosdeParticipante(self, id):
 
-        proyectosID = participante.objects.filter(usuario_id=id).values_list('proy')
+        listaQuery = participante.objects.filter(usuario_id=id).values("proyecto")
 
-        if len(proyectosID) == 0:
-            return proyectosID
+        print("listaQuery = ", listaQuery)
+        proyectos = []
+        for i in range(len(listaQuery)):
+            idProyecto = listaQuery[i]['proyecto']
+            proyectos.append(Proyecto.objects.get(id=int(idProyecto)))
 
-        proyectos = Proyecto.objects.get(id=int(id))
+        print("proyectosID", proyectos)
 
         return proyectos
 
@@ -92,7 +98,8 @@ class Proyecto(models.Model):
             ('eliminar_proyecto', 'Eliminar un proyecto'),
             ('actualizar_proyecto', 'Actualizar los parametros iniciales de un proyecto'),
             ('archivar_proyecto', 'Archivar un proyecto'),
-            ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto')
+            ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto'),
+            ('listar_proyectos', 'Listar uno o varios proyectos'),
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
@@ -105,6 +112,16 @@ class participante(models.Model):
     def __str__(self):
         return str([self.proyecto, self.usuario])
 
+    class Meta:
+        #default_permissions = ()  # ?deshabilitamos add/change/delete/view
+
+        permissions = (
+            ('agregar_participante', 'Agregar un usuario a un proyecto'),
+            ('modificar_participante', 'Modificar un participante'),
+            ('borrar_participante', 'Borrar participante'),
+            ('listar_participante', 'Lista un participante individual')
+
+        )
 
 
 
