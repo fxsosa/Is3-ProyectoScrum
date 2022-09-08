@@ -26,7 +26,7 @@ class controllerProyecto(APIView):
 
             return HttpResponse(proyecto, content_type='application/json', status=200)
         except Exception as e:
-            return HttpResponse("Algo salio mal " + str(e), status=500)
+            return HttpResponse("Algo salio mal aaaaaaaaa " + str(e), status=500)
 
     # TODO: Crear función de actualizar proyecto
     def put(self, request):

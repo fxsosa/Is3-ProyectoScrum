@@ -72,14 +72,12 @@ class Rol(APIView, CreateView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         body = request.data
-        nombreRol = request.GET.get('nombreRol', '')
         try:
             idRol=request.GET.get('id', '')
             if roles.models.Rol.objects.existeRolId(id=idRol):
                 # Obtenemos Rol y su lista de permisos
                 rol = roles.models.Rol.objects.get(id=idRol)
                 listaPermisos = roles.models.Rol.objects.listarPermisos(id=idRol)
-                print("PERMISOS SSSSSSSSSSS ", listaPermisos)
                 tipoRol = rol.tipo
                 if tipoRol == 'Externo':
                     if not user.has_perm('roles.listar_roles_externos', None):

@@ -3,6 +3,19 @@ from django.db import models
 #sys.path.append("..")
 from usuarios.models import Usuario
 
+class ManejoParticipantes(models.Manager):
+    def listarProyectosdeParticipante(self, id):
+
+        proyectos = Participante.objects.filter(idProyecto__participante=id)
+
+        if len(proyectos) == 0:
+            return proyectos
+
+        proyectos = proyectos.values_list('idProyecto')
+        return proyectos
+
+
+
 
 class ManejoProyectos(models.Manager):
 
@@ -17,6 +30,8 @@ class ManejoProyectos(models.Manager):
         proyecto = self.model(nombre=nombre, descripcion=descripcion, fechaInicio=fechaInicio,
                               fechaFin=fechaFin, scrumMaster=scrumMaster, estado=estado)
         proyecto.save()
+
+
         return proyecto
     #TODO: Añadir fecha de inicio automáticamente cuando el SM inicie el proyecto
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
@@ -57,10 +72,6 @@ class Proyecto(models.Model):
             ('archivar_proyecto', 'Archivar un proyecto'),
             ('cambiar_estado_proyecto', 'Modificar el estado de un proyecto')
         )
-
-
-
-
 # Participante de un proyecto (separado de usuario)
 class Participante(models.Model):
     # El id se genera de modo automático
@@ -70,3 +81,5 @@ class Participante(models.Model):
     #TODO: Combinar modelo de participante con roles
     def __str__(self):
         return str([self.idProyecto, self.idUsuario])
+
+    objects = ManejoParticipantes()

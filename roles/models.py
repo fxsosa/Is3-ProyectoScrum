@@ -178,7 +178,6 @@ class ManejoRol(models.Manager):
         :return: Boolean True/Existe, False/No existe
         """
 
-        print('Probamos con get')
         try:
             rol = Rol.objects.get(id=id)
         except Rol.DoesNotExist as e:
