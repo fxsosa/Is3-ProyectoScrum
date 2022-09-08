@@ -1,7 +1,11 @@
+import json
+
 from django.db import models
 #import sys
 #sys.path.append("..")
 from usuarios.models import Usuario
+from django.core import serializers
+import itertools
 
 class ManejoProyectos(models.Manager):
 
@@ -39,19 +43,22 @@ class ManejoParticipantes(models.Manager):
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
-        participante = self.model(idProyecto=proyecto, idUsuario=usuario)
+        participante = self.model(proyecto=proyecto, usuario=usuario)
         participante.save()
 
         return participante
 
     def listarProyectosdeParticipante(self, id):
 
-        proyectosID = participante.objects.filter(usuario_id=id).values_list('proy')
+        listaQuery = participante.objects.filter(usuario_id=id).values("proyecto")
 
-        if len(proyectosID) == 0:
-            return proyectosID
+        print("listaQuery = ", listaQuery)
+        proyectos = []
+        for i in range(len(listaQuery)):
+            idProyecto = listaQuery[i]['proyecto']
+            proyectos.append(Proyecto.objects.get(id=int(idProyecto)))
 
-        proyectos = Proyecto.objects.get(id=int(id))
+        print("proyectosID", proyectos)
 
         return proyectos
 
