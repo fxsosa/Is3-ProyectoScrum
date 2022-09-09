@@ -32,7 +32,8 @@ permisosInternos = [
     'permisos.ver_proyecto', 'participante.agregar_participante',
     'participante.modificar_participante', 'participante.borrar_participante',
     'participante.listar_participante', 'proyectos.crear_tipo_HU',
-    'proyectos.borrar_tipo_HU'
+    'proyectos.borrar_tipo_HU',
+    'proyectos.importar_roles_internos'
 ]
 
 
@@ -228,7 +229,6 @@ class ManejoRol(models.Manager):
         grupo = Group.objects.get(name=nombreGrupo)
         try:
             for per in lista:
-                print(per)
                 # Verificamos que los campos no sean null
                 if per['nombre'] != "" and per['idObjeto'] is not None:
                     try:
