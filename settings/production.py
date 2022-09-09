@@ -25,7 +25,7 @@ print(BASE_DIR)
 SECRET_KEY = 'django-insecure-n_fi(+vn^5mr_9uhi3)p3_8#%wj2)cy=!d&7lfyo8=#!g^+r4e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['proyectoscrumgrupo5.herokuapp.com']
 
@@ -48,6 +48,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'django.contrib.admin',
     'sprints',
+    'guardian',
+    'soportepermisos',
+    'proyectos',
+    'historiasDeUsuario',
+    'corsheaders'
+    # Falta añadir proyectos e historiasdeUsuario
 ]
 
 MIDDLEWARE = [
@@ -58,6 +64,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+    'https://proyectoscrumgrupo5.herokuapp.com'
 ]
 
 ROOT_URLCONF = 'ProyectoScrum.urls'
@@ -82,6 +95,7 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
 
 WSGI_APPLICATION = 'ProyectoScrum.wsgi.application'
@@ -143,6 +157,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = ['static']
 django_heroku.settings(locals())
+
 
 """
 STATIC_URL = 'static/'
