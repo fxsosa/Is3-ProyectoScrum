@@ -37,6 +37,13 @@ class ManejoTipoHU(models.Manager):
 
         return instanciaTipoHU
 
+    def borrarTipoHU(self, datos):
+        tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipoUH']))
+        tipoHU.delete()
+
+
+
+
 class ManejoColumasUH(models.Manager):
     # Definir función para retornar las columnas de un tipo de UH con cierto id
     def retornarColumnas(self, id_HU):
@@ -73,7 +80,7 @@ class Tipo_Historia_Usuario(models.Model):
 
 
 class Columna_Tipo_Historia_Usuario(models.Model):
-    tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.PROTECT) #Evita que se borre, se soluciona borrando el tipo de Historia de Usuario
+    tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.CASCADE) #Evita que se borre, se soluciona borrando el tipo de Historia de Usuario
     nombre = models.CharField(max_length=80)
     orden = models.IntegerField()
 
