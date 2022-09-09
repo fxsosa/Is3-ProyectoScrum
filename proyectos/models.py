@@ -26,6 +26,9 @@ class ManejoProyectos(models.Manager):
             El primer id referencia al proyecto a recibir los roles, el segundo, al proyecto del cual importar sus roles
         :return: Lista de Roles agregados
         """
+
+
+
         idProyectoActual = datos['idProyectoActual']
         idProyectoExterno = datos['idProyectoExterno']
 
@@ -70,7 +73,6 @@ class ManejoProyectos(models.Manager):
 
 
         return proyecto
-    #TODO: Añadir fecha de inicio automáticamente cuando el SM inicie el proyecto
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
     def modificarProyecto(self, datos):
@@ -107,6 +109,7 @@ class ManejoParticipantes(models.Manager):
     Manager del modelo de Participantes de proyecto
     """
 
+
     def crearParticipante(self, datos):
         """
         Metodo para crear un participante y asignarlo a un proyecto ya inicializado
@@ -132,6 +135,7 @@ class ManejoParticipantes(models.Manager):
         :param id: Id del usuario/participante
         :return: Lista de Int (IDs de los proyectos)
         """
+
         listaQuery = participante.objects.filter(usuario_id=id).values("proyecto")
 
         print("listaQuery = ", listaQuery)
@@ -150,6 +154,7 @@ class ManejoParticipantes(models.Manager):
         :param idProyecto: ID del proyecto
         :return: Lista (Usuario)
         """
+
         listaQuery = participante.objects.filter(proyecto=idProyecto).values("usuario")
 
         print("listaQuery = ", listaQuery)
@@ -190,6 +195,10 @@ class ManejoParticipantes(models.Manager):
 
 
 class Proyecto(models.Model):
+    """
+        Clase de Proyectos
+    """
+
     #El id se genera de forma automática
     nombre = models.CharField(max_length=80)
     descripcion = models.CharField(max_length=200)
@@ -204,6 +213,9 @@ class Proyecto(models.Model):
                     self.scrumMaster.id, self.estado])
 
     class Meta:
+        """
+            Clase con los permisos del modelo de proyectos
+        """
         #default_permissions = ()  # ?deshabilitamos add/change/delete/view
 
         permissions = (
@@ -228,11 +240,12 @@ class Proyecto(models.Model):
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
+    """
+        Clase para el modelo de participantes
+    """
     # El id se genera de modo automático
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE) # Se elimina el proyecto, se eliminan sus participantes
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE) # Si borramos el usuario, se borran todas sus participaciones
-    #rol = models.ForeignKey(Rol_Interno, on_delete=models.PROTECT) Si borramos un rol interno, ¿qué ocurre con los usuarios que tienen ese rol?
-    #TODO: Combinar modelo de participante con roles
     objects=ManejoParticipantes()
     def __str__(self):
         return str([self.proyecto, self.usuario])

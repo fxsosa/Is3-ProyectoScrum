@@ -16,6 +16,9 @@ from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Histor
 
 
 class controllerTipoHU(APIView):
+    """
+        Controlador de Tipos de Historia de Usuario
+    """
 
     # Esta función serviría para obtener un tipo de HU en particular (falta testear)
     """
@@ -43,25 +46,16 @@ class controllerTipoHU(APIView):
     # Retorna todos los tipos de HU en la base de datos (funciona perfectamente, podría ponerse en otro controlador)
 
     def get(self, request):
+        """
+            Función para obtener todos los tipos de Historias de Usuario de un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
             id = request.GET.get('idproyecto', '')
             tiposHU = Tipo_Historia_Usuario.objects.filter(proyectos__in=[id])
 
-            listaTotal = []
-
-            for tipo in tiposHU:
-                columnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(tipo.id)
-                print("asdddddddddddddddddd")
-                lista_total = []
-                lista_total.append(tipo)
-
-                for elemento in columnas:
-                    lista_total.append(elemento)
-
-                listaTotal.append(lista_total)
-
-            print("listaTotal",listaTotal)
-            serializer = json.dump(listaTotal)
+            serializer = serializers.serialize('json', tiposHU)
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
@@ -70,6 +64,11 @@ class controllerTipoHU(APIView):
     # El POST va a crear directamente un tipo de HU
     # con su proyecto asociado
     def post(self, request):
+        """
+            Función para crear un tipo de Historia de Usuario
+            :param datos: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -99,6 +98,11 @@ class controllerTipoHU(APIView):
 
 
     def delete(self, request):
+        """
+            Función para borrar un tipo de Historia de Usuario
+            :param datos: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -144,6 +148,11 @@ class controllerTipoHU(APIView):
         '''
 
 def obtenerUsuarioConToken(token):
+    """
+        Función para obtener los datos de un usuario a partir de su token
+        :param token: token del usuario
+        :return: datosUsuario
+    """
     datosUsuario={}
     decoded = jwt.decode(token, options={"verify_signature": False})  # works in PyJWT >= v2.0
 
