@@ -182,7 +182,7 @@ class controllerParticipantes(APIView):
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             try:
                 usuario = Usuario.objects.get(id=int(datos['idUsuario']))
-            except Proyecto.DoesNotExist as e:
+            except Proyecto.DoesNotExist as e: # Corregir y ponerle "usuario" en vez de proyecto
                 return HttpResponse("Usuario no existe:" + str(e), status=400)
 
             #if user.has_perm('participante.crear_participante', obj=proyecto):
@@ -226,6 +226,64 @@ class ControllerProyectoParticipantes(APIView):
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
+# Controlador para iniciar un proyecto individual
+class controllerProyectosInicio(APIView):
+    def put(self, request):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+            datos = request.data
+            try:
+                proyecto = Proyecto.objects.get(id=int(datos['id']))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+            if user.has_perm('proyectos.iniciar_proyecto', obj=proyecto):
+                proyecto = Proyecto.objects.iniciarProyecto(datos)
+                return HttpResponse(proyecto, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
+
+
+class controllerProyectosImportar(APIView):
+
+    def post(self, request):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        datos = request.data
+        try:
+            try:
+                proyectoActual = Proyecto.objects.get(id=datos['idProyectoActual'])
+                proyectoExterno = Proyecto.objects.get(id=datos['idProyectoExterno'])
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("No existe el/los proyectos recibidos! " + str(e))
+
+            listaRol = Proyecto.objects.importarRoles(datos)
+            queryRol_json = serializers.serialize('json', listaRol)
+            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+        except Exception as e:
+            return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
 
 def obtenerUsuarioConToken(token):
     datosUsuario={}
