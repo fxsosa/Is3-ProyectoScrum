@@ -14,8 +14,18 @@ import itertools
 
 
 class ManejoProyectos(models.Manager):
+    """
+        Manager del modelo de Proyectos
+    """
 
     def importarRoles(self, datos):
+        """
+            Método para importar roles
+            :param datos: datos del request
+            :return: listaRoles
+        """
+
+
         idProyectoActual = datos['idProyectoActual']
         idProyectoExterno = datos['idProyectoExterno']
 
@@ -41,6 +51,11 @@ class ManejoProyectos(models.Manager):
 
 
     def crearProyecto(self, datos):
+        """
+            Método para crear nuevo Proyecto
+            :param datos: datos del request
+            :return: proyecto
+        """
         nombre = datos['nombre']
         descripcion = datos['descripcion']
         fechaInicio = datos['fechaInicio']
@@ -57,6 +72,11 @@ class ManejoProyectos(models.Manager):
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
     def modificarProyecto(self, datos):
+        """
+            Método para modificar un proyecto
+            :param datos: datos del request
+            :return: proyecto
+        """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.nombre = datos['nombre']
         proyecto.descripcion = datos['descripcion']
@@ -66,6 +86,11 @@ class ManejoProyectos(models.Manager):
         return proyecto
 
     def iniciarProyecto(self, datos):
+        """
+            Método para iniciar Proyecto
+            :param datos: datos del request
+            :return: proyecto
+        """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.estado = "iniciado"
         proyecto.fechaInicio = datetime.date.today()
@@ -77,7 +102,16 @@ class ManejoProyectos(models.Manager):
 
 
 class ManejoParticipantes(models.Manager):
+    """
+        Manager del modelo de participantes
+    """
+
     def crearParticipante(self, datos):
+        """
+            Método para crear participante
+            :param datos: datos del request
+            :return: participante
+        """
 
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
@@ -92,6 +126,11 @@ class ManejoParticipantes(models.Manager):
         return participante
 
     def listarProyectosdeParticipante(self, id):
+        """
+            Método que retorna la lista de proyectos de un participante
+            :param id: id del participante
+            :return: listaRoles
+        """
 
         listaQuery = participante.objects.filter(usuario_id=id).values("proyecto")
 
@@ -106,6 +145,11 @@ class ManejoParticipantes(models.Manager):
         return proyectos
 
     def listarParticipantedeProyectos(self, idProyecto):
+        """
+            Método para listar los participantes de un proyecto
+            :param id: id del proyecto
+            :return: usuarios
+        """
 
         listaQuery = participante.objects.filter(proyecto=idProyecto).values("usuario")
 
@@ -120,6 +164,12 @@ class ManejoParticipantes(models.Manager):
         return usuarios
 
     def borrarParticipante(self, user,proyecto):
+        """
+            Método para borrar los participantes de un proyecto
+            :param usuario: Usuario del proyecto
+            :param proyecto: Proyecto referenciado
+            :return: null
+        """
         particip = participante.objects.get(usuario=user, proyecto=proyecto)
         particip.delete()
 
@@ -141,6 +191,10 @@ class ManejoParticipantes(models.Manager):
 
 
 class Proyecto(models.Model):
+    """
+        Clase de Proyectos
+    """
+
     #El id se genera de forma automática
     nombre = models.CharField(max_length=80)
     descripcion = models.CharField(max_length=200)
@@ -155,6 +209,9 @@ class Proyecto(models.Model):
                     self.scrumMaster.id, self.estado])
 
     class Meta:
+        """
+            Clase con los permisos del modelo de proyectos
+        """
         #default_permissions = ()  # ?deshabilitamos add/change/delete/view
 
         permissions = (
@@ -179,11 +236,12 @@ class Proyecto(models.Model):
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
+    """
+        Clase para el modelo de participantes
+    """
     # El id se genera de modo automático
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE) # Se elimina el proyecto, se eliminan sus participantes
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE) # Si borramos el usuario, se borran todas sus participaciones
-    #rol = models.ForeignKey(Rol_Interno, on_delete=models.PROTECT) Si borramos un rol interno, ¿qué ocurre con los usuarios que tienen ese rol?
-    #TODO: Combinar modelo de participante con roles
     objects=ManejoParticipantes()
     def __str__(self):
         return str([self.proyecto, self.usuario])

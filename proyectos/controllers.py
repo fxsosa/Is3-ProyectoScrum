@@ -18,7 +18,15 @@ from proyectos.models import Proyecto
 
 # Para proyectos individuales
 class controllerProyecto(APIView):
+    """
+        Clase para el manejo de proyectos individuales
+    """
     def get(self, request):
+        """
+            Método para obtener un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -47,6 +55,11 @@ class controllerProyecto(APIView):
 
 
     def post(self, request):
+        """
+            Método para crear un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -93,6 +106,11 @@ class controllerProyecto(APIView):
 
 
     def put(self, request):
+        """
+            Método para modificar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -126,8 +144,15 @@ class controllerProyecto(APIView):
 
 # Para proyectos en plural
 class controllerProyectos(APIView):
-
+    """
+        Controlador para Proyectos
+    """
     def get(self, request):
+        """
+            Método para obtener todos los proyectos
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -154,8 +179,16 @@ class controllerProyectos(APIView):
 
 # Para manejo de los participantes
 class controllerParticipantes(APIView):
+    """
+        Controlador para participantes
+    """
 
     def get(self, request):
+        """
+            Método para obtener un participante
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -184,6 +217,11 @@ class controllerParticipantes(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
     def post(self, request):
+        """
+            Método para crear un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
@@ -217,6 +255,11 @@ class controllerParticipantes(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
     def delete(self, request):
+        """
+            Método para borrar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -263,7 +306,15 @@ class controllerParticipantes(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
     '''
 class ControllerProyectoParticipantes(APIView):
+    """
+        Controlador para manejar participantes de un proyecto
+    """
     def get(self, request):
+        """
+            Método para obtener los participantes de un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -286,7 +337,15 @@ class ControllerProyectoParticipantes(APIView):
 
 # Controlador para iniciar un proyecto individual
 class controllerProyectosInicio(APIView):
+    """
+        Controlador para iniciar un proyecto individual
+    """
     def put(self, request):
+        """
+            Método para iniciar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -313,7 +372,16 @@ class controllerProyectosInicio(APIView):
         except Exception as e:
             return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
 class ControllerRolesProyectosUsuarios(APIView):
+    """
+        Controlador para listar roles internos por usuario
+    """
+
     def get(self, request):
+        """
+            Método para obtener la lista de roles internos por usuario
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
 
             idProyecto = request.GET.get('idproyecto', '')
@@ -329,8 +397,16 @@ class ControllerRolesProyectosUsuarios(APIView):
 
 
 class controllerProyectosImportar(APIView):
+    """
+        Controlador para importar roles de un proyecto a otro
+    """
 
     def post(self, request):
+        """
+            Método para importar roles de un proyecto a otro
+            :param request: datos del request
+            :return: HttpResponse
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -358,6 +434,11 @@ class controllerProyectosImportar(APIView):
             return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
 
 def obtenerUsuarioConToken(token):
+    """
+        Función para obtener un proyecto
+        :param token: token del usuario
+        :return: datosUsuario
+    """
     datosUsuario={}
     decoded = jwt.decode(token, options={"verify_signature": False})  # works in PyJWT >= v2.0
 

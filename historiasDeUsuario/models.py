@@ -7,11 +7,16 @@ from datetime import datetime
 
 
 class ManejoTipoHU(models.Manager):
+    """
+        Manager para manejar tipos de Historias de Usuario
+    """
 
-    # Creamos tipo de HU
-    # Añadir linkeamiento a columnas de HU
-    # Añadir linkeamiento a proyectos
     def crearTipoHU(self, datos):
+        """
+            Función para crear un tipo de Historia de Usuario
+            :param datos: datos del request
+            :return: instanciaTipoHU
+        """
         nombre = datos['nombre']
         # Obtener fecha y hora actuales
         ahora = datetime.now()
@@ -38,14 +43,27 @@ class ManejoTipoHU(models.Manager):
         return instanciaTipoHU
 
     def borrarTipoHU(self, datos):
+        """
+            Función para borrar un tipo de Historia de Usuario
+            :param datos: datos del request
+            :return: null
+        """
         tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipoUH']))
         tipoHU.delete()
 
 
 
 class ManejoColumasUH(models.Manager):
+    """
+        Manejar columnas de los tipos de HU
+    """
     # Definir función para retornar las columnas de un tipo de UH con cierto id
     def retornarColumnas(self, id_HU):
+        """
+            Función para retornar las columnas de un tipo de Historia de Usuario
+            :param id_HU: id de la Historia de Usuario
+            :return: lista_columnas
+        """
         columnas_totales = Columna_Tipo_Historia_Usuario.objects.all() #Todas las columnas de la base de datos
         #print(columnas_totales)
         lista_columnas = [] # Columnas que pertenecen a la HU cuyo id recibimos
@@ -58,6 +76,9 @@ class ManejoColumasUH(models.Manager):
         return lista_columnas
 
 class Tipo_Historia_Usuario(models.Model):
+    """
+        Clase de un Tipo de Historia de Usuario
+    """
     nombre = models.CharField(max_length=80)
     fechaCreacion = models.DateTimeField()
     proyectos = models.ManyToManyField(Proyecto)
@@ -79,6 +100,9 @@ class Tipo_Historia_Usuario(models.Model):
 
 
 class Columna_Tipo_Historia_Usuario(models.Model):
+    """
+        Clase para las columnas de un tipo de Historia de Usuario
+    """
     tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.CASCADE) #Evita que se borre, se soluciona borrando el tipo de Historia de Usuario
     nombre = models.CharField(max_length=80)
     orden = models.IntegerField()
