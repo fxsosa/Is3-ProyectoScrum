@@ -8,13 +8,9 @@ from guardian.shortcuts import assign_perm, remove_perm, get_group_perms
 # TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
     'soportepermisos.listar_permisos',
-    'roles.listar_roles_internos',
     'roles.listar_roles_externos',
-    'roles.crear_rol_interno',
     'roles.crear_rol_externo',
-    'roles.actualizar_rol_interno',
     'roles.actualizar_rol_externo',
-    'roles.borrar_rol_interno',
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
     'usuarios.modificar_roles_externos_de_usuario',
@@ -23,14 +19,18 @@ permisosExternos = [
 ]
 
 permisosInternos = [
-    'roles.listar_roles_internos', 'roles.crear_rol_interno',
-    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
-    'roles.listar_roles_proyecto',
-    'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
-    'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
-    'proyectos.listar_proyectos', 'proyectos.iniciar_proyecto',
-    'permisos.ver_proyecto', 'participante.agregar_participante',
-    'participante.modificar_participante', 'participante.borrar_participante',
+    'roles.listar_roles_internos',
+    'roles.crear_rol_interno',
+    'roles.actualizar_rol_interno',
+    'roles.borrar_rol_interno',
+    'proyectos.eliminar_proyecto',
+    'proyectos.actualizar_proyecto',
+    'proyectos.archivar_proyecto',
+    'proyectos.cambiar_estado_proyecto',
+    'participante.agregar_participante',
+    'participante.modificar_participante',
+    'participante.borrar_participante',
+    'participante.listar_participante'
     'participante.listar_participante', 'proyectos.crear_tipo_HU',
     'proyectos.borrar_tipo_HU',
     'proyectos.importar_roles_internos'
@@ -234,10 +234,12 @@ class ManejoRol(models.Manager):
                     try:
                         idObjeto = per['idObjeto']
                         proyecto = Proyecto.objects.get(id=idObjeto)
+
                         if r.tipo == 'Interno':
                             if per['nombre'] in permisosInternos:
                                 print("Permiso: " + per['nombre'])
                                 assign_perm(per['nombre'], grupo, proyecto)
+
                         elif r.tipo == 'Externo':
                             if per['nombre'] in permisosExternos:
                                 assign_perm(per['nombre'], grupo, proyecto)
@@ -366,13 +368,16 @@ class ManejoRol(models.Manager):
         except Rol.DoesNotExist as e:
             print("No existe el rol con id = " + idRol)
 
-    def listarRolesInternos(self):
+    def listarRolesInternos(self, idProyecto):
         """
         Lista todos los roles Internos
         :return: QuerySet de Roles Internos
         """
-
-        return Rol.objects.filter(tipo='Interno')
+        if idProyecto != None:
+            print("Llego muy lejooooooooooo")
+            return Rol.objects.filter(tipo='Interno',proyecto=idProyecto)
+        else:
+            return Rol.objects.filter(tipo='Interno')
 
     def listarRolesExternos(self):
         """

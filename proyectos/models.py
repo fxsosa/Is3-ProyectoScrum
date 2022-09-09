@@ -80,10 +80,12 @@ class ManejoProyectos(models.Manager):
 
 class ManejoParticipantes(models.Manager):
     def crearParticipante(self, datos):
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
         participante = self.model(proyecto=proyecto, usuario=usuario)
+        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         participante.save()
 
         return participante
@@ -101,6 +103,20 @@ class ManejoParticipantes(models.Manager):
         print("proyectosID", proyectos)
 
         return proyectos
+
+    def listarParticipantedeProyectos(self, idProyecto):
+
+        listaQuery = participante.objects.filter(proyecto=idProyecto).values("usuario")
+
+        print("listaQuery = ", listaQuery)
+        usuarios = []
+        for i in range(len(listaQuery)):
+            idUsuario = listaQuery[i]['usuario']
+            usuarios.append(Usuario.objects.get(id=int(idUsuario)))
+
+        print("usuarios", usuarios)
+
+        return usuarios
 
     # Falta corregir este método para el put, no funciona
     '''
@@ -165,7 +181,6 @@ class participante(models.Model):
             ('modificar_participante', 'Modificar un participante'),
             ('borrar_participante', 'Borrar participante'),
             ('listar_participante', 'Lista un participante individual')
-
         )
 
 
