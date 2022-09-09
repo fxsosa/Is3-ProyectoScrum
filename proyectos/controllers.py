@@ -13,6 +13,7 @@ from itertools import chain
 from proyectos.models import participante
 
 
+
 from proyectos.models import Proyecto
 
 # Para proyectos individuales
@@ -211,6 +212,40 @@ class controllerParticipantes(APIView):
             return HttpResponse(particip, content_type='application/json', status=200)
             #else:
              #   return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
+    def delete(self, request):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+            print(user)
+            datos = request.data
+            try:
+                proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+            #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
+            if user.has_perm('proyectos.borrar_participante', obj=proyecto):
+                participante.objects.borrarParticipante(datos)
+                return HttpResponse("Borrado exitoso", status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+
+            #else:
+            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+
+
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
