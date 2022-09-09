@@ -144,6 +144,36 @@ class ManejoRol(models.Manager):
 
         return listaRoles
 
+    def listarRolesInternosPorUsuario(self, userEmail, idProyecto):
+        """
+        Lista los roles que tiene un usuario
+        :param userEmail: Email del usuario a listar sus roles
+        :return: QuerySet de Rol
+        """
+
+        user = Usuario.objects.get(email=userEmail)
+        listaQuery = Group.objects.filter(user=user).values('name')
+        print("listaQuery = ",listaQuery)
+        listaRoles = []
+        for i in range(len(listaQuery)):
+            idRol = listaQuery[i]['name']
+            print("idRol ",idRol)
+            try:
+                idRol.index('_')
+            except:
+                pass
+            copia = idRol
+            nombreRol = copia[0:idRol.index('_')]
+            idProyectoAux = copia[idRol.index('_'):len(idRol)]
+            print(nombreRol,"++++++++++++++++",idProyectoAux)
+            if idProyectoAux != idProyecto:
+               pass
+
+            listaRoles.append(nombreRol)
+            print(listaRoles)
+
+        return listaRoles
+
     def asignarRolaUsuario(self, idRol, user):
         """
         Asigna un rol a un usuario dado

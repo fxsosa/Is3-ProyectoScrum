@@ -110,6 +110,7 @@ class controllerProyecto(APIView):
         try:
             datos = request.data
             try:
+                print('id -----------------' ,datos['id'])
                 proyecto = Proyecto.objects.get(id=int(datos['id']))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
@@ -230,14 +231,15 @@ class controllerParticipantes(APIView):
 
         try:
             print(user)
-            datos = request.data
             try:
-                proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+                idproyecto = request.GET.get('idproyecto', '')
+                proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
             if user.has_perm('proyectos.borrar_participante', obj=proyecto):
-                participante.objects.borrarParticipante(datos)
+                userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
+                participante.objects.borrarParticipante(userBorrar,proyecto)
                 return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
@@ -310,6 +312,20 @@ class controllerProyectosInicio(APIView):
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
+class ControllerRolesProyectosUsuarios(APIView):
+    def get(self, request):
+        try:
+
+            idProyecto = request.GET.get('idproyecto', '')
+            email=request.GET.get('email', '')
+
+            res = Rol.objects.listarRolesInternosPorUsuario(email,idProyecto)
+
+            queryRol_json = serializers.serialize('json', res)
+            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+        except Exception as e:
+            return HttpResponse("Error al obtener roles internos! - " + str(e), status=500)
+
 
 
 class controllerProyectosImportar(APIView):

@@ -18,6 +18,7 @@ from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Histor
 class controllerTipoHU(APIView):
 
     # Esta función serviría para obtener un tipo de HU en particular (falta testear)
+    """
     def get(self, request):
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
@@ -37,16 +38,34 @@ class controllerTipoHU(APIView):
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
+    """
 
     # Retorna todos los tipos de HU en la base de datos (funciona perfectamente, podría ponerse en otro controlador)
-    '''def get(self, request):
+
+    def get(self, request):
         try:
-            tiposHU = Tipo_Historia_Usuario.objects.all()
-            serializer = serializers.serialize('json', tiposHU)
+            id = request.GET.get('idproyecto', '')
+            tiposHU = Tipo_Historia_Usuario.objects.filter(proyectos__in=[id])
+
+            listaTotal = []
+
+            for tipo in tiposHU:
+                columnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(tipo.id)
+                print("asdddddddddddddddddd")
+                lista_total = []
+                lista_total.append(tipo)
+
+                for elemento in columnas:
+                    lista_total.append(elemento)
+
+                listaTotal.append(lista_total)
+
+            print("listaTotal",listaTotal)
+            serializer = json.dump(listaTotal)
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
-        '''
+
 
     # El POST va a crear directamente un tipo de HU
     # con su proyecto asociado
