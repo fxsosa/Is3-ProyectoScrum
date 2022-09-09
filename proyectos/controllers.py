@@ -173,7 +173,7 @@ class controllerParticipantes(APIView):
                 particip = participante.objects.get(id=int(id))
             except participante.DoesNotExist as e:
                 return HttpResponse("Error al obtener participante: " + str(e), status=400)
-            if user.has_perm('participante.listar_participante', obj=particip.proyecto):
+            if user.has_perm('proyectos.listar_participante', obj=particip.proyecto):
                 serializer = serializers.serialize('json', [particip, ])
                 return HttpResponse(serializer, content_type='application/json', status=200)
             else:

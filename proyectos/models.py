@@ -164,7 +164,11 @@ class Proyecto(models.Model):
             ('agregar_participante', 'Agregar un usuario a un proyecto'),
             ('modificar_participante', 'Modificar un participante'),
             ('borrar_participante', 'Borrar participante'),
-            ('listar_participante', 'Lista un participante individual')
+            ('listar_participante', 'Lista un participante individual'),
+            ('listar_roles_internos', 'Listar todos los roles internos del sistema'),
+            ('crear_rol_interno', 'Crear un nuevo rol interno'),
+            ('actualizar_rol_interno', 'Actualizar un rol interno'),
+            ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):

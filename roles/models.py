@@ -19,24 +19,25 @@ permisosExternos = [
 ]
 
 permisosInternos = [
-    'roles.listar_roles_internos',
-    'roles.crear_rol_interno',
-    'roles.actualizar_rol_interno',
-    'roles.borrar_rol_interno',
+    'proyectos.crear_proyecto',
     'proyectos.eliminar_proyecto',
     'proyectos.actualizar_proyecto',
     'proyectos.archivar_proyecto',
     'proyectos.cambiar_estado_proyecto',
+    'proyectos.listar_proyectos',
+    'proyectos.iniciar_proyecto',
+    'proyectos.crear_tipo_HU',
+    'proyectos.borrar_tipo_HU',
+    'proyectos.importar_roles_internos',
     'proyectos.agregar_participante',
     'proyectos.modificar_participante',
     'proyectos.borrar_participante',
     'proyectos.listar_participante',
-    'proyectos.listar_participante',
-    'proyectos.crear_tipo_HU',
-    'proyectos.borrar_tipo_HU',
-    'proyectos.importar_roles_internos'
+    'proyectos.listar_roles_internos',
+    'proyectos.crear_rol_interno',
+    'proyectos.actualizar_rol_interno',
+    'proyectos.borrar_rol_interno',
 ]
-
 
 class ManejoRol(models.Manager):
     """
@@ -433,13 +434,9 @@ class Rol(models.Model):
         default_permissions = ()  # deshabilitamos add/change/delete/view
 
         permissions = (
-            ('listar_roles_internos', 'Listar todos los roles internos del sistema'),
             ('listar_roles_externos', 'Listar todos los roles externos del sistema'),
-            ('crear_rol_interno', 'Crear un nuevo rol interno'),
             ('crear_rol_externo', 'Crear nuevo rol externo'),
-            ('actualizar_rol_interno', 'Actualizar un rol interno'),
             ('actualizar_rol_externo', 'Actualizar un rol externo'),
-            ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
             ('borrar_rol_externo', 'Borrar un rol externo del sistema'),
             ('listar_permisos_externos', 'Para listar los permisos de un rol externo')
         )
