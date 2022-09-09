@@ -84,6 +84,9 @@ class ManejoParticipantes(models.Manager):
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
+        if self.filter(proyecto=proyecto, usuario=usuario).exists():
+            return None
+
         participante = self.model(proyecto=proyecto, usuario=usuario)
 
         participante.save()
