@@ -15,15 +15,18 @@ import itertools
 
 class ManejoProyectos(models.Manager):
     """
-        Manager del modelo de Proyectos
+    Manager del modelo de Proyectos
     """
 
     def importarRoles(self, datos):
         """
-            Método para importar roles
-            :param datos: datos del request
-            :return: listaRoles
+        Metodo para la importacion de roles de usuario asociados a un proyecto, a otro proyecto
+        :param datos: Datos de request con el siguiente formato:
+            {"idProyectoActual": "id1", "idProyectoExterno": "id2"}
+            El primer id referencia al proyecto a recibir los roles, el segundo, al proyecto del cual importar sus roles
+        :return: Lista de Roles agregados
         """
+
 
 
         idProyectoActual = datos['idProyectoActual']
@@ -52,10 +55,12 @@ class ManejoProyectos(models.Manager):
 
     def crearProyecto(self, datos):
         """
-            Método para crear nuevo Proyecto
-            :param datos: datos del request
-            :return: proyecto
+        Metodo para la creacion de proyectos.
+        :param datos: Datos de un request.data con el siguiente formato
+            {"nombre": String, "descripcion": String, "fechaInicio": DATE, "fechaFin": DATE, "scrumMaster": email, "estado": String}
+        :return: None
         """
+
         nombre = datos['nombre']
         descripcion = datos['descripcion']
         fechaInicio = datos['fechaInicio']
@@ -68,14 +73,14 @@ class ManejoProyectos(models.Manager):
 
 
         return proyecto
-    #TODO: Añadir fecha de inicio automáticamente cuando el SM inicie el proyecto
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
     def modificarProyecto(self, datos):
         """
-            Método para modificar un proyecto
-            :param datos: datos del request
-            :return: proyecto
+        Metodo para la actualizacion de los parametros de un proyecto
+        :param datos: Diccionario recibido de un request.data
+                Contiene nombre y descripcion
+        :return: Instancia Proyecto
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.nombre = datos['nombre']
@@ -87,9 +92,10 @@ class ManejoProyectos(models.Manager):
 
     def iniciarProyecto(self, datos):
         """
-            Método para iniciar Proyecto
-            :param datos: datos del request
-            :return: proyecto
+        Metodo para cambiar el estado de proyecto a Iniciado
+        :param datos: Diccionario recibido como request.data
+        Contiene "estado" String, y "fechaInicio" DATE
+        :return: Instancia de Proyecto actualizado
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.estado = "iniciado"
@@ -98,21 +104,19 @@ class ManejoProyectos(models.Manager):
         return proyecto
 
 
-
-
-
 class ManejoParticipantes(models.Manager):
     """
-        Manager del modelo de participantes
+    Manager del modelo de Participantes de proyecto
     """
+
 
     def crearParticipante(self, datos):
         """
-            Método para crear participante
-            :param datos: datos del request
-            :return: participante
+        Metodo para crear un participante y asignarlo a un proyecto ya inicializado
+        :param datos: Diccionario recibido de un request.data
+        Contiene "idProyecto" Integer, y "idUsuario" Integer.
+        :return: Instancia de Participante
         """
-
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
@@ -127,9 +131,9 @@ class ManejoParticipantes(models.Manager):
 
     def listarProyectosdeParticipante(self, id):
         """
-            Método que retorna la lista de proyectos de un participante
-            :param id: id del participante
-            :return: listaRoles
+        Metodo para listar los IDs de los proyectos en los que participa un usuario
+        :param id: Id del usuario/participante
+        :return: Lista de Int (IDs de los proyectos)
         """
 
         listaQuery = participante.objects.filter(usuario_id=id).values("proyecto")
@@ -146,9 +150,9 @@ class ManejoParticipantes(models.Manager):
 
     def listarParticipantedeProyectos(self, idProyecto):
         """
-            Método para listar los participantes de un proyecto
-            :param id: id del proyecto
-            :return: usuarios
+        Metodo para listar a los participantes de un proyecto
+        :param idProyecto: ID del proyecto
+        :return: Lista (Usuario)
         """
 
         listaQuery = participante.objects.filter(proyecto=idProyecto).values("usuario")
@@ -165,10 +169,10 @@ class ManejoParticipantes(models.Manager):
 
     def borrarParticipante(self, user,proyecto):
         """
-            Método para borrar los participantes de un proyecto
-            :param usuario: Usuario del proyecto
-            :param proyecto: Proyecto referenciado
-            :return: null
+        Metodo para eliminar participante de un proyecto
+        :param user: Instancia Usuario
+        :param proyecto: Instancia Proyecto
+        :return: None
         """
         particip = participante.objects.get(usuario=user, proyecto=proyecto)
         particip.delete()
@@ -245,7 +249,3 @@ class participante(models.Model):
     objects=ManejoParticipantes()
     def __str__(self):
         return str([self.proyecto, self.usuario])
-
-
-
-

@@ -354,6 +354,7 @@ class ManejoRol(models.Manager):
                 [   {"nombre": "NombrePermiso1", "idObjeto": "idObjeto1"},
                     {"nombre": "NombrePermiso2", "idObjeto": "idObjeto2"}, ...
                 ]
+
         :return: None
         """
 
