@@ -128,25 +128,25 @@ class Rol(APIView, CreateView):
             datosRol = body
             # Crear y guardar el rol
             if datosRol['tipo'] == 'Externo':
-                if user.has_perm("roles.crear_rol_externo"):
+                #if user.has_perm("roles.crear_rol_externo"):
                     nuevoRol = roles.models.Rol.objects.crearRolExterno(nombre=datosRol['nombre'], descripcion=datosRol['descripcion'])
                     nuevoRol.save()
                     listaPermisos = request.data['permisos']
                     roles.models.Rol.objects.agregarListaPermisoGlobal(nuevoRol, listaPermisos)
-                else:
-                    return HttpResponse("No se tiene permiso para crear rol externos!", status=403)
+                #else:
+                    #return HttpResponse("No se tiene permiso para crear rol externos!", status=403)
             elif datosRol['tipo'] == 'Interno':
-                if user.has_perm("proyectos.crear_rol_interno"):
-                    nuevoRol = roles.models.Rol.objects.crearRolInterno(nombre=datosRol['nombre'], idProyecto=datosRol['idProyecto'], descripcion=datosRol['descripcion'])
-                    nuevoRol.save()
-                    lista = request.data['permisos']
-                    listaPermisos = []
-                    for p in lista:
-                        listaPermisos.append({"nombre": p, "idObjeto": datosRol['idProyecto']})
+                #if user.has_perm("proyectos.crear_rol_interno"):
+                nuevoRol = roles.models.Rol.objects.crearRolInterno(nombre=datosRol['nombre'], idProyecto=datosRol['idProyecto'], descripcion=datosRol['descripcion'])
+                nuevoRol.save()
+                lista = request.data['permisos']
+                listaPermisos = []
+                for p in lista:
+                    listaPermisos.append({"nombre": p, "idObjeto": datosRol['idProyecto']})
 
-                    roles.models.Rol.objects.agregarListaPermisoObjeto(nuevoRol, listaPermisos)
-                else:
-                    return HttpResponse("No se tiene permiso para crear rol internos!", status=403)
+                roles.models.Rol.objects.agregarListaPermisoObjeto(nuevoRol, listaPermisos)
+                #else:
+                #    return HttpResponse("No se tiene permiso para crear rol internos!", status=403)
             else:
                 return HttpResponse("El Tipo de rol \"" + datosRol['tipo'] + "\" es invalido!", status=400)
 
@@ -273,12 +273,13 @@ class Rol(APIView, CreateView):
                 tipoRol = request.GET.get('tipoRol', '')
                 rol = roles.models.Rol.objects.get(id=idRol)
                 if rol.tipo == tipoRol:
-                    if tipoRol == 'Interno':
-                        if not user.has_perm("proyectos.borrar_rol_interno"):
-                            return HttpResponse("No tiene los permisos para borrar rol interno", status=400)
-                    elif tipoRol == 'Externo':
-                        if not user.has_perm("roles.borrar_rol_externo"):
-                            return HttpResponse("No tiene los permisos para borrar rol externo", status=400)
+                    pass
+                    #if tipoRol == 'Interno':
+                     #   if not user.has_perm("proyectos.borrar_rol_interno"):
+                      #      return HttpResponse("No tiene los permisos para borrar rol interno", status=400)
+                    #elif tipoRol == 'Externo':
+                     #   if not user.has_perm("roles.borrar_rol_externo"):
+                      #      return HttpResponse("No tiene los permisos para borrar rol externo", status=400)
                 else:
                     # No coinciden el tipo de rol enviado con el tipo del rol hallado en la base de datos
                     return HttpResponse("Tipo de rol invalido! ", status=400)

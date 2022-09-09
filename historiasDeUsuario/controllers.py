@@ -47,21 +47,7 @@ class controllerTipoHU(APIView):
             id = request.GET.get('idproyecto', '')
             tiposHU = Tipo_Historia_Usuario.objects.filter(proyectos__in=[id])
 
-            listaTotal = []
-
-            for tipo in tiposHU:
-                columnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(tipo.id)
-                print("asdddddddddddddddddd")
-                lista_total = []
-                lista_total.append(tipo)
-
-                for elemento in columnas:
-                    lista_total.append(elemento)
-
-                listaTotal.append(lista_total)
-
-            print("listaTotal",listaTotal)
-            serializer = json.dump(listaTotal)
+            serializer = serializers.serialize('json', tiposHU)
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
