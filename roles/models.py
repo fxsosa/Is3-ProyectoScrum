@@ -125,12 +125,11 @@ class ManejoRol(models.Manager):
         """
         Lista los roles que tiene un usuario
         :param userEmail: Email del usuario a listar sus roles
-        :return: QuerySet de Rol
+        :return: Lista de id de los Roles
         """
 
         user = Usuario.objects.get(email=userEmail)
         listaQuery = Group.objects.filter(user=user).values('name')
-        print("listaQuery = ",listaQuery)
         listaRoles = []
         for i in range(len(listaQuery)):
             idRol = listaQuery[i]['name']
@@ -140,7 +139,6 @@ class ManejoRol(models.Manager):
             except:
                 nombreRol = idRol
             listaRoles.append(nombreRol)
-            print(listaRoles)
 
         return listaRoles
 
@@ -308,7 +306,7 @@ class ManejoRol(models.Manager):
         """
         Agrega una lista de permisos al Rol actual (self)
         :param lista: lista de json objects. Tiene el siguiente formato
-        '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
+                    [{'nombre1', 'nombre2', 'nombre3']
         :param r: Instancia Rol al cual agregar permisos
         :return: None
         """
