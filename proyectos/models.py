@@ -1,6 +1,7 @@
 import json
 
 from django.db import models
+import datetime
 
 import roles
 #import sys
@@ -59,9 +60,6 @@ class ManejoProyectos(models.Manager):
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.nombre = datos['nombre']
         proyecto.descripcion = datos['descripcion']
-        proyecto.fechaInicio = datos['fechaInicio']
-        proyecto.fechaFin = datos['fechaFin']
-        proyecto.scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
         # El estado del proyecto no se modifica manualmente, sino automáticamente
 
         proyecto.save()
@@ -70,7 +68,7 @@ class ManejoProyectos(models.Manager):
     def iniciarProyecto(self, datos):
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.estado = "iniciado"
-
+        proyecto.fechaInicio = datetime.date.today()
         proyecto.save()
         return proyecto
 
@@ -121,8 +119,8 @@ class ManejoParticipantes(models.Manager):
 
         return usuarios
 
-    def borrarParticipante(self, datos):
-        particip = participante.objects.get(id=int(datos['id_participante']))
+    def borrarParticipante(self, user,proyecto):
+        particip = participante.objects.get(usuario=user, proyecto=proyecto)
         particip.delete()
 
 
