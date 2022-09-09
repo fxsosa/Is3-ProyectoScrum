@@ -7,9 +7,10 @@ from django.http import HttpResponse
 from django.views.generic import CreateView
 from rest_framework.utils import json
 import roles
-from roles.models import Rol
+from roles.models import Rol, permisosInternos
 from usuarios.models import Usuario
 from itertools import chain
+from proyectos.models import participante
 
 
 from proyectos.models import Proyecto
@@ -63,6 +64,26 @@ class controllerProyecto(APIView):
             datos = request.data
             if user.has_perm('proyectos.crear_proyecto', obj=None):
                 proyecto = Proyecto.objects.crearProyecto(datos)
+
+                print("proyecto[pk]",proyecto.id)
+                # agg rol Srummaster
+                rolInterno = Rol.objects.crearRolInterno("Srum Master",proyecto.id)
+                lista = permisosInternos
+                listaPermisos = []
+                for p in lista:
+                    listaPermisos.append({"nombre": p, "idObjeto": proyecto.id})
+
+                roles.models.Rol.objects.agregarListaPermisoObjeto(rolInterno, listaPermisos)
+
+                # agg participante
+                scrumMaster = Usuario.objects.get(email=datos['scrumMaster'])
+                proyectoAux = Proyecto.objects.get(id=proyecto.id)
+                participantea = participante.objects.model(proyecto=proyectoAux, usuario=scrumMaster)
+                participantea.save()
+                # asignar rol scrummaster al participante
+
+                Rol.objects.asignarRolaUsuario(idRol=rolInterno.id, user=scrumMaster)
+
                 return HttpResponse(proyecto, content_type='application/json', status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)

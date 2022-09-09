@@ -80,12 +80,12 @@ class ManejoProyectos(models.Manager):
 
 class ManejoParticipantes(models.Manager):
     def crearParticipante(self, datos):
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
         usuario = Usuario.objects.get(id=int(datos['idUsuario']))
 
         participante = self.model(proyecto=proyecto, usuario=usuario)
-        print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
         participante.save()
 
         return participante
@@ -160,7 +160,11 @@ class Proyecto(models.Model):
             ('iniciar_proyecto', 'Marcar un proyecto como iniciado'),
             ('crear_tipo_HU', 'Crear un nuevo tipo de Historia de Usuario'),
             ('borrar_tipo_HU', 'Borrar un tipo de HU'),
-            ('importar_roles_internos', 'Importar roles internos de otro proyecto')
+            ('importar_roles_internos', 'Importar roles internos de otro proyecto'),
+            ('agregar_participante', 'Agregar un usuario a un proyecto'),
+            ('modificar_participante', 'Modificar un participante'),
+            ('borrar_participante', 'Borrar participante'),
+            ('listar_participante', 'Lista un participante individual')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
@@ -172,16 +176,6 @@ class participante(models.Model):
     objects=ManejoParticipantes()
     def __str__(self):
         return str([self.proyecto, self.usuario])
-
-    class Meta:
-        #default_permissions = ()  # ?deshabilitamos add/change/delete/view
-
-        permissions = (
-            ('agregar_participante', 'Agregar un usuario a un proyecto'),
-            ('modificar_participante', 'Modificar un participante'),
-            ('borrar_participante', 'Borrar participante'),
-            ('listar_participante', 'Lista un participante individual')
-        )
 
 
 

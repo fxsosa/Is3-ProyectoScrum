@@ -27,11 +27,12 @@ permisosInternos = [
     'proyectos.actualizar_proyecto',
     'proyectos.archivar_proyecto',
     'proyectos.cambiar_estado_proyecto',
-    'participante.agregar_participante',
-    'participante.modificar_participante',
-    'participante.borrar_participante',
-    'participante.listar_participante'
-    'participante.listar_participante', 'proyectos.crear_tipo_HU',
+    'proyectos.agregar_participante',
+    'proyectos.modificar_participante',
+    'proyectos.borrar_participante',
+    'proyectos.listar_participante',
+    'proyectos.listar_participante',
+    'proyectos.crear_tipo_HU',
     'proyectos.borrar_tipo_HU',
     'proyectos.importar_roles_internos'
 ]
@@ -236,10 +237,12 @@ class ManejoRol(models.Manager):
                         proyecto = Proyecto.objects.get(id=idObjeto)
 
                         if r.tipo == 'Interno':
-                            if per['nombre'] in permisosInternos:
-                                print("Permiso: " + per['nombre'])
-                                assign_perm(per['nombre'], grupo, proyecto)
 
+                            print("Permiso: " + per['nombre'])
+                            try:
+                                assign_perm(per['nombre'], grupo, proyecto)
+                            except:
+                                pass
                         elif r.tipo == 'Externo':
                             if per['nombre'] in permisosExternos:
                                 assign_perm(per['nombre'], grupo, proyecto)
