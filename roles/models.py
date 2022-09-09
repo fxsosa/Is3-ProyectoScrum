@@ -8,27 +8,29 @@ from guardian.shortcuts import assign_perm, remove_perm, get_group_perms
 # TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
     'soportepermisos.listar_permisos',
-    'roles.listar_roles_internos',
     'roles.listar_roles_externos',
-    'roles.crear_rol_interno',
     'roles.crear_rol_externo',
-    'roles.actualizar_rol_interno',
     'roles.actualizar_rol_externo',
-    'roles.borrar_rol_interno',
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
-    'usuarios.modificar_roles_externos_de_usuario'
+    'usuarios.modificar_roles_externos_de_usuario',
+    'proyectos.listar_proyectos',
+    'proyectos.crear_proyecto',
 ]
 
 permisosInternos = [
-    'roles.listar_roles_internos', 'roles.crear_rol_interno',
-    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
-    'roles.listar_roles_proyecto', 'proyectos.crear_proyecto',
-    'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
-    'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
-    'listar_roles_proyecto', 'crear_proyecto',
-    'eliminar_proyecto', 'actualizar_proyecto',
-    'archivar_proyecto', 'cambiar_estado_proyecto'
+    'roles.listar_roles_internos',
+    'roles.crear_rol_interno',
+    'roles.actualizar_rol_interno',
+    'roles.borrar_rol_interno',
+    'proyectos.eliminar_proyecto',
+    'proyectos.actualizar_proyecto',
+    'proyectos.archivar_proyecto',
+    'proyectos.cambiar_estado_proyecto',
+    'participante.agregar_participante',
+    'participante.modificar_participante',
+    'participante.borrar_participante',
+    'participante.listar_participante'
 ]
 
 
@@ -182,7 +184,6 @@ class ManejoRol(models.Manager):
         :return: Boolean True/Existe, False/No existe
         """
 
-        print('Probamos con get')
         try:
             rol = Rol.objects.get(id=id)
         except Rol.DoesNotExist as e:
@@ -223,16 +224,18 @@ class ManejoRol(models.Manager):
         grupo = Group.objects.get(name=nombreGrupo)
         try:
             for per in lista:
-                print(per)
+                print('per',per)
                 # Verificamos que los campos no sean null
                 if per['nombre'] != "" and per['idObjeto'] is not None:
                     try:
                         idObjeto = per['idObjeto']
                         proyecto = Proyecto.objects.get(id=idObjeto)
+
                         if r.tipo == 'Interno':
                             if per['nombre'] in permisosInternos:
                                 print("Permiso: " + per['nombre'])
                                 assign_perm(per['nombre'], grupo, proyecto)
+
                         elif r.tipo == 'Externo':
                             if per['nombre'] in permisosExternos:
                                 assign_perm(per['nombre'], grupo, proyecto)
@@ -271,7 +274,6 @@ class ManejoRol(models.Manager):
         :param r: Instancia Rol al cual agregar permisos
         :return: None
         """
-
         nombreGrupo = Rol.objects.obtenerNombreGrupo(r)
         grupo = Group.objects.get(name=nombreGrupo)
         tipo = r.tipo
@@ -283,6 +285,9 @@ class ManejoRol(models.Manager):
             for p in lista:
                 if p in permisosExternos:
                     assign_perm(p, grupo)
+                    print(p)
+                #print(p)
+        grupo.save()
 
     def borrarListaPermisoGlobal(self, r, lista):
         """
@@ -359,13 +364,16 @@ class ManejoRol(models.Manager):
         except Rol.DoesNotExist as e:
             print("No existe el rol con id = " + idRol)
 
-    def listarRolesInternos(self):
+    def listarRolesInternos(self, idProyecto):
         """
         Lista todos los roles Internos
         :return: QuerySet de Roles Internos
         """
-
-        return Rol.objects.filter(tipo='Interno')
+        if idProyecto != None:
+            print("Llego muy lejooooooooooo")
+            return Rol.objects.filter(tipo='Interno',proyecto=idProyecto)
+        else:
+            return Rol.objects.filter(tipo='Interno')
 
     def listarRolesExternos(self):
         """
