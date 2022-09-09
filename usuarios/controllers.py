@@ -182,6 +182,11 @@ class ControllerUsuarioIndividualAdmin(APIView):
 
 class ControllerUsuarioExistencia(APIView):
     def get(self,request):
+        """
+        Funcion para verificar si un usuario existe o no en el sistema
+        :param request: Request. El query param recibido es 'email' del usuario a verificar
+        :return: (HttpResponse) QuerySet de un Usuario
+        """
         try:
             # Obtenemos el cuerpo de la peticion
             body = request.data
