@@ -8,13 +8,9 @@ from guardian.shortcuts import assign_perm, remove_perm, get_group_perms
 # TO-DO: Arreglar esto (pasar a utils)
 permisosExternos = [
     'soportepermisos.listar_permisos',
-    'roles.listar_roles_internos',
     'roles.listar_roles_externos',
-    'roles.crear_rol_interno',
     'roles.crear_rol_externo',
-    'roles.actualizar_rol_interno',
     'roles.actualizar_rol_externo',
-    'roles.borrar_rol_interno',
     'roles.borrar_rol_externo',
     'roles.listar_permisos_externos',
     'usuarios.modificar_roles_externos_de_usuario',
@@ -23,17 +19,25 @@ permisosExternos = [
 ]
 
 permisosInternos = [
-    'roles.listar_roles_internos', 'roles.crear_rol_interno',
-    'roles.actualizar_rol_interno', 'roles.borrar_rol_interno',
-    'roles.listar_roles_proyecto',
-    'proyectos.eliminar_proyecto', 'proyectos.actualizar_proyecto',
-    'proyectos.archivar_proyecto', 'proyectos.cambiar_estado_proyecto',
+    'proyectos.crear_proyecto',
+    'proyectos.eliminar_proyecto',
+    'proyectos.actualizar_proyecto',
+    'proyectos.archivar_proyecto',
+    'proyectos.cambiar_estado_proyecto',
     'proyectos.listar_proyectos',
-    'permisos.ver_proyecto', 'participante.agregar_participante',
-    'participante.modificar_participante', 'participante.borrar_participante',
-    'participante.listar_participante'
+    'proyectos.iniciar_proyecto',
+    'proyectos.crear_tipo_HU',
+    'proyectos.borrar_tipo_HU',
+    'proyectos.importar_roles_internos',
+    'proyectos.agregar_participante',
+    'proyectos.modificar_participante',
+    'proyectos.borrar_participante',
+    'proyectos.listar_participante',
+    'proyectos.listar_roles_internos',
+    'proyectos.crear_rol_interno',
+    'proyectos.actualizar_rol_interno',
+    'proyectos.borrar_rol_interno',
 ]
-
 
 class ManejoRol(models.Manager):
     """
@@ -227,16 +231,19 @@ class ManejoRol(models.Manager):
         grupo = Group.objects.get(name=nombreGrupo)
         try:
             for per in lista:
-                print(per)
                 # Verificamos que los campos no sean null
                 if per['nombre'] != "" and per['idObjeto'] is not None:
                     try:
                         idObjeto = per['idObjeto']
                         proyecto = Proyecto.objects.get(id=idObjeto)
+
                         if r.tipo == 'Interno':
-                            if per['nombre'] in permisosInternos:
-                                print("Permiso: " + per['nombre'])
+
+                            print("Permiso: " + per['nombre'])
+                            try:
                                 assign_perm(per['nombre'], grupo, proyecto)
+                            except:
+                                pass
                         elif r.tipo == 'Externo':
                             if per['nombre'] in permisosExternos:
                                 assign_perm(per['nombre'], grupo, proyecto)
@@ -427,13 +434,9 @@ class Rol(models.Model):
         default_permissions = ()  # deshabilitamos add/change/delete/view
 
         permissions = (
-            ('listar_roles_internos', 'Listar todos los roles internos del sistema'),
             ('listar_roles_externos', 'Listar todos los roles externos del sistema'),
-            ('crear_rol_interno', 'Crear un nuevo rol interno'),
             ('crear_rol_externo', 'Crear nuevo rol externo'),
-            ('actualizar_rol_interno', 'Actualizar un rol interno'),
             ('actualizar_rol_externo', 'Actualizar un rol externo'),
-            ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
             ('borrar_rol_externo', 'Borrar un rol externo del sistema'),
             ('listar_permisos_externos', 'Para listar los permisos de un rol externo')
         )
