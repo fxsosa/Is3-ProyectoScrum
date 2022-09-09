@@ -270,7 +270,7 @@ class ManejoRol(models.Manager):
         """
         Agrega una lista de permisos al Rol actual (self)
         :param lista: lista de json objects. Tiene el siguiente formato
-        '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
+                    [{'nombre1', 'nombre2', 'nombre3']
         :param r: Instancia Rol al cual agregar permisos
         :return: None
         """
