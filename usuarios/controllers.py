@@ -45,8 +45,6 @@ class controllerProyecto(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
 
-
-
 class ControllerUsuario(APIView):
     def post(self, request, format=None):
         """
