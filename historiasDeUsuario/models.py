@@ -43,7 +43,6 @@ class ManejoTipoHU(models.Manager):
 
 
 
-
 class ManejoColumasUH(models.Manager):
     # Definir función para retornar las columnas de un tipo de UH con cierto id
     def retornarColumnas(self, id_HU):

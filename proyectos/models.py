@@ -121,6 +121,12 @@ class ManejoParticipantes(models.Manager):
 
         return usuarios
 
+    def borrarParticipante(self, datos):
+        particip = participante.objects.get(id=int(datos['id_participante']))
+        particip.delete()
+
+
+
     # Falta corregir este método para el put, no funciona
     '''
     def modificarParticipante(self, datos):
