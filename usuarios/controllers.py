@@ -47,12 +47,11 @@ class controllerProyecto(APIView):
 
 class ControllerUsuario(APIView):
     def post(self, request, format=None):
-        """
-        Funcion para generar un usuario y guardar como usuario del sistema
-        :param request: Request.
-        El request.data contiene los siguientes campos: {"email": "example@email.com", "password": "examplePassword",
-        "nombres": "exampleNombres", "apellidos" : "exampleApellidos", "username": "exampleUsername"}
+        """Funcion para generar un usuario y guardar como usuario del sistema
+
+        :param request: Request. El request.data contiene los siguientes campos: {"email": "example@email.com", "password": "examplePassword", "nombres": "exampleNombres", "apellidos" : "exampleApellidos", "username": "exampleUsername"}
         :param format: None
+
         :return: (HttpResponse) QuerySet Usuario Creado
         """
         try:
@@ -93,10 +92,11 @@ class ControllerUsuario(APIView):
 
 class ControllerUsuarioAdministracion(APIView):
     def get(self, request, format=None):
-        """
-        Funcion para listar todos los usuarios del sistema
+        """Funcion para listar todos los usuarios del sistema
+
         :param request: Request
         :param format: None
+
         :return: (HttpResponse) QuerySet de Usuarios del sistema
         """
         try:
@@ -107,11 +107,11 @@ class ControllerUsuarioAdministracion(APIView):
             return HttpResponse("Algo salio mal "+ str(e), status=200)
 
     def put(self, request, format=None):
-        """
-        Funcion para actualizar datos de un usuario por parte de un admin
-        :param request: Request. El request.data contiene los siguientes campos {"email": "example@email.com",
-        "accion": "agregar/eliminar", "roles" = [idRol1, idRol2, ...]}
+        """Funcion para actualizar datos de un usuario por parte de un admin
+
+        :param request: Request. El request.data contiene los siguientes campos {"email": "example@email.com", "accion": "agregar/eliminar", "roles" = [idRol1, idRol2, ...]}
         :param format: None
+
         :return: (HttpResponse) QuerySet de Usuario actualizado / Vacio si fue eliminado
         """
         try:
@@ -151,12 +151,13 @@ class ControllerUsuarioAdministracion(APIView):
 
 class ControllerUsuarioIndividualAdmin(APIView):
     def get(self,request):
+        """Funcion para obtener roles de un usuario por parte del admin
+
+        :param request: Request. Se recibe como query param 'email' del usuario
+        :param format: None
+
+        :return: (HttpResponse) QuerySet de Roles
         """
-                Funcion para obtener roles de un usuario por parte del admin
-                :param request: Request. Se recibe como query param 'email' del usuario
-                :param format: None
-                :return: (HttpResponse) QuerySet de Roles
-                """
         try:
             # Obtenemos el cuerpo de la peticion
             body = request.data
@@ -180,9 +181,10 @@ class ControllerUsuarioIndividualAdmin(APIView):
 
 class ControllerUsuarioExistencia(APIView):
     def get(self,request):
-        """
-        Funcion para verificar si un usuario existe o no en el sistema
+        """Funcion para verificar si un usuario existe o no en el sistema
+
         :param request: Request. El query param recibido es 'email' del usuario a verificar
+
         :return: (HttpResponse) QuerySet de un Usuario
         """
         try:
@@ -223,4 +225,3 @@ def obtenerUsuarioConToken(token):
     datosUsuario['username'] = decoded['email'].split("@")[0]
 
     return datosUsuario
-

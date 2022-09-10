@@ -19,11 +19,12 @@ class ManejoProyectos(models.Manager):
     """
 
     def importarRoles(self, datos):
-        """
-        Metodo para la importacion de roles de usuario asociados a un proyecto, a otro proyecto
+        """Metodo para la importacion de roles de usuario asociados a un proyecto, a otro proyecto
+
         :param datos: Datos de request con el siguiente formato:
             {"idProyectoActual": "id1", "idProyectoExterno": "id2"}
             El primer id referencia al proyecto a recibir los roles, el segundo, al proyecto del cual importar sus roles
+
         :return: Lista de Roles agregados
         """
 
@@ -54,10 +55,11 @@ class ManejoProyectos(models.Manager):
 
 
     def crearProyecto(self, datos):
-        """
-        Metodo para la creacion de proyectos.
+        """Metodo para la creacion de proyectos.
+
         :param datos: Datos de un request.data con el siguiente formato
             {"nombre": String, "descripcion": String, "fechaInicio": DATE, "fechaFin": DATE, "scrumMaster": email, "estado": String}
+
         :return: None
         """
 
@@ -76,10 +78,11 @@ class ManejoProyectos(models.Manager):
     #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
     def modificarProyecto(self, datos):
-        """
-        Metodo para la actualizacion de los parametros de un proyecto
+        """Metodo para la actualizacion de los parametros de un proyecto
+
         :param datos: Diccionario recibido de un request.data
                 Contiene nombre y descripcion
+
         :return: Instancia Proyecto
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
@@ -91,10 +94,11 @@ class ManejoProyectos(models.Manager):
         return proyecto
 
     def iniciarProyecto(self, datos):
-        """
-        Metodo para cambiar el estado de proyecto a Iniciado
+        """Metodo para cambiar el estado de proyecto a Iniciado
+        
         :param datos: Diccionario recibido como request.data
         Contiene "estado" String, y "fechaInicio" DATE
+        
         :return: Instancia de Proyecto actualizado
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
@@ -111,10 +115,11 @@ class ManejoParticipantes(models.Manager):
 
 
     def crearParticipante(self, datos):
-        """
-        Metodo para crear un participante y asignarlo a un proyecto ya inicializado
+        """Metodo para crear un participante y asignarlo a un proyecto ya inicializado
+
         :param datos: Diccionario recibido de un request.data
         Contiene "idProyecto" Integer, y "idUsuario" Integer.
+
         :return: Instancia de Participante
         """
         proyecto = Proyecto.objects.get(id=int(datos['idProyecto']))
@@ -130,9 +135,10 @@ class ManejoParticipantes(models.Manager):
         return participante
 
     def listarProyectosdeParticipante(self, id):
-        """
-        Metodo para listar los IDs de los proyectos en los que participa un usuario
+        """Metodo para listar los IDs de los proyectos en los que participa un usuario
+
         :param id: Id del usuario/participante
+
         :return: Lista de Int (IDs de los proyectos)
         """
 
@@ -149,9 +155,10 @@ class ManejoParticipantes(models.Manager):
         return proyectos
 
     def listarParticipantedeProyectos(self, idProyecto):
-        """
-        Metodo para listar a los participantes de un proyecto
+        """Metodo para listar a los participantes de un proyecto
+
         :param idProyecto: ID del proyecto
+
         :return: Lista (Usuario)
         """
 
@@ -168,10 +175,11 @@ class ManejoParticipantes(models.Manager):
         return usuarios
 
     def borrarParticipante(self, user,proyecto):
-        """
-        Metodo para eliminar participante de un proyecto
+        """Metodo para eliminar participante de un proyecto
+
         :param user: Instancia Usuario
         :param proyecto: Instancia Proyecto
+
         :return: None
         """
         particip = participante.objects.get(usuario=user, proyecto=proyecto)
