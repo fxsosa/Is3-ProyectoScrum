@@ -7,8 +7,14 @@ class ManejoUsuarios(BaseUserManager):
     Modelo personalizado de manejo de usuarios donde el email es el PK y no el nombre
     """
     def create_user(self, email, password, username, **extra_fields):
-        """
-        Crear y guardar un usuario con un email y contraseña dada.
+        """Crear usuario con el modelo de usuario personalizado
+
+        :param email: Email del nuevo usuario
+        :param password:  Contraseña del nuevo usuario
+        :param username: Username a utilizar en el sistema
+        :param extra_fields: Extra_fields
+
+        :return: Usuario
         """
         if not email:
             raise ValueError(_('The Email must be set'))
@@ -19,8 +25,14 @@ class ManejoUsuarios(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, username, **extra_fields):
-        """
-        Create and save a SuperUser with the given email and password.
+        """Crear un superusuario con todos los permisos del sistema
+
+        :param email: Email
+        :param password: Password
+        :param username: Username
+        :param extra_fields: Extra_fields
+
+        :return: Usuario
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
