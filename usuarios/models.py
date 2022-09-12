@@ -24,8 +24,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = ManejoUsuarios()
 
     def __str__(self):
-        """
-        Generar instancia en string
+        """Generar instancia en string
+
         :return: "[email, username, nombres, apellidos]"
         """
         return str([self.email, self.username, self.nombres, self.apellidos])
