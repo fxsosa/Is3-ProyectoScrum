@@ -212,12 +212,12 @@ class Proyecto(models.Model):
     descripcion = models.CharField(max_length=200)
     fechaInicio = models.DateTimeField(null=True) #Incluye minutos y segundos
     fechaFin = models.DateTimeField(null=True)
-    scrumMaster = models.ForeignKey(Usuario, on_delete=models.PROTECT) #Evita que se borre, se soluciona cambiando de Scrum Master y luego borrando al usuario
+    scrumMaster = models.ForeignKey(Usuario, on_delete=models.PROTECT, null=True) #Evita que se borre, se soluciona cambiando de Scrum Master y luego borrando al usuario
     estado = models.CharField(max_length=30)
 
     objects = ManejoProyectos()
     def __str__(self):
-        return str([self.nombre, self.descripcion,self.fechaInicio, self.fechaFin,
+        return str([self.nombre, self.descripcion, self.fechaInicio, self.fechaFin,
                     self.scrumMaster.id, self.estado])
 
     class Meta:
