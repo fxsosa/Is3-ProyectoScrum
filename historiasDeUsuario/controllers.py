@@ -20,29 +20,6 @@ class controllerTipoHU(APIView):
         Controlador de Tipos de Historia de Usuario
     """
 
-    # Esta función serviría para obtener un tipo de HU en particular (falta testear)
-    """
-    def get(self, request):
-        try:
-            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
-            tipo_HU = Tipo_Historia_Usuario.objects.get(id=int(id))
-            print(tipo_HU)
-
-            # Obtener todas las columnas de la HU
-            columnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id)
-            lista_total= []
-
-            lista_total.append(tipo_HU)
-
-            for elemento in columnas:
-                lista_total.append(elemento)
-
-            serializer = serializers.serialize('json', lista_total)
-            return HttpResponse(serializer, content_type='application/json', status=200)
-        except Exception as e:
-            return HttpResponse("Algo salio mal " + str(e), status=500)
-    """
-
     # Retorna todos los tipos de HU en la base de datos (funciona perfectamente, podría ponerse en otro controlador)
 
     def get(self, request):
@@ -156,13 +133,39 @@ class controllerTipoHU(APIView):
             datos = request.data
             proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
             print(proyecto)
-            #if user.has_perm('proyectos.importar_tipo_HU', obj=proyecto):
-            Tipo_Historia_Usuario.objects.importarTipoHU(datos)
-            return HttpResponse("Importación exitosa", status=200)
-            #else:
-            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            if user.has_perm('proyectos.importar_tipo_HU', obj=proyecto):
+                Tipo_Historia_Usuario.objects.importarTipoHU(datos)
+                return HttpResponse("Importación exitosa", status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Error encontrado: " + str(e), status=500)
+
+
+class controllerTipoHU_2(APIView):
+    """
+        Otro controlador para Tipos de Historia de Usuario
+    """
+    # Esta función serviría para obtener un tipo de HU en particular (falta testear)
+    def get(self, request):
+        try:
+            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            tipo_HU = Tipo_Historia_Usuario.objects.get(id=int(id))
+            print(tipo_HU)
+
+            # Obtener todas las columnas de la HU
+            columnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id)
+            lista_total= []
+
+            lista_total.append(tipo_HU)
+
+            for elemento in columnas:
+                lista_total.append(elemento)
+
+            serializer = serializers.serialize('json', lista_total)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
 
 
 def obtenerUsuarioConToken(token):
