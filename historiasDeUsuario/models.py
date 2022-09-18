@@ -52,6 +52,20 @@ class ManejoTipoHU(models.Manager):
         tipoHU.delete()
 
 
+    def importarTipoHU(self, datos):
+        """
+        Función para importar un tipo de Historia de Usuario a un proyecto determinado.
+        La Historia de Usuario será añadida a ese proyecto.
+        :param datos:
+        :return:
+        """
+        tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipo_HU']))
+        proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+        print(tipoHU)
+        print(proyecto)
+
+        tipoHU.proyectos.add(proyecto)
+
 
 class ManejoColumasUH(models.Manager):
     """

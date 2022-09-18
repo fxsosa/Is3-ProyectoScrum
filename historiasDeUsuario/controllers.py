@@ -133,19 +133,37 @@ class controllerTipoHU(APIView):
 
 
 
+    def put(self, request):
+        """
+        Función para añadir un Tipo de HU existente a un proyecto
+        :param request:
+        :return:
+        """
 
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
-    # TODO: Crear opción para importar HU en un proyecto
-    # Put usado para añadir HU a proyectos
-    '''def put(self, request):
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
         try:
             datos = request.data
-            proyecto = Proyecto.objects.modificarProyecto(datos)
-
-            return HttpResponse(proyecto, content_type='application/json', status=200)
+            proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+            print(proyecto)
+            #if user.has_perm('proyectos.importar_tipo_HU', obj=proyecto):
+            Tipo_Historia_Usuario.objects.importarTipoHU(datos)
+            return HttpResponse("Importación exitosa", status=200)
+            #else:
+            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
-            return HttpResponse("Algo salio mal " + str(e), status=500)
-        '''
+            return HttpResponse("Error encontrado: " + str(e), status=500)
+
 
 def obtenerUsuarioConToken(token):
     """

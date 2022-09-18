@@ -228,6 +228,7 @@ class Proyecto(models.Model):
             ('iniciar_proyecto', 'Marcar un proyecto como iniciado'),
             ('crear_tipo_HU', 'Crear un nuevo tipo de Historia de Usuario'),
             ('borrar_tipo_HU', 'Borrar un tipo de HU'),
+            ('importar_tipo_HU', 'Importar un tipo de HU'),
             ('importar_roles_internos', 'Importar roles internos de otro proyecto'),
             ('agregar_participante', 'Agregar un usuario a un proyecto'),
             ('modificar_participante', 'Modificar un participante'),
