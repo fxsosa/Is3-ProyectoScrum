@@ -46,9 +46,10 @@ class ManejoRol(models.Manager):
     """
 
     def obtenerNombreGrupo(self, rol):
-        """
-        Retorna el nombre del grupo al cual pertenece un rol
+        """Retorna el nombre del grupo al cual pertenece un rol
+
         :param rol: Instancia Rol
+
         :return: String con el nombre del grupo asociado al rol
         """
         if rol.tipo == "Interno":
@@ -59,10 +60,11 @@ class ManejoRol(models.Manager):
 
 
     def crearRolExterno(self, nombre, **extra_fields):
-        """
-        Crear un rol externo y registrar el modelo en la base de datos
+        """Crear un rol externo y registrar el modelo en la base de datos
+
         :param nombre: Nombre del rol a registrar
         :param extra_fields: Campos extra del modelo (descripcion)
+
         :return: Objeto Rol
         """
 
@@ -76,11 +78,11 @@ class ManejoRol(models.Manager):
         return rolExterno
 
     def crearRolInterno(self, nombre, idProyecto, **extra_fields):
-        """
-        Crear un Rol Interno y registrar el modelo en la base de datos
+        """Crear un Rol Interno y registrar el modelo en la base de datos
 
         :param idProyecto: Id del proyecto a registrar
         :param extra_fields: Campos extra del modelo (descripcion)
+
         :return: Objeto Rol
         """
 
@@ -99,9 +101,10 @@ class ManejoRol(models.Manager):
         return rolInterno
 
     def listarUsuarios(self, nombreRol):
-        """
-        Genera una lista de usuarios que se encuentran asociados a un rol
+        """Genera una lista de usuarios que se encuentran asociados a un rol
+
         :param nombreRol: Nombre del Rol a buscar
+
         :return: QuerySet de Usuario
         """
 
@@ -115,17 +118,18 @@ class ManejoRol(models.Manager):
         return Usuario.objects.filter(groups__name=nombreGrupo)
 
     def listarRoles(self):
-        """
-        Lista todos los roles registrados en la base de datos
+        """Lista todos los roles registrados en la base de datos
+
         :return: QuerySet de todos los Roles
         """
 
         return Rol.objects.all()
 
     def listarRolesPorUsuario(self, userEmail):
-        """
-        Lista los roles que tiene un usuario
+        """Lista los roles que tiene un usuario
+
         :param userEmail: Email del usuario a listar sus roles
+
         :return: Lista de id de los Roles
         """
 
@@ -144,9 +148,10 @@ class ManejoRol(models.Manager):
         return listaRoles
 
     def listarRolesInternosPorUsuario(self, userEmail, idProyecto):
-        """
-        Lista los roles que tiene un usuario
+        """Lista los roles que tiene un usuario
+
         :param userEmail: Email del usuario a listar sus roles
+
         :return: QuerySet de Rol
         """
 
@@ -174,10 +179,11 @@ class ManejoRol(models.Manager):
         return listaRoles
 
     def asignarRolaUsuario(self, idRol, user):
-        """
-        Asigna un rol a un usuario dado
+        """Asigna un rol a un usuario dado
+
         :param idRol: id del rol a asignar
         :param user: Usuario a recibir el rol
+
         :return: None
         """
         
@@ -187,10 +193,11 @@ class ManejoRol(models.Manager):
         grupo.user_set.add(user)
 
     def eliminarRolaUsuario(self, idRol, user):
-        """
-        Elimina un rol a un usuario dado
+        """Elimina un rol a un usuario dado
+
         :param idRol: id del rol a eliminar de un usuario
         :param user: Usuario a eliminar el rol
+
         :return: None
         """
         try:
@@ -204,9 +211,10 @@ class ManejoRol(models.Manager):
         grupo.user_set.remove(user)
 
     def existeRol(self, nombreRol):
-        """
-        Verifica si un Rol existe o no en la base de datos
+        """Verifica si un Rol existe o no en la base de datos
+
         :param nombreRol: Nombre del rol a verificar
+
         :return: Boolean True/Existe, False/No existe
         """
 
@@ -214,9 +222,10 @@ class ManejoRol(models.Manager):
 
 
     def existeRolId(self, id):
-        """
-        Verificar si un rol existe o no en la base de datos
+        """Verificar si un rol existe o no en la base de datos
+
         :param id: ID del rol a verificar
+
         :return: Boolean True/Existe, False/No existe
         """
 
@@ -228,12 +237,12 @@ class ManejoRol(models.Manager):
         return True
 
     def agregarPermisoDeObjeto(self, idRol, nombrePermiso, objeto):
-        """
-        Agrega permiso a operar en el objeto dado, al Rol referenciado
+        """Agrega permiso a operar en el objeto dado, al Rol referenciado
 
         :param idRol: ID del rol referenciado
         :param nombrePermiso: Nombre del permiso a otorgar
         :param objeto: Instancia Objeto del cual damos el permiso
+
         :return: None
         """
 
@@ -246,13 +255,14 @@ class ManejoRol(models.Manager):
             print("No existe el rol con id = " + idRol)
 
     def agregarListaPermisoObjeto(self, r, lista):
-        """
-        Agrega la lista de permisos de objeto de un Rol
+        """Agrega la lista de permisos de objeto de un Rol
+
         :param r: Instancia Rol
         :param lista: Lista de permisos a agregar
                 [   {"nombre": "NombrePermiso1", "idObjeto": "idObjeto1"},
                     {"nombre": "NombrePermiso2", "idObjeto": "idObjeto2"}, ...
                 ]
+
         :return: None
         """
 
@@ -283,13 +293,13 @@ class ManejoRol(models.Manager):
             return None
 
     def agregarPermisoGlobal(self, idRol, nombrePermiso):
-        """
-        Agrega permisos globales al rol
+        """Agrega permisos globales al rol.
         Estos permisos globales son similares a los permisos de clase (afectan a todas
         las instancias de una clase)
 
         :param idRol: Nombre del rol al cual asignar los permisos
         :param nombrePermiso: Nombre del permiso global a asignar
+
         :return: None
         """
 
@@ -304,11 +314,12 @@ class ManejoRol(models.Manager):
         assign_perm(nombrePermiso, grupo)
 
     def agregarListaPermisoGlobal(self, r, lista):
-        """
-        Agrega una lista de permisos al Rol actual (self)
+        """Agrega una lista de permisos al Rol actual (self)
+
         :param lista: lista de json objects. Tiene el siguiente formato
                     [{'nombre1', 'nombre2', 'nombre3']
         :param r: Instancia Rol al cual agregar permisos
+
         :return: None
         """
         nombreGrupo = Rol.objects.obtenerNombreGrupo(r)
@@ -327,11 +338,12 @@ class ManejoRol(models.Manager):
         grupo.save()
 
     def borrarListaPermisoGlobal(self, r, lista):
-        """
-        Elimina una lista de permisos al Rol actual (self)
+        """Elimina una lista de permisos al Rol actual (self)
+
         :param lista: lista de json objects. Tiene el siguiente formato
         '[{"permiso":'nombre1'}, {"permiso":'nombre2'}, {"permiso":'nombre3'}]'
         :param r: Instancia Rol al cual elimina permisos
+
         :return: None
         """
 
@@ -348,8 +360,8 @@ class ManejoRol(models.Manager):
                     remove_perm(p, grupo, None)
 
     def borrarListaPermisoObjeto(self, r, lista):
-        """
-        Elimina la lista de permisos de objeto de un Rol
+        """Elimina la lista de permisos de objeto de un Rol
+
         :param r: Instancia Rol
         :param lista: Lista de permisos a eliminar
                 [   {"nombre": "NombrePermiso1", "idObjeto": "idObjeto1"},
@@ -383,9 +395,10 @@ class ManejoRol(models.Manager):
 
 
     def borrarRol(self, idRol):
-        """
-        Borra el rol
+        """Borra el rol
+
         :param idRol: ID del rol a borrar
+
         :return: None
         """
 
@@ -403,8 +416,8 @@ class ManejoRol(models.Manager):
             print("No existe el rol con id = " + idRol)
 
     def listarRolesInternos(self, idProyecto):
-        """
-        Lista todos los roles Internos
+        """Lista todos los roles Internos
+
         :return: QuerySet de Roles Internos
         """
         if idProyecto != None:
@@ -414,8 +427,8 @@ class ManejoRol(models.Manager):
             return Rol.objects.filter(tipo='Interno')
 
     def listarRolesExternos(self):
-        """
-        Lista todos los roles Externos
+        """Lista todos los roles Externos
+
         :return: QuerySet de Roles Externos
         """
 
@@ -423,9 +436,10 @@ class ManejoRol(models.Manager):
 
 
     def listarPermisos(self, id):
-        """
-        Lista todos los permisos asociados un rol
+        """Lista todos los permisos asociados un rol
+
         :param id: ID del rol
+
         :return: QuerySet de permisos
         """
 
