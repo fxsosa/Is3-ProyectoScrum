@@ -231,11 +231,16 @@ class controllerColumnasTipoHU(APIView):
 
         datos = request.data
         try:
-            #if user.has_perm('proyectos.modificar_columnas_tipo_HU', obj=proyecto):
+            try:
+                proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+
+            if user.has_perm('proyectos.modificar_columnas_tipo_HU', obj=proyecto):
                 Columna_Tipo_Historia_Usuario.objects.agregarColumna(datos)
                 return HttpResponse("Se ha creado exitosamente la nueva columna", status=200)
-            #else:
-            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Error encontrado:" + str(e), status=500)
 
