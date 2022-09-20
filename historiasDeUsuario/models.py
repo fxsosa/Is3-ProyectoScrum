@@ -117,14 +117,14 @@ class Columna_Tipo_Historia_Usuario(models.Model):
     """
         Clase para las columnas de un tipo de Historia de Usuario
     """
-    tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.CASCADE) #Evita que se borre, se soluciona borrando el tipo de Historia de Usuario
+    tipoHU = models.ForeignKey(Tipo_Historia_Usuario, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=80)
     orden = models.IntegerField()
 
     objects = ManejoColumasUH()
 
     def __str__(self):
-        return str([self.idTipoHU, self.nombre, self.orden])
+        return str([self.tipoHU, self.nombre, self.orden])
 
 
 

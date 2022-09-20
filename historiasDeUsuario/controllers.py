@@ -146,8 +146,26 @@ class controllerTipoHU_2(APIView):
     """
         Otro controlador para Tipos de Historia de Usuario
     """
-    # Esta función serviría para obtener un tipo de HU en particular (falta testear)
+
     def get(self, request):
+        """
+        Función para obtener un tipo de HU con sus columnas
+        :param request:
+        :return:
+        """
+
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
             tipo_HU = Tipo_Historia_Usuario.objects.get(id=int(id))
@@ -166,6 +184,32 @@ class controllerTipoHU_2(APIView):
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
+
+
+class controllerColumnasTipoHU(APIView):
+    def get(self, request):
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+            id_columna = request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            columna_tipo_HU = Columna_Tipo_Historia_Usuario.objects.get(id=int(id_columna))
+            print(columna_tipo_HU)
+            
+            serializer = serializers.serialize('json', [columna_tipo_HU, ])
+            return HttpResponse(serializer, content_type='application/json', status=200)
+            
+        except Exception as e:
+            return HttpResponse("Error encontrado:" + str(e), status=500)
 
 
 def obtenerUsuarioConToken(token):
