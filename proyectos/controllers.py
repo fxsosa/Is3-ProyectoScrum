@@ -1,15 +1,10 @@
-from django.http import HttpResponse
 from rest_framework.views import APIView
 from django.core import serializers
-from proyectos.models import Proyecto, participante
 import jwt
 from django.http import HttpResponse
-from django.views.generic import CreateView
-from rest_framework.utils import json
 import roles
 from roles.models import Rol, permisosInternos
 from usuarios.models import Usuario
-from itertools import chain
 from proyectos.models import participante
 
 
@@ -28,17 +23,7 @@ class controllerProyecto(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
@@ -61,17 +46,7 @@ class controllerProyecto(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
 
         try:
@@ -112,17 +87,7 @@ class controllerProyecto(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
 
         try:
@@ -154,17 +119,7 @@ class controllerProyectos(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             if user.has_perm('proyectos.listar_proyectos', obj=None):
@@ -190,17 +145,7 @@ class controllerParticipantes(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
@@ -223,17 +168,7 @@ class controllerParticipantes(APIView):
             :return: HttpResponse
         """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             datos = request.data
@@ -260,17 +195,8 @@ class controllerParticipantes(APIView):
             :param request: datos del request
             :return: HttpResponse
         """
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             print(user)
@@ -315,17 +241,8 @@ class ControllerProyectoParticipantes(APIView):
             :param request: datos del request
             :return: HttpResponse
         """
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             idProyecto=request.GET.get('idproyecto', '')
@@ -346,17 +263,8 @@ class controllerProyectosInicio(APIView):
             :param request: datos del request
             :return: HttpResponse
         """
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             datos = request.data
@@ -382,6 +290,9 @@ class ControllerRolesProyectosUsuarios(APIView):
             :param request: datos del request
             :return: HttpResponse
         """
+
+        user = validarRequest(request)
+
         try:
 
             idProyecto = request.GET.get('idproyecto', '')
@@ -407,17 +318,8 @@ class controllerProyectosImportar(APIView):
             :param request: datos del request
             :return: HttpResponse
         """
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         datos = request.data
         try:
@@ -433,12 +335,25 @@ class controllerProyectosImportar(APIView):
         except Exception as e:
             return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
 
+
+def validarRequest(request):
+    # Obtenemos los datos del token
+    try:
+        token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+        usuarioJSON = obtenerUsuarioConToken(token)
+    except Exception as e1:
+        return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+    # Obtenemos el usuario del modelo Usuario
+    try:
+        user = Usuario.objects.get(email=usuarioJSON['email'])
+    except Usuario.DoesNotExist as e:
+        return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+    return user
+
+
 def obtenerUsuarioConToken(token):
-    """
-        Función para obtener un proyecto
-        :param token: token del usuario
-        :return: datosUsuario
-    """
     datosUsuario={}
     decoded = jwt.decode(token, options={"verify_signature": False})  # works in PyJWT >= v2.0
 
@@ -451,4 +366,3 @@ def obtenerUsuarioConToken(token):
     datosUsuario['username'] = decoded['email'].split("@")[0]
 
     return datosUsuario
-
