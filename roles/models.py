@@ -38,6 +38,7 @@ permisosInternos = [
     'proyectos.actualizar_rol_interno',
     'proyectos.borrar_rol_interno',
     'proyectos.importar_tipo_HU',
+    'proyectos.modificar_columnas_tipo_HU',
 ]
 
 class ManejoRol(models.Manager):

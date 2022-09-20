@@ -246,6 +246,8 @@ class Proyecto(models.Model):
             ('crear_rol_interno', 'Crear un nuevo rol interno'),
             ('actualizar_rol_interno', 'Actualizar un rol interno'),
             ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
+            ('modificar_columnas_tipo_HU', 'Añadir, eliminar o modificar columnas de un tipo de HU'),
+
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):

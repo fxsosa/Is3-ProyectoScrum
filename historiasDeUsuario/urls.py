@@ -7,8 +7,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('', controllerTipoHU.as_view(), name="proyecto"),
-    path('/tipoHU', controllerTipoHU_2.as_view(), name="tipoHU"),
-    path('/columnas', controllerColumnasTipoHU.as_view(), name="columnasTipoHU")
+    path('tipoHU', controllerTipoHU_2.as_view(), name="tipoHU"),
+    path('columnas', controllerColumnasTipoHU.as_view(), name="columnasTipoHU")
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -112,7 +112,7 @@ class controllerTipoHU(APIView):
 
     def put(self, request):
         """
-        Función para añadir un Tipo de HU existente a un proyecto
+        Función para importar un Tipo de HU existente de un proyecto a otro
         :param request:
         :return:
         """
@@ -210,6 +210,38 @@ class controllerColumnasTipoHU(APIView):
             
         except Exception as e:
             return HttpResponse("Error encontrado:" + str(e), status=500)
+
+    def post(self, request):
+        """
+        Función para añadir una nueva columna a un tipo de HU existente
+        :param request: Datos del request
+        :return: HttpResponse
+        """
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        datos = request.data
+        try:
+            #if user.has_perm('proyectos.modificar_columnas_tipo_HU', obj=proyecto):
+                Columna_Tipo_Historia_Usuario.objects.agregarColumna(datos)
+                return HttpResponse("Se ha creado exitosamente la nueva columna", status=200)
+            #else:
+            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Error encontrado:" + str(e), status=500)
+
+
+
+
 
 
 def obtenerUsuarioConToken(token):

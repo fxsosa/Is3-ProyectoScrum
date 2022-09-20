@@ -89,6 +89,27 @@ class ManejoColumasUH(models.Manager):
 
         return lista_columnas
 
+    def agregarColumna(self, datos):
+        """
+            Función que añade una columna a un tipo de HU existente
+        :param datos:
+        :return:
+        """
+        nombre = datos['nombre']  # Una lista de nombres
+        id_tipo_HU = datos['id_tipo_HU']
+        instancia_tipo_HU = Tipo_Historia_Usuario.objects.get(id=id_tipo_HU)
+
+        #Obtener el nuevo orden de la nueva columna
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+        orden_columna = lista_columnas_tipo_HU[-1].orden + 1 # Se suma un 1 al orden de la última columna
+
+        col = Columna_Tipo_Historia_Usuario(nombre=nombre,  # Crear columna
+                                            orden=orden_columna,
+                                            tipoHU=instancia_tipo_HU)
+        col.save()
+
+
+
 class Tipo_Historia_Usuario(models.Model):
     """
         Clase de un Tipo de Historia de Usuario
