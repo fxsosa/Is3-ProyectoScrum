@@ -21,6 +21,8 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+# Cache
+**/__pycache__
 
 # Documentacion
 documentacion
