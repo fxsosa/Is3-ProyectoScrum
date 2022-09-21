@@ -188,6 +188,11 @@ class controllerTipoHU_2(APIView):
 
 class controllerColumnasTipoHU(APIView):
     def get(self, request):
+        """
+        Obtener una columna de un Tipo de HU
+        :param request:
+        :return:
+        """
         try:
             token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
             usuarioJSON = obtenerUsuarioConToken(token)
@@ -244,6 +249,39 @@ class controllerColumnasTipoHU(APIView):
         except Exception as e:
             return HttpResponse("Error encontrado:" + str(e), status=500)
 
+    def put(self, request):
+        """
+        Modifica el nombre de una columna de un tipo de HU, o intercambia orden y nombre de 2 tipos de HU
+        :param request:
+        :return:
+        """
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        datos = request.data
+        try:
+            try:
+                proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+
+            if user.has_perm('proyectos.modificar_columnas_tipo_HU', obj=proyecto):
+                mensaje = Columna_Tipo_Historia_Usuario.objects.modificarColumna(datos)
+
+                return HttpResponse(mensaje, status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Error encontrado:" + str(e), status=500)
 
 
 

@@ -108,6 +108,51 @@ class ManejoColumasUH(models.Manager):
                                             tipoHU=instancia_tipo_HU)
         col.save()
 
+    def modificarColumna(self, datos):
+        """
+        Método que modifica el nombre de una columna, o intercambia 2 columnas distintas, intercambiando
+        nombre y orden
+        :param datos:
+        :return:
+        """
+        nombre = datos['nombre']  # Una lista de nombres
+        id_tipo_HU = datos['id_tipo_HU']
+        orden_origen = datos['orden_origen'] # Estas 2 variables sirven para intercambiar columnas
+        orden_destino = datos['orden_destino'] # Pero si son iguales, solo modifica el nombre de la columna objetivo
+
+        # Obtener el nuevo orden de la nueva columna
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+
+        if (orden_origen == orden_destino): # Solo modifica el nombre de la columna
+            indice_destino = orden_destino - 1 # El orden va de 1 a n, pero los índices van de 0 a n-1
+
+            columna = lista_columnas_tipo_HU[indice_destino]
+            columna.nombre = nombre
+            columna.save()
+
+            return "Se ha modificado el nombre exitosamente"
+        else: # Intercambia columnas (nombre y orden)
+            indice_origen = orden_origen - 1
+            indice_destino = orden_destino - 1
+
+            columna_origen = lista_columnas_tipo_HU[indice_origen]
+            columna_destino = lista_columnas_tipo_HU[indice_destino]
+
+            # Intercambio
+            aux_nombre = columna_origen.nombre
+            aux_orden = columna_origen.orden
+            columna_origen.nombre = columna_destino.nombre
+            columna_origen.orden = columna_destino.orden
+            columna_destino.nombre = aux_nombre
+            columna_destino.orden = aux_orden
+
+            columna_origen.save()
+            columna_destino.save()
+
+            #TODO: Migrar US de una columna a otra
+
+            return "Se ha realizado el intercambio exitosamente"
+
 
 
 class Tipo_Historia_Usuario(models.Model):
