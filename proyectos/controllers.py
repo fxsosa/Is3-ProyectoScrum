@@ -208,7 +208,7 @@ class controllerParticipantes(APIView):
             #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
             if user.has_perm('proyectos.borrar_participante', obj=proyecto):
                 userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
-                participante.objects.borrarParticipandete(userBorrar,proyecto)
+                participante.objects.borrarParticipante(userBorrar,proyecto)
                 return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)

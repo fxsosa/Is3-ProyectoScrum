@@ -59,6 +59,8 @@ class ManejoTipoHU(models.Manager):
         :param datos:
         :return:
         """
+        #TODO: Modificar para crear un nuevo tipo de HU con las mismas columnas y en el mismo orden
+        # que la HU importada, para evitar conflictos entre proyectos al modificar tipos de HU
         tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipo_HU']))
         proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
         print(tipoHU)
@@ -113,7 +115,7 @@ class ManejoColumasUH(models.Manager):
         Método que modifica el nombre de una columna, o intercambia 2 columnas distintas, intercambiando
         nombre y orden
         :param datos:
-        :return:
+        :return mensaje: Un mensaje con el resultado de la operación realizada (modificar nombre o intercambiar columnas)
         """
         nombre = datos['nombre']  # Una lista de nombres
         id_tipo_HU = datos['id_tipo_HU']
@@ -152,6 +154,42 @@ class ManejoColumasUH(models.Manager):
             #TODO: Migrar US de una columna a otra
 
             return "Se ha realizado el intercambio exitosamente"
+
+    def eliminarColumna(self, datos):
+        """
+        Elimina una columna de un tipo de HU
+        :param datos:
+        :return:
+        """
+        id_tipo_HU = datos['id_tipo_HU']
+        orden = datos['orden']
+        indice_orden = orden - 1
+
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+        orden_maximo = lista_columnas_tipo_HU[-1].orden
+        indice_orden_maximo = orden_maximo - 1
+
+        if(indice_orden == indice_orden_maximo):
+            columna = lista_columnas_tipo_HU[indice_orden_maximo]
+            columna.delete()
+            # TODO: Añadir método para migrar HU de la columna borrada a la siguiente a la izquierda
+        else:
+            columna = lista_columnas_tipo_HU[indice_orden]
+            columna.delete()
+
+            # Actualizar orden de las columnas a la derecha
+            for indice in range(indice_orden+1, orden_maximo):
+                columna = lista_columnas_tipo_HU[indice]
+                columna.orden = columna.orden - 1
+                columna.save()
+
+
+
+            #TODO: Añadir método para migrar HU de la columna borrada a la siguiente a la derecha
+
+
+
+
 
 
 
