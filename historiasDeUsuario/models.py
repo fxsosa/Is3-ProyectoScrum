@@ -125,7 +125,10 @@ class ManejoColumasUH(models.Manager):
 
         #Obtener el nuevo orden de la nueva columna
         lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
-        orden_columna = lista_columnas_tipo_HU[-1].orden + 1 # Se suma un 1 al orden de la última columna
+        if len(lista_columnas_tipo_HU) == 0:
+            orden_columna = 1
+        else:
+            orden_columna = lista_columnas_tipo_HU[-1].orden + 1 # Se suma un 1 al orden de la última columna
 
         col = Columna_Tipo_Historia_Usuario(nombre=nombre,  # Crear columna
                                             orden=orden_columna,
@@ -145,7 +148,7 @@ class ManejoColumasUH(models.Manager):
         orden_destino = datos['orden_destino'] # Pero si son iguales, solo modifica el nombre de la columna objetivo
 
         # Obtener el nuevo orden de la nueva columna
-        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU).order_by('orden'))
 
         if (orden_origen == orden_destino): # Solo modifica el nombre de la columna
             indice_destino = orden_destino - 1 # El orden va de 1 a n, pero los índices van de 0 a n-1
@@ -162,18 +165,18 @@ class ManejoColumasUH(models.Manager):
             columna_origen = lista_columnas_tipo_HU[indice_origen]
             columna_destino = lista_columnas_tipo_HU[indice_destino]
 
+            print("lista_columnas_tipo_HU",lista_columnas_tipo_HU)
+            print("columna_origen", columna_origen)
+            print("columna_destino", columna_destino)
+
             # Intercambio
-            aux_nombre = columna_origen.nombre
+
             aux_orden = columna_origen.orden
-            columna_origen.nombre = columna_destino.nombre
             columna_origen.orden = columna_destino.orden
-            columna_destino.nombre = aux_nombre
             columna_destino.orden = aux_orden
 
             columna_origen.save()
             columna_destino.save()
-
-            #TODO: Migrar US de una columna a otra
 
             return "Se ha realizado el intercambio exitosamente"
 
@@ -187,7 +190,7 @@ class ManejoColumasUH(models.Manager):
         orden = datos['orden']
         indice_orden = orden - 1
 
-        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU).order_by('orden'))
         orden_maximo = lista_columnas_tipo_HU[-1].orden
         indice_orden_maximo = orden_maximo - 1
 
