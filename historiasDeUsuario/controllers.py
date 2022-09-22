@@ -336,7 +336,11 @@ class controllerColumnasTipoHU(APIView):
         except Usuario.DoesNotExist as e:
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
-        datos = request.data
+        datos = {}
+        datos['id_proyecto'] = int(request.GET.get('id_proyecto', ''))
+        datos['id_tipo_HU'] = int(request.GET.get('id_tipo_HU', ''))
+        datos['orden'] = int(request.GET.get('orden', ''))
+
         try:
             try:
                 proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
