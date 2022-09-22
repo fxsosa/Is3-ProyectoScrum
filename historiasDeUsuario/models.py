@@ -57,7 +57,7 @@ class ManejoTipoHU(models.Manager):
         Función para importar un tipo de Historia de Usuario a un proyecto determinado.
         Se creará un tipo de HU idéntico y será añadida a ese proyecto.
         :param datos:
-        :return:
+        :return :
         """
         tipo_HU_viejo = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipo_HU']))
         proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
