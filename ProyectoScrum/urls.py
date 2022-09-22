@@ -12,6 +12,8 @@ urlpatterns = [
     path('api/v1/tipoHistoriaUsuario/', include('historiasDeUsuario.urls')),
     path('api/v1/participantes/', include('proyectos.urls3')),
     path('api/v1/rol/', include('roles.urls')),
+    path('api/v1/tipoHistoriaUsuario_proyecto/', include('historiasDeUsuario_proyecto.urls')),
+
 ]
 
 
