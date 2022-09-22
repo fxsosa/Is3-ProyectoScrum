@@ -55,18 +55,27 @@ class ManejoTipoHU(models.Manager):
     def importarTipoHU(self, datos):
         """
         Función para importar un tipo de Historia de Usuario a un proyecto determinado.
-        La Historia de Usuario será añadida a ese proyecto.
+        Se creará un tipo de HU idéntico y será añadida a ese proyecto.
         :param datos:
         :return:
         """
-        #TODO: Modificar para crear un nuevo tipo de HU con las mismas columnas y en el mismo orden
-        # que la HU importada, para evitar conflictos entre proyectos al modificar tipos de HU
-        tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipo_HU']))
+        tipo_HU_viejo = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipo_HU']))
         proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
-        print(tipoHU)
-        print(proyecto)
 
-        tipoHU.proyectos.add(proyecto)
+        # Crea un nuevo tipo de HU en la base de datos
+        tipo_HU_nuevo = self.model(nombre=tipo_HU_viejo.nombre, fechaCreacion=tipo_HU_viejo.fechaCreacion)
+        tipo_HU_nuevo.save()
+
+        #Añadimos las columnas
+        lista_col = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=tipo_HU_viejo.id))
+        for i in range(len(lista_col)):
+            col_a_copiar = lista_col[i]
+            col = Columna_Tipo_Historia_Usuario(nombre=col_a_copiar.nombre,  # Crear columna
+                                                orden=col_a_copiar.orden,
+                                                tipoHU=tipo_HU_nuevo)
+            col.save()
+
+        tipo_HU_nuevo.proyectos.add(proyecto)
 
 
 class ManejoColumasUH(models.Manager):
