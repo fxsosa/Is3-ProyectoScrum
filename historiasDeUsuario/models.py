@@ -42,13 +42,26 @@ class ManejoTipoHU(models.Manager):
 
         return instanciaTipoHU
 
-    def borrarTipoHU(self, datos):
+    def actualizarTipoHU(self, datos):
         """
             Función para borrar un tipo de Historia de Usuario
             :param datos: datos del request
             :return: null
         """
-        tipoHU = Tipo_Historia_Usuario.objects.get(id=int(datos['id_tipoUH']))
+        print("aaaaaaaaaaaaaa")
+        tipoHU = Tipo_Historia_Usuario.objects.get(id=datos['id'])
+        tipoHU.nombre = datos['nombre']
+        tipoHU.save()
+        return True
+
+
+    def borrarTipoHU(self, id):
+        """
+            Función para borrar un tipo de Historia de Usuario
+            :param datos: datos del request
+            :return: null
+        """
+        tipoHU = Tipo_Historia_Usuario.objects.get(id=id)
         tipoHU.delete()
 
 

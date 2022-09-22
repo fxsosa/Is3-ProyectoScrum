@@ -93,13 +93,15 @@ class controllerTipoHU(APIView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         try:
-            datos = request.data
+            idProyecto = request.GET.get('idproyecto', '')
+            idtipoHU = request.GET.get('id', '')
             try:
-                proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
+                proyecto = Proyecto.objects.get(id=int(idProyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             if user.has_perm('proyectos.borrar_tipo_HU', obj=proyecto):
-                Tipo_Historia_Usuario.objects.borrarTipoHU(datos)
+
+                Tipo_Historia_Usuario.objects.borrarTipoHU(idtipoHU)
                 return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
@@ -167,7 +169,8 @@ class controllerTipoHU_2(APIView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         try:
-            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            idProyecto = request.GET.get('idproyecto', '')
+            id=request.GET.get('id', '') #Recibe el parámetro "idproyecto" de la url
             tipo_HU = Tipo_Historia_Usuario.objects.get(id=int(id))
             print(tipo_HU)
 
@@ -185,6 +188,38 @@ class controllerTipoHU_2(APIView):
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
+    def put(self,request):
+        """
+        Funcion para actualizar un tipo de historia de usuario
+        :param request:
+        :return:
+        """
+        try:
+            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+            usuarioJSON = obtenerUsuarioConToken(token)
+        except Exception as e1:
+            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+        # Obtenemos el usuario del modelo Usuario
+        try:
+            user = Usuario.objects.get(email=usuarioJSON['email'])
+        except Usuario.DoesNotExist as e:
+            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+        try:
+
+            idProyecto = request.data['idProyecto']
+            proyecto = Proyecto.objects.get(id=idProyecto)
+
+            if user.has_perm("proyectos.actualizar_tipo_HU", proyecto):
+
+                Tipo_Historia_Usuario.objects.actualizarTipoHU(request.data)
+
+                return HttpResponse("Se ha actualiado correctamente", status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos para actualizar tipo HU", status=400)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
 
 class controllerColumnasTipoHU(APIView):
     def get(self, request):

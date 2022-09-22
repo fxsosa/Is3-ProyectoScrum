@@ -54,17 +54,26 @@ class Rol(APIView, CreateView):
         body = request.data
         try:
             idRol=request.GET.get('id', '')
+            tipo=request.GET.get('tipo', '')
             if roles.models.Rol.objects.existeRolId(id=idRol):
                 # Obtenemos Rol y su lista de permisos
                 rol = roles.models.Rol.objects.get(id=idRol)
-                listaPermisos = roles.models.Rol.objects.listarPermisos(id=idRol)
                 tipoRol = rol.tipo
+
+                if tipo == tipoRol:
+                    listaPermisos = roles.models.Rol.objects.listarPermisos(id=idRol)
+                else:
+                    listaPermisos = []
+                    rolPermisos = list(chain([rol, ], listaPermisos))
+                    # Convertimos a json
+                    jsonRespuesta = serializers.serialize('json', rolPermisos)
+                    return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+
                 if tipoRol == 'Externo':
                     if not user.has_perm('roles.listar_roles_externos', None):
                         # Tipo de rol externo y el user no tiene permiso para rol externo
                         return HttpResponse("No se tiene permiso para obtener roles externos", status=403)
                 elif tipoRol=='Interno':
-
                     if not user.has_perm('proyectos.listar_roles_internos', obj=rol.proyecto):
                         # Tipo de rol interno y el user no tiene permiso para rol interno (+ proyecto al que pertenece)
                         return HttpResponse("No se tiene permiso para obtener roles internos", status=403)

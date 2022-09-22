@@ -28,6 +28,7 @@ permisosInternos = [
     'proyectos.iniciar_proyecto',
     'proyectos.crear_tipo_HU',
     'proyectos.borrar_tipo_HU',
+    'proyectos.actualizar_tipo_HU',
     'proyectos.importar_roles_internos',
     'proyectos.agregar_participante',
     'proyectos.modificar_participante',
@@ -187,7 +188,7 @@ class ManejoRol(models.Manager):
 
         :return: None
         """
-        
+        print("aaaaaaaaaaaaaasddddddddddddddddddddddd", idRol)
         rol = Rol.objects.get(id=idRol)
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
         grupo = Group.objects.get(name=nombreGrupo)
@@ -208,7 +209,7 @@ class ManejoRol(models.Manager):
             return None
 
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
-        grupo = Group.objects.get(id=nombreGrupo)
+        grupo = Group.objects.get(name=nombreGrupo)
         grupo.user_set.remove(user)
 
     def existeRol(self, nombreRol):

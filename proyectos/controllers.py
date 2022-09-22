@@ -28,11 +28,11 @@ class controllerProyecto(APIView):
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
             proyecto = Proyecto.objects.get(id=int(id))
-            #if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
-            serializer = serializers.serialize('json', [proyecto, ])
-            return HttpResponse(serializer, content_type='application/json', status=200)
-            #else:
-              #  return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
+                serializer = serializers.serialize('json', [proyecto, ])
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -208,7 +208,7 @@ class controllerParticipantes(APIView):
             #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
             if user.has_perm('proyectos.borrar_participante', obj=proyecto):
                 userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
-                participante.objects.borrarParticipandete(userBorrar,proyecto)
+                participante.objects.borrarParticipante(userBorrar,proyecto)
                 return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
