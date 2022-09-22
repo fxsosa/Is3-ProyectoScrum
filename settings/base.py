@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-n_fi(+vn^5mr_9uhi3)p3_8#%wj2)cy=!d&7lfyo8=#!g^+r4e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -37,13 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'webpack_loader',
     'app.apps.AppConfig',
+    'webpack_loader',
+    'usuarios',
+    'roles',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django.contrib.admin',
+    'sprints',
+    'guardian',
+    'soportepermisos',
+    'proyectos',
+    'historiasDeUsuario',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -54,7 +62,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    #'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'ProyectoScrum.urls'
 
@@ -77,14 +89,15 @@ TEMPLATES = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
-
 
 WSGI_APPLICATION = 'ProyectoScrum.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -140,18 +153,20 @@ STATICFILES_DIRS = ['static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Para usar el usuario personalizado
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 WEBPACK_LOADER = {
   'DEFAULT': {
     'CACHE': not DEBUG,
-    'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
+    'STATS_FILE': os.path.join(BASE_DIR, os.path.join('frontend', 'webpack-stats.json')),
     'POLL_INTERVAL': 0.1,
     'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
   }
 }
 
 # Elementos necesarios para django allauth
-SITE_ID = 2
+SITE_ID = 3
 
 LOGIN_REDIRECT_URL = '/'
 
@@ -166,6 +181,10 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+
+
+
 
 
 
