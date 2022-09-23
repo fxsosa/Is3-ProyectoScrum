@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('historiasDeUsuario', '0001_initial'),
+        ('tiposHistoriasDeUsuario', '0001_initial'),
     ]
 
     operations = [
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nombre', models.CharField(max_length=80)),
                 ('orden', models.IntegerField()),
-                ('tipoHU', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='historiasDeUsuario.tipo_historia_usuario')),
+                ('tipoHU', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='tiposHistoriasDeUsuario.tipo_historia_usuario')),
             ],
         ),
     ]

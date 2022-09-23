@@ -1,6 +1,6 @@
 from app import views as myapp_views
 from django.urls import path, include
-from historiasDeUsuario.controllers import controllerTipoHU, controllerTipoHU_2, controllerColumnasTipoHU
+from tiposHistoriasDeUsuario.controllers import controllerTipoHU, controllerTipoHU_2, controllerColumnasTipoHU
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # Url para proyectos en singular, con funciones para hacer GET y POST con un proyecto
