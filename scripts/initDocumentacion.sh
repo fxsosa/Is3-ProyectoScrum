@@ -133,7 +133,7 @@ then
   sed -i 's/:caption: Contents:/&\n   tests/' './index.rst'
   sed -i 's/:caption: Contents:/&\n   settings/' './index.rst'
   sed -i 's/:caption: Contents:/&\n   roles/' './index.rst'
-  sed -i 's/:caption: Contents:/&\n   historiasDeUsuario/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   tiposHistoriasDeUsuario/' './index.rst'
   sed -i 's/:caption: Contents:/&\n   proyectos/' './index.rst'
   sed -i 's/:caption: Contents:/&\n   soportepermisos/' './index.rst'
   sed -i 's/:caption: Contents:/&\n/' './index.rst'

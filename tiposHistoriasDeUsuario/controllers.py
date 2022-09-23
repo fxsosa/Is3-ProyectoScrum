@@ -12,7 +12,7 @@ from usuarios.models import Usuario
 from itertools import chain
 from proyectos.models import Proyecto
 
-from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
+from tiposHistoriasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 
 
 class controllerTipoHU(APIView):

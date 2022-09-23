@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'guardian',
     'soportepermisos',
     'proyectos',
-    'historiasDeUsuario',
+    'tiposHistoriasDeUsuario',
     'corsheaders',
     'historiasDeUsuario_proyecto'
 ]
