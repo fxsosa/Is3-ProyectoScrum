@@ -1,17 +1,8 @@
-import json
-
 from django.db import models
 import datetime
 
-import roles
-#import sys
-#sys.path.append("..")
 from usuarios.models import Usuario
 from django.apps import apps
-
-from django.core import serializers
-import itertools
-
 
 class ManejoProyectos(models.Manager):
     """
@@ -106,7 +97,6 @@ class ManejoProyectos(models.Manager):
         proyecto.fechaInicio = datetime.date.today()
         proyecto.save()
         return proyecto
-
 
 class ManejoParticipantes(models.Manager):
     """
@@ -247,8 +237,12 @@ class Proyecto(models.Model):
             ('actualizar_rol_interno', 'Actualizar un rol interno'),
             ('borrar_rol_interno', 'Borrar un rol interno de proyecto'),
             ('modificar_columnas_tipo_HU', 'Añadir, eliminar o modificar columnas de un tipo de HU'),
-            ('actualizar_tipo_HU', 'Actualizar un tipo de Historia de Usuario')
-
+            ('actualizar_tipo_HU', 'Actualizar un tipo de Historia de Usuario'),
+            ('listar_historias_usuario', 'Listar las historias de usuario de un proyecto'),
+            ('obtener_historia_usuario', 'Obtener una historia de usuario de un proyecto'),
+            ('crear_historia_usuario', 'Crear y agregar una historia de usuario a un proyecto'),
+            ('actualizar_historia_usuario', 'Actualizar una historia de usuario de un proyecto'),
+            ('borrar_historia_usuario', 'Borrar una historia de usuario de un proyecto')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
