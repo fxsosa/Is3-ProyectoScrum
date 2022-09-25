@@ -122,7 +122,7 @@ class ManejoColumasUH(models.Manager):
         instancia_tipo_HU = Tipo_Historia_Usuario.objects.get(id=id_tipo_HU)
 
         #Obtener el nuevo orden de la nueva columna
-        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU))
+        lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU).order_by('orden'))
         if len(lista_columnas_tipo_HU) == 0:
             orden_columna = 1
         else:

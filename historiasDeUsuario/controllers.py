@@ -30,7 +30,7 @@ class controllerTipoHU(APIView):
         """
         try:
             id = request.GET.get('idproyecto', '')
-            tiposHU = Tipo_Historia_Usuario.objects.filter(proyectos__in=[id])
+            tiposHU = Tipo_Historia_Usuario.objects.filter(proyecto__in=[id])
 
             serializer = serializers.serialize('json', tiposHU)
             return HttpResponse(serializer, content_type='application/json', status=200)

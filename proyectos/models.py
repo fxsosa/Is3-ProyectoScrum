@@ -158,7 +158,8 @@ class ManejoParticipantes(models.Manager):
         usuarios = []
         for i in range(len(listaQuery)):
             idUsuario = listaQuery[i]['usuario']
-            usuarios.append(Usuario.objects.get(id=int(idUsuario)))
+            usuarioAgg = Usuario.objects.get(id=int(idUsuario))
+            usuarios.append(usuarioAgg)
 
         print("usuarios", usuarios)
 

@@ -148,16 +148,16 @@ class controllerParticipantes(APIView):
         user = validarRequest(request)
 
         try:
-            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            correo = request.GET.get('correo', '')
+            idProyecto = request.GET.get('idProyecto', '')
+            usuario = Usuario.objects.get(email=correo)
+            proyecto = Proyecto.objects.get(id=idProyecto)
             try:
-                particip = participante.objects.get(id=int(id))
-            except participante.DoesNotExist as e:
-                return HttpResponse("Error al obtener participante: " + str(e), status=400)
-            if user.has_perm('proyectos.listar_participante', obj=particip.proyecto):
+                particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
                 serializer = serializers.serialize('json', [particip, ])
                 return HttpResponse(serializer, content_type='application/json', status=200)
-            else:
-                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            except participante.DoesNotExist as e:
+                return HttpResponse("NoExiste", status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -181,11 +181,11 @@ class controllerParticipantes(APIView):
             except Proyecto.DoesNotExist as e: # Corregir y ponerle "usuario" en vez de proyecto
                 return HttpResponse("Usuario no existe:" + str(e), status=400)
 
-            #if user.has_perm('participante.crear_participante', obj=proyecto):
-            particip = participante.objects.crearParticipante(datos)
-            return HttpResponse(particip, content_type='application/json', status=200)
-            #else:
-             #   return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            if user.has_perm('proyectos.agregar_participante', obj=proyecto):
+                particip = participante.objects.crearParticipante(datos)
+                return HttpResponse(particip, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -205,16 +205,16 @@ class controllerParticipantes(APIView):
                 proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
-            #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
             if user.has_perm('proyectos.borrar_participante', obj=proyecto):
-                userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
-                participante.objects.borrarParticipante(userBorrar,proyecto)
-                return HttpResponse("Borrado exitoso", status=200)
+                if user.has_perm('proyectos.borrar_participante', obj=proyecto):
+                    userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
+                    participante.objects.borrarParticipante(userBorrar,proyecto)
+                    return HttpResponse("Borrado exitoso", status=200)
+                else:
+                    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
-
-            #else:
-            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
 
 
         except Exception as e:
@@ -247,6 +247,28 @@ class ControllerProyectoParticipantes(APIView):
         try:
             idProyecto=request.GET.get('idproyecto', '')
             participantes = participante.objects.listarParticipantedeProyectos(idProyecto=idProyecto)
+            serializer = serializers.serialize('json', participantes)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
+
+class ControllerProyectoParticipantes2(APIView):
+    """
+        Controlador para manejar participantes de un proyecto
+    """
+    def get(self, request):
+        """
+            Método para obtener los participantes de un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+
+        try:
+            idProyecto=request.GET.get('idproyecto', '')
+            participantes = participante.objects.filter(proyecto_id=idProyecto)
             serializer = serializers.serialize('json', participantes)
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
