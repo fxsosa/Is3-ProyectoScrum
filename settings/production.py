@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'soportepermisos',
     'proyectos',
     'historiasDeUsuario',
-    'corsheaders'
+    'corsheaders',
     'historiasDeUsuario_proyecto'
 ]
 
