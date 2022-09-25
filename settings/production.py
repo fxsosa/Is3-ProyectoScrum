@@ -71,7 +71,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     'http://localhost:8000',
-    'https://proyectoscrumgrupo5.herokuapp.com'
+    'https://proyectoscrumgrupo5.herokuapp.com',
+    'https://proyectoscrum5.web.app',
 ]
 
 ROOT_URLCONF = 'ProyectoScrum.urls'
