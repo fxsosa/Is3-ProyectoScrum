@@ -8,6 +8,20 @@ from usuarios.models import Usuario
 
 class managerHistoriaUsuario(models.Manager):
     def crearHistoriaUsuario(self, datos):
+        """Crea una historia de usuario
+
+        :param datos: Diccionario (o JSON) con los siguientes valores "key":
+        - nombre: Nombre de la historia de usuario a crear,
+        - descripcion: Descripcion de la historia de usuario,
+        - prioridad_tecnica: Prioridad (entero),
+        - prioridad_negocio: Prioridad (entero),
+        - estimacion_horas: Estimacion en horas (entero),
+        - idTipo: ID del registro del modelo Tipo_Historia_Usuario,
+        - idParticipante: ID del participante del proyecto,
+        - idProyecto: ID del proyecto al cual pertenecera esta historia de usuario
+
+        :return: QuerySet de Historia de Usuario Creada / None
+        """
 
         try:
             nombre = datos['nombre']
@@ -46,7 +60,7 @@ class managerHistoriaUsuario(models.Manager):
                 return False
 
             # verificando si existe como historia de usuario del proyecto dado
-            if str(historia.proyecto.id) == idProyecto:
+            if str(historia.proyecto.id) == str(idProyecto):
                 historia.delete()
                 return True
             else:
@@ -133,7 +147,7 @@ class managerHistoriaUsuario(models.Manager):
             return None
 
         # verificando si existe como historia de usuario del proyecto dado
-        if str(historia.proyecto.id) == idProyecto:
+        if str(historia.proyecto.id) == str(idProyecto):
             historia = historiaUsuario.objects.filter(id=historia.id)
             return historia
         else:
