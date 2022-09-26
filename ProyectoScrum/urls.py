@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/v1/tipoHistoriaUsuario/', include('tiposHistoriasDeUsuario.urls')),
     path('api/v1/participantes/', include('proyectos.urls3')),
     path('api/v1/rol/', include('roles.urls')),
-    path('api/v1/tipoHistoriaUsuario_proyecto/', include('historiasDeUsuario_proyecto.urls')),
+    path('api/v1/historiasUsuario/', include('historiasDeUsuario_proyecto.urls')),
 
 ]
 

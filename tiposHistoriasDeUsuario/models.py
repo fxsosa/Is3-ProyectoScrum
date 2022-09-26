@@ -1,9 +1,6 @@
 from django.db import models
-#import sys
-#sys.path.append("..")
-from proyectos.models import Proyecto
 from datetime import datetime
-# Create your models here.
+from proyectos.models import Proyecto
 
 
 class ManejoTipoHU(models.Manager):
@@ -27,7 +24,7 @@ class ManejoTipoHU(models.Manager):
         instanciaTipoHU.save()
         # Añadir el tipo de HU a un proyecto individual
         proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
-        instanciaTipoHU.proyectos.add(proyecto)
+        instanciaTipoHU.proyecto.add(proyecto)
         instanciaTipoHU.save()
 
         # Añadir columnas de tipo de HU en orden ascendente (de 1 a n)
@@ -40,6 +37,7 @@ class ManejoTipoHU(models.Manager):
             col.save()
             orden_columna=orden_columna+1
 
+        instanciaTipoHU.save()
         return instanciaTipoHU
 
     def actualizarTipoHU(self, datos):
@@ -48,7 +46,7 @@ class ManejoTipoHU(models.Manager):
             :param datos: datos del request
             :return: null
         """
-        print("aaaaaaaaaaaaaa")
+
         tipoHU = Tipo_Historia_Usuario.objects.get(id=datos['id'])
         tipoHU.nombre = datos['nombre']
         tipoHU.save()
@@ -88,7 +86,7 @@ class ManejoTipoHU(models.Manager):
                                                 tipoHU=tipo_HU_nuevo)
             col.save()
 
-        tipo_HU_nuevo.proyectos.add(proyecto)
+        tipo_HU_nuevo.proyecto.add(proyecto)
 
 
 class ManejoColumasUH(models.Manager):
@@ -213,23 +211,18 @@ class ManejoColumasUH(models.Manager):
             #TODO: Añadir método para migrar HU de la columna borrada a la siguiente a la derecha
 
 
-
-
-
-
-
 class Tipo_Historia_Usuario(models.Model):
     """
         Clase de un Tipo de Historia de Usuario
     """
     nombre = models.CharField(max_length=80)
     fechaCreacion = models.DateTimeField()
-    proyectos = models.ManyToManyField(Proyecto)
+    proyecto = models.ManyToManyField(Proyecto)
 
     objects = ManejoTipoHU()
 
     def __str__(self):
-        return str([self.nombre, self.fechaCreacion, self.proyectos])
+        return str([self.nombre, self.fechaCreacion, self.proyecto])
 
     '''
     class Meta:

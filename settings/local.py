@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'proyectos',
     'tiposHistoriasDeUsuario',
     'corsheaders',
-    'historiasDeUsuario_proyecto'
+    'historiasDeUsuario_proyecto',
 ]
 
 MIDDLEWARE = [
