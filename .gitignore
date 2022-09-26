@@ -26,3 +26,10 @@ pnpm-debug.log*
 
 # Documentacion
 documentacion
+/historiasDeUsuario/migrations/
+/historiasDeUsuario_proyecto/migrations/
+/proyectos/migrations/
+/roles/migrations/
+/soportepermisos/migrations/
+/sprints/migrations/
+/usuarios/migrations/
