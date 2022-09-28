@@ -243,7 +243,11 @@ class Proyecto(models.Model):
             ('obtener_historia_usuario', 'Obtener una historia de usuario de un proyecto'),
             ('crear_historia_usuario', 'Crear y agregar una historia de usuario a un proyecto'),
             ('actualizar_historia_usuario', 'Actualizar una historia de usuario de un proyecto'),
-            ('borrar_historia_usuario', 'Borrar una historia de usuario de un proyecto')
+            ('borrar_historia_usuario', 'Borrar una historia de usuario de un proyecto'),
+            ('listar_sprint_proyecto', 'Listar los sprints de un proyecto'),
+            ('crear_sprint', 'Crear y agregar un sprint a un proyecto'),
+            ('obtener_sprint', 'Obtiene un sprint de un proyecto'),
+            ('borrar_sprint', 'Borrar un sprint de un proyecto'),
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
