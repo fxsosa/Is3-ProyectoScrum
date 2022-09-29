@@ -126,8 +126,8 @@ class Sprint(models.Model):
     :estado: Str
         Creado, En Espera, En Ejecucion, Culminado, Cancelado
     """
-    nombre = models.CharField(max_length=50, null=False)
-    descripcion = models.CharField(max_length=200, null=False)
+    nombre = models.CharField(max_length=50, null=True)
+    descripcion = models.CharField(max_length=200, null=True)
     fecha_inicio = models.DateTimeField(null=False)
     fecha_fin = models.DateTimeField(null=False)
     capacidadEquipo = models.IntegerField(null=False)
