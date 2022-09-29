@@ -123,10 +123,17 @@ class ControllerUsuarioAdministracion(APIView):
             except Exception as e:
                 return HttpResponse("Algo salio mal al buscar el usuario " + str(e), status=500)
 
-            """
-            if not usuarioSolicitante.has_perm('usuarios.modificar_roles_externos_de_usuario', None):
-                return HttpResponse("No tienes los permisos para cambiar roles externos", status=400)
-            """
+            # verificamos los permisos
+            listaRoles = body['roles']
+            idRol=listaRoles[0]
+            rol = Rol.objects.get(id=idRol)
+
+            if(rol.tipo == 'Interno'):
+                if not usuarioSolicitante.has_perm('proyectos.modificar_participante', obj=rol.proyecto):
+                    return HttpResponse("No tienes los permisos para cambiar roles", status=400)
+            else:
+                if not usuarioSolicitante.has_perm('roles.actualizar_rol_externo', None):
+                    return HttpResponse("No tienes los permisos para cambiar roles", status=400)
 
             usuario = Usuario.objects.get(email=body['email'])
 

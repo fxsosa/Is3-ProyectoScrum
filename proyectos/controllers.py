@@ -347,13 +347,12 @@ class controllerProyectosImportar(APIView):
         try:
             try:
                 proyectoActual = Proyecto.objects.get(id=datos['idProyectoActual'])
-                proyectoExterno = Proyecto.objects.get(id=datos['idProyectoExterno'])
+                rol = Rol.objects.get(id=datos['idRol'])
             except Proyecto.DoesNotExist as e:
-                return HttpResponse("No existe el/los proyectos recibidos! " + str(e))
+                return HttpResponse("No existe el proyectos recibido o el rol! " + str(e))
 
-            listaRol = Proyecto.objects.importarRoles(datos)
-            queryRol_json = serializers.serialize('json', listaRol)
-            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+            rolNuevo = Proyecto.objects.importarRoles(datos)
+            return HttpResponse(rolNuevo, content_type='application/json', status=201)
         except Exception as e:
             return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
 
