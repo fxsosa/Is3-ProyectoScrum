@@ -193,7 +193,6 @@ class ManejoRol(models.Manager):
 
         :return: None
         """
-        print("aaaaaaaaaaaaaasddddddddddddddddddddddd", idRol)
         rol = Rol.objects.get(id=idRol)
         nombreGrupo = Rol.objects.obtenerNombreGrupo(rol)
         grupo = Group.objects.get(name=nombreGrupo)
@@ -428,7 +427,6 @@ class ManejoRol(models.Manager):
         :return: QuerySet de Roles Internos
         """
         if idProyecto != None:
-            print("Llego muy lejooooooooooo")
             return Rol.objects.filter(tipo='Interno',proyecto=idProyecto)
         else:
             return Rol.objects.filter(tipo='Interno')
