@@ -10,7 +10,7 @@ class ManejoProyectos(models.Manager):
     """
 
     def importarRoles(self, datos):
-        """Metodo para la importacion de roles de usuario asociados a un proyecto, a otro proyecto
+        """Metodo para la importacion de rol a otro proyecto
 
         :param datos: Datos de request con el siguiente formato:
             {"idProyectoActual": "id1", "idProyectoExterno": "id2"}
@@ -18,31 +18,22 @@ class ManejoProyectos(models.Manager):
 
         :return: Lista de Roles agregados
         """
-
-
-
         idProyectoActual = datos['idProyectoActual']
-        idProyectoExterno = datos['idProyectoExterno']
-
-        # Se valida en los controllers
         proyectoActual = Proyecto.objects.get(id=idProyectoActual)
-        proyectoExterno = Proyecto.objects.get(id=idProyectoExterno)
-        listaRoles = apps.get_model('roles.Rol').objects.filter(proyecto=idProyectoExterno)
-        listaRolesActuales = apps.get_model('roles.Rol').objects.filter(proyecto=idProyectoActual)
-        listaNuevosRoles = []
+        idRol = datos['idRol']
+        rol = apps.get_model('roles.Rol').objects.get(id=idRol)
 
-        for r in listaRoles:
-                rolNuevo = apps.get_model('roles.Rol').objects.crearRolInterno(nombre=r.nombre, descripcion=r.descripcion, idProyecto=proyectoActual.id)
-                listaPermisosExterno = apps.get_model('roles.Rol').objects.listarPermisos(id=r.id)
-                listaPermisosActual = []
-                for perm in listaPermisosExterno:
-                    listaPermisosActual.append({"nombre": "proyectos." + perm.codename, "idObjeto": idProyectoActual})
+        rolNuevo = apps.get_model('roles.Rol').objects.crearRolInterno(nombre=rol.nombre, descripcion=rol.descripcion,
+                                                                       idProyecto=proyectoActual.id)
+        listaPermisosExterno = apps.get_model('roles.Rol').objects.listarPermisos(id=rol.id)
+        listaPermisosActual = []
+        for perm in listaPermisosExterno:
+            listaPermisosActual.append({"nombre": "proyectos." + perm.codename, "idObjeto": idProyectoActual})
 
-                # Agregamos permisos de objeto
-                apps.get_model('roles.Rol').objects.agregarListaPermisoObjeto(r=rolNuevo, lista=listaPermisosActual)
-                listaNuevosRoles.append(rolNuevo)
+        # Agregamos permisos de objeto
+        apps.get_model('roles.Rol').objects.agregarListaPermisoObjeto(r=rolNuevo, lista=listaPermisosActual)
 
-        return listaNuevosRoles
+        return rolNuevo
 
 
     def crearProyecto(self, datos):
@@ -139,8 +130,6 @@ class ManejoParticipantes(models.Manager):
         for i in range(len(listaQuery)):
             idProyecto = listaQuery[i]['proyecto']
             proyectos.append(Proyecto.objects.get(id=int(idProyecto)))
-
-        print("proyectosID", proyectos)
 
         return proyectos
 

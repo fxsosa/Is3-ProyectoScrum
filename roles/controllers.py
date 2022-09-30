@@ -22,12 +22,17 @@ class ListaRoles(APIView, CreateView):
         try:
             tipo = request.GET.get('tipo', '')
             idproyecto = request.GET.get('idproyecto', '')
+            obtener = request.GET.get('obtener', '')
             if tipo == 'Internos':
-                proyecto = Proyecto.objects.get(id=idproyecto)
-                if user.has_perm('proyectos.listar_roles_internos', obj=proyecto):
-                    listaRoles = roles.models.Rol.objects.listarRolesInternos(idProyecto=idproyecto)
+                if idproyecto == None:
+                    listaRoles = roles.models.Rol.objects.listarRolesInternos()
                 else:
-                    return HttpResponse("No se tienen los permisos para listar roles internos", status=403)
+                    proyecto = Proyecto.objects.get(id=idproyecto)
+
+                    if user.has_perm('proyectos.listar_roles_internos', obj=proyecto) or obtener == "Todos":
+                        listaRoles = roles.models.Rol.objects.listarRolesInternos(idProyecto=idproyecto)
+                    else:
+                        return HttpResponse("No se tienen los permisos para listar roles internos", status=403)
             elif tipo == 'Externos':
                 if user.has_perm('roles.listar_roles_externos', None):
                     listaRoles = roles.models.Rol.objects.listarRolesExternos()
