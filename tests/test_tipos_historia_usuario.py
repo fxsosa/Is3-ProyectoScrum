@@ -1,4 +1,5 @@
 import pytest
+import pytz
 from django.db import models
 from historiasDeUsuario.models import Tipo_Historia_Usuario
 from historiasDeUsuario.models import Columna_Tipo_Historia_Usuario
@@ -17,17 +18,10 @@ def test_crear_tipo_HU():
     proyecto = Proyecto.objects.create(nombre='Proyecto 1', descripcion='Descripcion 1',
                                        fechaInicio=None, fechaFin=None, scrumMaster=user, estado='Creado')
 
-    # instancia_tipo_HU = Tipo_Historia_Usuario.objects.get(id=1)
-    ahora = datetime.now()
-    cadena_ahora = ahora.strftime("%Y-%m-%d %H:%M:%S")
-    fechaCreacion = cadena_ahora
-
-    instancia_tipo_HU = Tipo_Historia_Usuario(nombre='TipoHU', fechaCreacion=fechaCreacion)
+    instancia_tipo_HU = Tipo_Historia_Usuario(nombre='TipoHU')
     instancia_tipo_HU.save()
     instancia_tipo_HU.proyecto.add(proyecto)
-
-    assert instancia_tipo_HU.__str__() == str(['TipoHU', fechaCreacion, instancia_tipo_HU.proyecto])
-
+    assert instancia_tipo_HU.__str__() == str(['TipoHU', instancia_tipo_HU.proyecto])
     instancia_tipo_HU.delete()
 
 @pytest.mark.django_db
