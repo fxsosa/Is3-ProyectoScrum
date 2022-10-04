@@ -49,6 +49,7 @@ permisosInternos = [
     'proyectos.crear_sprint',
     'proyectos.obtener_sprint',
     'proyectos.borrar_sprint',
+    'proyectos.ver_equipo_sprint'
 ]
 
 class ManejoRol(models.Manager):

@@ -110,6 +110,21 @@ class ManagerSprint(models.Manager):
         return listaSprints
 
 
+class ManagerMiembroSprint(models.Manager):
+
+    def agregarMiembro(self):
+        pass
+
+    def modificarMiembro(self):
+        pass
+
+    def eliminarMiembro(self):
+        pass
+
+
+
+
+
 class Sprint(models.Model):
     """
     Representación del modelo de Sprint
@@ -162,31 +177,28 @@ class SprintBacklog(models.Model):
     def __str__(self):
         return str([self.idSprint.id])
 
-
-class SprintEquipo(models.Model):
+class Sprint_Miembro_Equipo(models.Model):
     """
-        Representación de la lista de usuarios de un Sprint dado.
-
+        Miembro del equipo de un Sprint dado
 
         Attributes
         ----------
-        :usuario: HistoriaUsuario
+        :usuario: Usuario
             Foreign Key al usuario participante de este equipo
         :sprint: Sprint
             Foreign Key referenciando el Sprint al cual este usuario
             pertenece.
-        :trabajo: CharField
-            ??? ??? ???
         :capacidad: IntegerField
             Capacidad (int en horas) del Usuario participante de este equipo
     """
 
     usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
-    trabajo = models.CharField(max_length=80)
     capacidad = models.IntegerField()
 
+    objects = ManagerMiembroSprint()
+
     def __str__(self):
-        return str([self.usuario.id, self.sprint.id, self.trabajo,
+        return str([self.usuario.id, self.sprint.id,
                     self.capacidad.__str__()])
 

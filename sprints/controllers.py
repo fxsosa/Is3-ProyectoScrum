@@ -6,7 +6,7 @@ from django.core import serializers
 
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
-from sprints.models import Sprint
+from sprints.models import Sprint, Sprint_Miembro_Equipo
 from usuarios.models import Usuario
 
 class controllerListarSprints(APIView):
@@ -54,7 +54,6 @@ class controllerSprint(APIView):
 
     def get(self, request):
         user = validarRequest(request)
-        body = request.data
         try:
             idProyecto = request.GET.get('idProyecto', '')
             proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
@@ -78,7 +77,6 @@ class controllerSprint(APIView):
     def delete(self, request):
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
-        body = request.data
         try:
             idProyecto = request.GET.get('idProyecto', '')
             proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
@@ -92,6 +90,30 @@ class controllerSprint(APIView):
                 return HttpResponse("No se tienen los permisos para borrar sprints del proyecto!", status=403)
         except Exception as e:
             return HttpResponse("Error al eliminar el sprint - " + str(e), status=500)
+class controllerEquipoSprint(APIView):
+
+    # Retorna todos los miembros del equipo de un Sprint
+    def get(self, request):
+
+        user = validarRequest(request)
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.ver_equipo_sprint', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                sprint = Sprint.objects.obtenerSprint(idProyecto=idProyecto, idSprint=idSprint)
+                if sprint is not None:
+                    # Convertimos a json y retornamos los miembros del equipo del Sprint
+                    miembros = Sprint_Miembro_Equipo.objects.filter(sprint_id=idSprint)
+                    jsonRespuesta = serializers.serialize('json', miembros)
+
+                    return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudo obtener el sprint! ", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener sprints del proyecto!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
 
 
 def validarRequest(request):

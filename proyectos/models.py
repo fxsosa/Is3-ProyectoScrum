@@ -248,6 +248,7 @@ class Proyecto(models.Model):
             ('crear_sprint', 'Crear y agregar un sprint a un proyecto'),
             ('obtener_sprint', 'Obtiene un sprint de un proyecto'),
             ('borrar_sprint', 'Borrar un sprint de un proyecto'),
+            ('ver_equipo_sprint', 'Ver miembros del equipo de un Sprint')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
