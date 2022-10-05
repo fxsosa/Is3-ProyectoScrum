@@ -133,8 +133,35 @@ class ManagerMiembroSprint(models.Manager):
 
         return miembro_equipo
 
-    def eliminarMiembro(self):
-        pass
+    def eliminarMiembro(self, idSprint, idProyecto, id_miembro_equipo ):
+        try:
+            try:
+                '''Verificar proyecto, sprint, coincidencia de sprint y proyecto, existencia de miembro y luego eliminar'''
+                sprint = Sprint.objects.get(id=idSprint)
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint con el ID dado! " + str(e))
+                return False
+
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto con el ID dado! " + str(e))
+
+            # verificando si existe como historia de usuario del proyecto dado
+            if str(sprint.proyecto.id) == str(idProyecto):
+                try:
+                    miembro = Sprint_Miembro_Equipo.objects.get(id=id_miembro_equipo)
+                    miembro.delete()
+                except Sprint_Miembro_Equipo.DoesNotExist as e:
+                    print('No existe el miembro con el id dado:' + str(e))
+
+                return True
+            else:
+                print("El sprint no pertenece al proyecto dado...")
+                return False
+        except Exception as e:
+            print("Error inesperado! " + str(e))
+            return False
 
 
 

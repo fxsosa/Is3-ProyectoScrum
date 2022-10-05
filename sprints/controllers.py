@@ -165,6 +165,27 @@ class controllerEquipoSprint(APIView):
         except Exception as e:
             return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
+    def delete(self, request):
+
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.borrar_miembro_sprint', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                id_miembro_equipo = request.GET.get('idMiembroEquipo', '')
+                if Sprint_Miembro_Equipo.objects.eliminarMiembro(idProyecto=idProyecto, idSprint=idSprint,
+                                                                 id_miembro_equipo=id_miembro_equipo):
+                    return HttpResponse("Miembro del equipo eliminado con exito!", status=201)
+                else:
+                    return HttpResponse("No se pudo eliminar el miembro del equipo!", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para borrar miembros del equipo del sprint!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al eliminar miembro del equipo - " + str(e), status=500)
+
+
 
 def validarRequest(request):
     # Obtenemos los datos del token
