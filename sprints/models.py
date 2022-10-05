@@ -112,11 +112,26 @@ class ManagerSprint(models.Manager):
 
 class ManagerMiembroSprint(models.Manager):
 
-    def agregarMiembro(self):
-        pass
+    def agregarMiembro(self, datos):
 
-    def modificarMiembro(self):
-        pass
+        capacidad = datos['capacidad']
+        sprint_id = datos['sprint_id']
+        usuario_id = datos['usuario_id']
+
+        miembro_equipo = self.model(sprint_id=sprint_id, usuario_id=usuario_id, capacidad=capacidad)
+        miembro_equipo.save()
+
+        return miembro_equipo
+
+    def modificarMiembro(self, datos):
+        capacidad = datos['capacidad']
+        miembro_id = datos['miembro_equipo_id']
+
+        miembro_equipo = Sprint_Miembro_Equipo.objects.get(id=miembro_id)
+        miembro_equipo.capacidad = capacidad
+        miembro_equipo.save()
+
+        return miembro_equipo
 
     def eliminarMiembro(self):
         pass

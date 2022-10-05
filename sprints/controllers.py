@@ -90,6 +90,8 @@ class controllerSprint(APIView):
                 return HttpResponse("No se tienen los permisos para borrar sprints del proyecto!", status=403)
         except Exception as e:
             return HttpResponse("Error al eliminar el sprint - " + str(e), status=500)
+
+# Controlador para manejar los equipos en un Sprint
 class controllerEquipoSprint(APIView):
 
     # Retorna todos los miembros del equipo de un Sprint
@@ -114,6 +116,54 @@ class controllerEquipoSprint(APIView):
                 return HttpResponse("No se tienen los permisos para obtener sprints del proyecto!", status=403)
         except Exception as e:
             return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
+
+        # Añade a un usuario al equipo de un Sprint
+    def post(self, request):
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['proyecto_id'])
+            if user.has_perm('proyectos.agregar_miembro_sprint', obj=proyecto):
+                sprint = Sprint.objects.obtenerSprint(idProyecto=datos['proyecto_id'], idSprint=datos['sprint_id'])
+                miembro_equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos)
+                if sprint is not None:
+                    # Retornar el rol creado
+                    miembro_equipo_json = serializers.serialize('json', [miembro_equipo, ])
+
+                    # Crear un nuevo miembro del equipo de un Sprint
+                    return HttpResponse(miembro_equipo_json, content_type='application/json', status=201)
+                else:
+                    return HttpResponse("No se pudo registrar el miembro de sprint", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para crear miembros de Sprints!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al registrar miembro de Sprint: " + str(e), status=500)
+
+    def put(self, request):
+
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['proyecto_id'])
+            if user.has_perm('proyectos.modificar_miembro_sprint', obj=proyecto):
+                sprint = Sprint.objects.obtenerSprint(idProyecto=datos['proyecto_id'], idSprint=datos['sprint_id'])
+                miembro_equipo = Sprint_Miembro_Equipo.objects.modificarMiembro(datos)
+                if sprint is not None:
+                    # Retornar el rol creado
+                    miembro_equipo_json = serializers.serialize('json', [miembro_equipo, ])
+
+                    # Crear un nuevo miembro del equipo de un Sprint
+                    return HttpResponse(miembro_equipo_json, content_type='application/json', status=201)
+                else:
+                    return HttpResponse("No se pudo modificar el miembro de sprint", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para modificar miembros de Sprints!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
 
 def validarRequest(request):
