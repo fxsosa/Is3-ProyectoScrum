@@ -2,6 +2,7 @@ from django.db import models
 
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
+from historiasDeUsuario_proyecto.models import historiaUsuario
 
 class ManagerSprint(models.Manager):
 
@@ -133,10 +134,9 @@ class ManagerMiembroSprint(models.Manager):
 
         return miembro_equipo
 
-    def eliminarMiembro(self, idSprint, idProyecto, id_miembro_equipo ):
+    def eliminarMiembro(self, idSprint, idProyecto, id_miembro_equipo):
         try:
             try:
-                '''Verificar proyecto, sprint, coincidencia de sprint y proyecto, existencia de miembro y luego eliminar'''
                 sprint = Sprint.objects.get(id=idSprint)
             except Sprint.DoesNotExist as e:
                 print("No existe el sprint con el ID dado! " + str(e))
@@ -164,6 +164,9 @@ class ManagerMiembroSprint(models.Manager):
             return False
 
 
+class ManagerSprintBacklog(models.Manager):
+    def crearSprintBacklog(self):
+        pass
 
 
 
@@ -213,8 +216,10 @@ class SprintBacklog(models.Model):
     """
 
 
-    # idHistoriaUsuario = models.ForeignKey(Historia_Usuario)
+    idHistoriaUsuario = models.ManyToManyField(historiaUsuario)
     idSprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=False)
+
+    objects = ManagerSprintBacklog()
 
     def __str__(self):
         return str([self.idSprint.id])

@@ -190,3 +190,9 @@ class historiaUsuario(models.Model):
 
     # TODO: Para los comentarios, se tiene que crear un modelo aparte que apunte a
     # la historia de usuario a la cual hacen referencia.
+
+    def __str__(self):
+        return str([self.nombre, self.descripcion, self.prioridad_tecnica,
+                    self.prioridad_negocio, self.estimacion_horas,
+                    self.tipo_historia_usuario, self.desarrollador_asignado,
+                    self.proyecto])
