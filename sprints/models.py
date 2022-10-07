@@ -165,8 +165,28 @@ class ManagerMiembroSprint(models.Manager):
 
 
 class ManagerSprintBacklog(models.Manager):
-    def crearSprintBacklog(self):
-        pass
+    def crearSprintBacklog(self, proyecto_id, sprint_id):
+
+        # Lista de HU ordenada por prioridad
+        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
+
+        sprint = Sprint.objects.get(id=sprint_id)
+        capacidad_sprint = sprint.capacidadEquipo
+
+        # Crear Sprint Backlog
+        sprint_backlog = SprintBacklog.objects.model(idSprint_id=sprint_id)
+        sprint_backlog.save()
+
+        # Añadir HU según la capacidad del Sprint
+        acumulado = 0
+
+        for historia_usuario in lista_hu_ordenada:
+            if acumulado >= capacidad_sprint:
+                break
+
+            sprint_backlog.historiaUsuario.add(historia_usuario)
+            horas_hu = historia_usuario.estimacion_horas
+            acumulado += horas_hu
 
 
 
@@ -216,7 +236,7 @@ class SprintBacklog(models.Model):
     """
 
 
-    idHistoriaUsuario = models.ManyToManyField(historiaUsuario)
+    historiaUsuario = models.ManyToManyField(historiaUsuario)
     idSprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, null=False)
 
     objects = ManagerSprintBacklog()
