@@ -51,6 +51,14 @@ class managerHistoriaUsuario(models.Manager):
             return None
 
     def eliminarHistoriaUsuario(self, idProyecto, idHistoria):
+        """Elimina de forma lógica una Historia de Usuario
+
+        :param datos:
+        - idHistoria: ID de la Historia de Usuario,
+        - idProyecto: ID del proyecto al cual pertenecera esta historia de usuario
+
+        :return: boolean
+        """
 
         try:
             try:
@@ -60,8 +68,10 @@ class managerHistoriaUsuario(models.Manager):
                 return False
 
             # verificando si existe como historia de usuario del proyecto dado
-            if str(historia.proyecto.id) == str(idProyecto):
-                historia.delete()
+            if str(historia.proyecto.id) == str(idProyecto): # Procede a realizar la eliminación lógica
+                #historia.delete()
+                historia.estado = "cancelada"
+                historia.save()
                 return True
             else:
                 print("La historia de usuario no pertenece al proyecto dado...")
@@ -181,6 +191,9 @@ class historiaUsuario(models.Model):
     tipo_historia_usuario = models.ForeignKey(Tipo_Historia_Usuario, null=True, on_delete=models.SET_NULL)
     desarrollador_asignado = models.ForeignKey(participante, null=False, on_delete=models.CASCADE)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
+    horas_trabajadas = models.IntegerField(null=True)
+    prioridad_final = models.IntegerField(null=True)
+    estado = models.CharField(max_length=200, null=True)
 
     # TODO: Agregar Sprints a todo esto (aun no es necesario para la iteracion del 26)
     # ?????
@@ -190,3 +203,9 @@ class historiaUsuario(models.Model):
 
     # TODO: Para los comentarios, se tiene que crear un modelo aparte que apunte a
     # la historia de usuario a la cual hacen referencia.
+
+    def __str__(self):
+        return str([self.nombre, self.descripcion, self.prioridad_tecnica,
+                    self.prioridad_negocio, self.estimacion_horas,
+                    self.tipo_historia_usuario, self.desarrollador_asignado,
+                    self.proyecto, self.horas_trabajadas])
