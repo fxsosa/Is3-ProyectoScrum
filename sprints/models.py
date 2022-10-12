@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from proyectos.models import Proyecto
@@ -10,7 +12,7 @@ class ManagerSprint(models.Manager):
         """Crea una historia de usuario
 
         :param datos: Diccionario (o JSON) con los siguientes valores "key":
-        nombre, descripcion, idProyecto, fechaInicio, fechaFin, capacidadEquipo, estado.
+        nombre, descripcion, idProyecto, fechaInicio, fechaFin, capacidadEquipo.
 
         :return: QuerySet de Sprint Creado / None
         """
@@ -19,15 +21,15 @@ class ManagerSprint(models.Manager):
             nombre = datos['nombre']
             descripcion = datos['descripcion']
             idProyecto = datos['idProyecto']
-            fecha_inicio = datos['fechaInicio']
-            fecha_fin = datos['fechaFin']
             capacidadEquipo = datos['capacidadEquipo']
+            cantidadDias = datos['cantidadDias']
             proyecto = Proyecto.objects.get(id=idProyecto)
 
             sprint = self.model(nombre=nombre, descripcion=descripcion,
                                 proyecto=proyecto,
-                                fecha_inicio=fecha_inicio,
-                                fecha_fin=fecha_fin,
+                                fecha_inicio=None,
+                                fecha_fin=None,
+                                cantidadDias=cantidadDias,
                                 capacidadEquipo=capacidadEquipo)
             sprint.save()
 
@@ -91,6 +93,59 @@ class ManagerSprint(models.Manager):
         except Exception as e:
             print("Error inesperado! " + str(e))
             return False
+
+    def cambiarEstado(self, idProyecto, idSprint, opcion):
+        """Cambia el estado de un sprint
+
+        :param idProyecto: ID del proyecto al que pertenece el sprint
+        :param idSprint: ID del sprint
+        :param opcion: Str, Avanzar/Cancelar
+        Avanzar cambia el estado: Planificacion -> En Ejecucion -> Finalizado
+
+        :return: QuerySet del Sprint actualizado/None
+        """
+
+        try:
+
+            try:
+                sprint = Sprint.objects.get(id=idSprint)
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint! " + str(e))
+                return None
+
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto! " + str(e))
+                return None
+            if sprint.proyecto_id == proyecto.id:
+                if opcion == 'Avanzar':
+                    if sprint.estado == "Planificación":
+                        sprint.estado = "En Ejecución"
+
+                        # Agregamos la cantidad de dias de duracion que va a tener el proyecto
+                        fechahoy = datetime.date.today()
+                        sprint.fecha_inicio = fechahoy
+                        sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                        SprintBacklog.objects.crearSprintBacklog(proyecto_id=idProyecto, sprint_id=idSprint)
+                    elif sprint.estado == "En Ejecución":
+                        sprint.estado = "Finalizado"
+
+                    sprint.save()
+                    return Sprint.objects.filter(id=sprint.id)
+                elif opcion == 'Cancelar':
+                    sprint.estado = "Cancelado"
+                    sprint.save()
+                    return Sprint.objects.filter(id=sprint.id)
+                else:
+                    print("Opcion invalida! ")
+                    return None
+            else:
+                print("El sprint no pertenece al proyecto dado! ")
+                return None
+        except Exception as e:
+            print("No se pudo actualizar el estado del sprint! " + str(e))
+            return None
 
 
 
@@ -250,14 +305,15 @@ class Sprint(models.Model):
     :capacidadEquipo: Integer
         capacidad, en horas, de trabajo asumible por el equipo del Sprint.
     :estado: Str
-        Creado, En Espera, En Ejecucion, Culminado, Cancelado
+        Planificación, Ejecución, Finalizado, Cancelado
     """
     nombre = models.CharField(max_length=50, null=True)
     descripcion = models.CharField(max_length=200, null=True)
     fecha_inicio = models.DateTimeField(null=False)
     fecha_fin = models.DateTimeField(null=False)
+    cantidadDias = models.IntegerField(null=True)
     capacidadEquipo = models.IntegerField(null=False)
-    estado = models.TextField(max_length=10)
+    estado = models.TextField(max_length=20, default='Planificación')
     proyecto = models.ForeignKey(Proyecto, null=False, on_delete=models.CASCADE)
 
     objects = ManagerSprint()
