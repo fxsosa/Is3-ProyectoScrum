@@ -51,6 +51,14 @@ class managerHistoriaUsuario(models.Manager):
             return None
 
     def eliminarHistoriaUsuario(self, idProyecto, idHistoria):
+        """Elimina de forma lógica una Historia de Usuario
+
+        :param datos:
+        - idHistoria: ID de la Historia de Usuario,
+        - idProyecto: ID del proyecto al cual pertenecera esta historia de usuario
+
+        :return: boolean
+        """
 
         try:
             try:
@@ -60,8 +68,10 @@ class managerHistoriaUsuario(models.Manager):
                 return False
 
             # verificando si existe como historia de usuario del proyecto dado
-            if str(historia.proyecto.id) == str(idProyecto):
-                historia.delete()
+            if str(historia.proyecto.id) == str(idProyecto): # Procede a realizar la eliminación lógica
+                #historia.delete()
+                historia.estado = "cancelada"
+                historia.save()
                 return True
             else:
                 print("La historia de usuario no pertenece al proyecto dado...")

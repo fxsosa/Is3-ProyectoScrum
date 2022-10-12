@@ -184,12 +184,13 @@ class ManagerSprintBacklog(models.Manager):
         acumulado = 0
 
         for historia_usuario in lista_hu_ordenada:
-            if acumulado >= capacidad_sprint:
+            if acumulado >= capacidad_sprint: # Si llenamos la capacidad del Sprint, terminamos de añadir HU
                 break
 
-            sprint_backlog.historiaUsuario.add(historia_usuario)
-            horas_hu = historia_usuario.estimacion_horas
-            acumulado += horas_hu
+            if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada"):
+                sprint_backlog.historiaUsuario.add(historia_usuario)
+                horas_hu = historia_usuario.estimacion_horas
+                acumulado += horas_hu
 
     def actualizarPrioridadFinal(self, proyecto_id):
         lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by(
