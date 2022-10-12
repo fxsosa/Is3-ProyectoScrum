@@ -181,6 +181,8 @@ class historiaUsuario(models.Model):
     tipo_historia_usuario = models.ForeignKey(Tipo_Historia_Usuario, null=True, on_delete=models.SET_NULL)
     desarrollador_asignado = models.ForeignKey(participante, null=False, on_delete=models.CASCADE)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
+    horas_trabajadas = models.IntegerField(null=True)
+    prioridad_final = models.IntegerField(null=True)
 
     # TODO: Agregar Sprints a todo esto (aun no es necesario para la iteracion del 26)
     # ?????
@@ -195,4 +197,4 @@ class historiaUsuario(models.Model):
         return str([self.nombre, self.descripcion, self.prioridad_tecnica,
                     self.prioridad_negocio, self.estimacion_horas,
                     self.tipo_historia_usuario, self.desarrollador_asignado,
-                    self.proyecto])
+                    self.proyecto, self.horas_trabajadas])

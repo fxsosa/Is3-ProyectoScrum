@@ -168,7 +168,10 @@ class ManagerSprintBacklog(models.Manager):
     def crearSprintBacklog(self, proyecto_id, sprint_id):
 
         # Lista de HU ordenada por prioridad
-        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
+        #lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
+
+        self.actualizarPrioridadFinal(self, proyecto_id)
+        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by('prioridad_final').reverse()
 
         sprint = Sprint.objects.get(id=sprint_id)
         capacidad_sprint = sprint.capacidadEquipo
@@ -188,39 +191,17 @@ class ManagerSprintBacklog(models.Manager):
             horas_hu = historia_usuario.estimacion_horas
             acumulado += horas_hu
 
-    def listarHistoriasUsuario(self, proyecto_id, sprint_id):
-        """Retorna la lista de historias de usuario asociadas al sprint del proyecto dado
+    def actualizarPrioridadFinal(self, proyecto_id):
+        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by(
+            'prioridad_tecnica').reverse()
 
-        :param proyecto_id: ID del proyecto
-        :param sprint_id: ID del sprint
+        for hu in lista_hu_ordenada:
+            hu.prioridad_final = round(0.6*hu.prioridad_negocio + 0.4*hu.prioridad_tecnica) # Redondea el valor decimal
+            if hu.horas_trabajadas is not None:
+                if hu.horas_trabajadas > 0:
+                    hu.prioridad_final += 3
+            hu.save()
 
-        :return: QuerySet de lista de US/None
-        """
-        try:
-            try:
-                proyecto = Proyecto.objects.get(id=proyecto_id)
-            except Proyecto.DoesNotExist as e:
-                print("El proyecto no existe!")
-                return None
-
-            try:
-                sprint = Sprint.objects.get(id=sprint_id)
-            except Sprint.DoesNotExist as e:
-                print("El sprint no existe!")
-                return None
-
-            # Verificando que el sprint pertenezca al proyecto dado
-            if sprint.proyecto_id == proyecto.id:
-                try:
-                    backlog = SprintBacklog.objects.get(idSprint=sprint.id)
-                except SprintBacklog.DoesNotExist as e:
-                    print("No existe el sprintbacklog! " + str(e))
-                    return None
-
-                return backlog.historiaUsuario.all()
-        except Exception as e:
-            print("Error al obtener la lista de US! " + str(e))
-            return None
 
 class Sprint(models.Model):
     """
