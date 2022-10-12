@@ -309,8 +309,8 @@ class Sprint(models.Model):
     """
     nombre = models.CharField(max_length=50, null=True)
     descripcion = models.CharField(max_length=200, null=True)
-    fecha_inicio = models.DateTimeField(null=False)
-    fecha_fin = models.DateTimeField(null=False)
+    fecha_inicio = models.DateTimeField(null=True)
+    fecha_fin = models.DateTimeField(null=True)
     cantidadDias = models.IntegerField(null=True)
     capacidadEquipo = models.IntegerField(null=False)
     estado = models.TextField(max_length=20, default='Planificación')
