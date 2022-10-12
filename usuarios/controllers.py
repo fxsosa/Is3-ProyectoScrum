@@ -123,26 +123,36 @@ class ControllerUsuarioAdministracion(APIView):
             except Exception as e:
                 return HttpResponse("Algo salio mal al buscar el usuario " + str(e), status=500)
 
-            """
-            if not usuarioSolicitante.has_perm('usuarios.modificar_roles_externos_de_usuario', None):
-                return HttpResponse("No tienes los permisos para cambiar roles externos", status=400)
-            """
+            # verificamos los permisos
+            if body['roles'] != []:
+                listaRoles = body['roles']
+                idRol=listaRoles[0]
+                rol = Rol.objects.get(id=idRol)
+                usuario = Usuario.objects.get(email=body['email'])
 
-            usuario = Usuario.objects.get(email=body['email'])
+                if(rol.tipo == 'Interno'):
+                    if not usuarioSolicitante.has_perm('proyectos.modificar_participante', obj=rol.proyecto):
+                        return HttpResponse("No tienes los permisos para cambiar roles", status=400)
+                    if usuario == rol.proyecto.scrumMaster:
+                        return HttpResponse("No se puede quitar/asignar roles al Scrum Master", status=400)
+                else:
+                    if not usuarioSolicitante.has_perm('roles.actualizar_rol_externo', None):
+                        return HttpResponse("No tienes los permisos para cambiar roles", status=400)
 
-            if body['accion'] == 'agregar':
-                if body['roles']:
-                    for idRol in body['roles']:
-                        Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
-            elif body['accion'] == 'eliminar':
-                print("Entro elif")
-                if body['roles']:
-                    for idRol in body['roles']:
-                        Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
+                if body['accion'] == 'agregar':
+                    if body['roles']:
+                        for idRol in body['roles']:
+                            Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
+                elif body['accion'] == 'eliminar':
+                    if body['roles']:
+                        for idRol in body['roles']:
+                            Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
 
-            resultadoQueryUsuario = Usuario.objects.filter(email=body['email'])
-            queryUsuario_json = serializers.serialize('json', resultadoQueryUsuario)
-            return HttpResponse(queryUsuario_json, content_type='application/json', status=200)
+                resultadoQueryUsuario = Usuario.objects.filter(email=body['email'])
+                queryUsuario_json = serializers.serialize('json', resultadoQueryUsuario)
+                return HttpResponse(queryUsuario_json, content_type='application/json', status=200)
+            else:
+                return HttpResponse("Nada que actualizar", status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 

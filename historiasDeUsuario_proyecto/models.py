@@ -30,9 +30,15 @@ class managerHistoriaUsuario(models.Manager):
             prioridad_negocio = datos['prioridad_negocio']
             estimacion_horas = datos['estimacion_horas']
             idTipo = datos['idTipo']
-            tipoHistoria = Tipo_Historia_Usuario.objects.get(id=idTipo)
+            if datos['idTipo']:
+                tipoHistoria = Tipo_Historia_Usuario.objects.get(id=idTipo)
+            else:
+                tipoHistoria = None
             idParticipante = datos['idParticipante'] # Participante asignado
-            desarrollador = participante.objects.get(id=idParticipante)
+            if datos['idParticipante']:
+                desarrollador = participante.objects.get(id=idParticipante)
+            else:
+                desarrollador = None
             proyecto = Proyecto.objects.get(id=datos['idProyecto'])
 
             historia = self.model(nombre=nombre, descripcion=descripcion,
@@ -189,7 +195,7 @@ class historiaUsuario(models.Model):
     prioridad_negocio = models.IntegerField(null=True)
     estimacion_horas = models.IntegerField(null=True)
     tipo_historia_usuario = models.ForeignKey(Tipo_Historia_Usuario, null=True, on_delete=models.SET_NULL)
-    desarrollador_asignado = models.ForeignKey(participante, null=False, on_delete=models.CASCADE)
+    desarrollador_asignado = models.ForeignKey(participante, null=True, on_delete=models.CASCADE)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
     horas_trabajadas = models.IntegerField(null=True)
     prioridad_final = models.IntegerField(null=True)

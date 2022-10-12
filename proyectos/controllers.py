@@ -1,7 +1,10 @@
+from rest_framework.utils import json
 from rest_framework.views import APIView
 from django.core import serializers
 import jwt
 from django.http import HttpResponse
+
+from historiasDeUsuario_proyecto.models import historiaUsuario
 import roles
 from roles.models import Rol, permisosInternos
 from usuarios.models import Usuario
@@ -205,16 +208,24 @@ class controllerParticipantes(APIView):
                 proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
-            if user.has_perm('proyectos.borrar_participante', obj=proyecto):
-                if user.has_perm('proyectos.borrar_participante', obj=proyecto):
-                    userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
-                    participante.objects.borrarParticipante(userBorrar,proyecto)
-                    return HttpResponse("Borrado exitoso", status=200)
-                else:
-                    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
 
+            if user.has_perm('proyectos.borrar_participante', obj=proyecto):
+                userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
+                # verificamos si es el scrum master del proyecto
+                if proyecto.scrumMaster == userBorrar:
+                    return HttpResponse("No se puede eliminar al Scrum Master del proyecto", status=403)
+                # verificamos que no tenga tareas asignadas
+                participanteBorrar = participante.objects.get(usuario=userBorrar, proyecto=proyecto)
+                esParticipante = historiaUsuario.objects.filter(desarrollador_asignado=participanteBorrar).exists()
+                if esParticipante:
+                    return HttpResponse("No se puede eliminar el participante porque tiene tareas designadas", status=403)
+
+                participante.objects.borrarParticipante(participanteBorrar)
+                return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+
+
 
 
         except Exception as e:
@@ -320,10 +331,10 @@ class ControllerRolesProyectosUsuarios(APIView):
             idProyecto = request.GET.get('idproyecto', '')
             email=request.GET.get('email', '')
 
-            res = Rol.objects.listarRolesInternosPorUsuario(email,idProyecto)
-
+            res = Rol.objects.listarRolesInternosPorUsuario(email, idProyecto)
             queryRol_json = serializers.serialize('json', res)
             return HttpResponse(queryRol_json, content_type='application/json', status=201)
+
         except Exception as e:
             return HttpResponse("Error al obtener roles internos! - " + str(e), status=500)
 
@@ -347,13 +358,15 @@ class controllerProyectosImportar(APIView):
         try:
             try:
                 proyectoActual = Proyecto.objects.get(id=datos['idProyectoActual'])
-                proyectoExterno = Proyecto.objects.get(id=datos['idProyectoExterno'])
+                rol = Rol.objects.get(id=datos['idRol'])
             except Proyecto.DoesNotExist as e:
-                return HttpResponse("No existe el/los proyectos recibidos! " + str(e))
+                return HttpResponse("No existe el proyectos recibido o el rol! " + str(e))
 
-            listaRol = Proyecto.objects.importarRoles(datos)
-            queryRol_json = serializers.serialize('json', listaRol)
-            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+            if user.has_perm("proyectos.importar_roles_internos", obj=proyectoActual):
+                rolNuevo = Proyecto.objects.importarRoles(datos)
+                return HttpResponse(rolNuevo, content_type='application/json', status=201)
+            else:
+                return HttpResponse("No tienes permiso para importar roles internos", status=400)
         except Exception as e:
             return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
 

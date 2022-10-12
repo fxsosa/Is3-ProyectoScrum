@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+import pytz
 from proyectos.models import Proyecto
 
 
@@ -15,12 +16,7 @@ class ManejoTipoHU(models.Manager):
             :return: instanciaTipoHU
         """
         nombre = datos['nombre']
-        # Obtener fecha y hora actuales
-        ahora = datetime.now()
-        cadena_ahora = ahora.strftime("%Y-%m-%d %H:%M:%S")
-        fechaCreacion = cadena_ahora
-        # Añadimos 2 elementos a la instancia de modelo
-        instanciaTipoHU = self.model(nombre=nombre, fechaCreacion=fechaCreacion)
+        instanciaTipoHU = self.model(nombre=nombre)
         instanciaTipoHU.save()
         # Añadir el tipo de HU a un proyecto individual
         proyecto = Proyecto.objects.get(id=int(datos['id_proyecto']))
@@ -216,13 +212,13 @@ class Tipo_Historia_Usuario(models.Model):
         Clase de un Tipo de Historia de Usuario
     """
     nombre = models.CharField(max_length=80)
-    fechaCreacion = models.DateTimeField()
+    fechaCreacion = models.DateTimeField(auto_now_add=True)
     proyecto = models.ManyToManyField(Proyecto)
 
     objects = ManejoTipoHU()
 
     def __str__(self):
-        return str([self.nombre, self.fechaCreacion, self.proyecto])
+        return str([self.nombre, self.proyecto])
 
     '''
     class Meta:
