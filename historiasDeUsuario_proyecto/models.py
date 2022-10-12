@@ -182,6 +182,7 @@ class historiaUsuario(models.Model):
     desarrollador_asignado = models.ForeignKey(participante, null=False, on_delete=models.CASCADE)
     proyecto = models.ForeignKey(Proyecto, on_delete=models.CASCADE)
     horas_trabajadas = models.IntegerField(null=True)
+    prioridad_final = models.IntegerField(null=True)
 
     # TODO: Agregar Sprints a todo esto (aun no es necesario para la iteracion del 26)
     # ?????

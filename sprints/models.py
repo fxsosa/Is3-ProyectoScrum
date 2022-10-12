@@ -168,7 +168,10 @@ class ManagerSprintBacklog(models.Manager):
     def crearSprintBacklog(self, proyecto_id, sprint_id):
 
         # Lista de HU ordenada por prioridad
-        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
+        #lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
+
+        self.actualizarPrioridadFinal(self, proyecto_id)
+        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by('prioridad_final').reverse()
 
         sprint = Sprint.objects.get(id=sprint_id)
         capacidad_sprint = sprint.capacidadEquipo
@@ -188,6 +191,16 @@ class ManagerSprintBacklog(models.Manager):
             horas_hu = historia_usuario.estimacion_horas
             acumulado += horas_hu
 
+    def actualizarPrioridadFinal(self, proyecto_id):
+        lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by(
+            'prioridad_tecnica').reverse()
+
+        for hu in lista_hu_ordenada:
+            hu.prioridad_final = round(0.6*hu.prioridad_negocio + 0.4*hu.prioridad_tecnica) # Redondea el valor decimal
+            if hu.horas_trabajadas is not None:
+                if hu.horas_trabajadas > 0:
+                    hu.prioridad_final += 3
+            hu.save()
 
 
 class Sprint(models.Model):
