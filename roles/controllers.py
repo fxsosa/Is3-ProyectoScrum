@@ -1,5 +1,5 @@
 import jwt
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, Group
 from django.http import HttpResponse
 from django.views.generic import CreateView
 from rest_framework.utils import json
@@ -231,10 +231,18 @@ class Rol(APIView, CreateView):
             if roles.models.Rol.objects.existeRolId(id=idRol):
                 tipoRol = request.GET.get('tipoRol', '')
                 rol = roles.models.Rol.objects.get(id=idRol)
+                # verificamos que no haya usuarios con ese rol
+                # obtenemos el grupo
+                nombreGrupo = roles.models.Rol.objects.obtenerNombreGrupo(rol)
+                usuarios = Usuario.objects.filter(groups__name=nombreGrupo)
+                # verificamos si hay usuarios en ese grupo
+                if usuarios.exists():
+                    return HttpResponse("No se puede eliminar el Rol porque está asignado a uno o varios usuarios", status=400)
                 if rol.tipo == tipoRol:
                     if tipoRol == 'Interno':
                         if not user.has_perm("proyectos.borrar_rol_interno", obj=rol.proyecto):
                             return HttpResponse("No tiene los permisos para borrar rol interno", status=400)
+                        # verificamos que no haya usuarios con ese rol
                     elif tipoRol == 'Externo':
                         if not user.has_perm("roles.borrar_rol_externo"):
                             return HttpResponse("No tiene los permisos para borrar rol externo", status=400)

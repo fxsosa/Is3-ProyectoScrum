@@ -154,15 +154,13 @@ class ManejoParticipantes(models.Manager):
 
         return usuarios
 
-    def borrarParticipante(self, user,proyecto):
+    def borrarParticipante(self, particip):
         """Metodo para eliminar participante de un proyecto
 
-        :param user: Instancia Usuario
-        :param proyecto: Instancia Proyecto
+        :param particip: Instancia de Participante
 
         :return: None
         """
-        particip = participante.objects.get(usuario=user, proyecto=proyecto)
         particip.delete()
 
 

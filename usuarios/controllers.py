@@ -128,23 +128,22 @@ class ControllerUsuarioAdministracion(APIView):
                 listaRoles = body['roles']
                 idRol=listaRoles[0]
                 rol = Rol.objects.get(id=idRol)
-
+                usuario = Usuario.objects.get(email=body['email'])
 
                 if(rol.tipo == 'Interno'):
                     if not usuarioSolicitante.has_perm('proyectos.modificar_participante', obj=rol.proyecto):
                         return HttpResponse("No tienes los permisos para cambiar roles", status=400)
+                    if usuario == rol.proyecto.scrumMaster:
+                        return HttpResponse("No se puede quitar/asignar roles al Scrum Master", status=400)
                 else:
                     if not usuarioSolicitante.has_perm('roles.actualizar_rol_externo', None):
                         return HttpResponse("No tienes los permisos para cambiar roles", status=400)
-
-                usuario = Usuario.objects.get(email=body['email'])
 
                 if body['accion'] == 'agregar':
                     if body['roles']:
                         for idRol in body['roles']:
                             Rol.objects.asignarRolaUsuario(idRol=idRol, user=usuario)
                 elif body['accion'] == 'eliminar':
-                    print("Entro elif")
                     if body['roles']:
                         for idRol in body['roles']:
                             Rol.objects.eliminarRolaUsuario(idRol=idRol, user=usuario)
