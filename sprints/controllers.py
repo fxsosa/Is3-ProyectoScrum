@@ -6,7 +6,7 @@ from django.core import serializers
 
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
-from sprints.models import Sprint, Sprint_Miembro_Equipo
+from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog
 from usuarios.models import Usuario
 
 class controllerListarSprints(APIView):
@@ -71,7 +71,7 @@ class controllerSprint(APIView):
         except Exception as e:
             return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
 
-    def update(self, request):
+    def put(self, request):
         pass
 
     def delete(self, request):
@@ -184,6 +184,29 @@ class controllerEquipoSprint(APIView):
                 return HttpResponse("No se tienen los permisos para borrar miembros del equipo del sprint!", status=403)
         except Exception as e:
             return HttpResponse("Error al eliminar miembro del equipo - " + str(e), status=500)
+
+class controllerSprintBacklog(APIView):
+
+    def get(self, request):
+        user = validarRequest(request=request)
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                sprintBacklog = SprintBacklog.objects.listarHistoriasUsuario(proyecto_id=idProyecto, sprint_id=idSprint)
+                if sprintBacklog is not None:
+                    # Convertimos a json y retornamos el backlog del sprint
+                    serializer = serializers.serialize('json', sprintBacklog)
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudo obtener el sprint backlog! ", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener el backlog del sprint!", status=403)
+        except Exception as e:
+            print("Error en el controller! " + str(e))
+            return HttpResponse("No se pudo obtener el backlog del sprint! " + str(e), status=500)
+
 
 
 
