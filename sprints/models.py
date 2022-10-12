@@ -188,7 +188,39 @@ class ManagerSprintBacklog(models.Manager):
             horas_hu = historia_usuario.estimacion_horas
             acumulado += horas_hu
 
+    def listarHistoriasUsuario(self, proyecto_id, sprint_id):
+        """Retorna la lista de historias de usuario asociadas al sprint del proyecto dado
 
+        :param proyecto_id: ID del proyecto
+        :param sprint_id: ID del sprint
+
+        :return: QuerySet de lista de US/None
+        """
+        try:
+            try:
+                proyecto = Proyecto.objects.get(id=proyecto_id)
+            except Proyecto.DoesNotExist as e:
+                print("El proyecto no existe!")
+                return None
+
+            try:
+                sprint = Sprint.objects.get(id=sprint_id)
+            except Sprint.DoesNotExist as e:
+                print("El sprint no existe!")
+                return None
+
+            # Verificando que el sprint pertenezca al proyecto dado
+            if sprint.proyecto_id == proyecto.id:
+                try:
+                    backlog = SprintBacklog.objects.get(idSprint=sprint.id)
+                except SprintBacklog.DoesNotExist as e:
+                    print("No existe el sprintbacklog! " + str(e))
+                    return None
+
+                return backlog.historiaUsuario.all()
+        except Exception as e:
+            print("Error al obtener la lista de US! " + str(e))
+            return None
 
 class Sprint(models.Model):
     """
