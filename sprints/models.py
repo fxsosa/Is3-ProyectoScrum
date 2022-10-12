@@ -127,7 +127,7 @@ class ManagerSprint(models.Manager):
                         fechahoy = datetime.date.today()
                         sprint.fecha_inicio = fechahoy
                         sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
-                        SprintBacklog.objects.crearSprintBacklog(proyecto_id=idProyecto, sprint_id=idSprint)
+                        ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
                     elif sprint.estado == "En Ejecución":
                         sprint.estado = "Finalizado"
 
