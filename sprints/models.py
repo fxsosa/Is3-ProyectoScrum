@@ -9,10 +9,10 @@ from historiasDeUsuario_proyecto.models import historiaUsuario
 class ManagerSprint(models.Manager):
 
     def crearSprint(self, datos):
-        """Crea una historia de usuario
+        """Crea un sprint de proyecto
 
         :param datos: Diccionario (o JSON) con los siguientes valores "key":
-        nombre, descripcion, idProyecto, fechaInicio, fechaFin, capacidadEquipo.
+        nombre, descripcion, idProyecto, cantidadDias, capacidadEquipo.
 
         :return: QuerySet de Sprint Creado / None
         """

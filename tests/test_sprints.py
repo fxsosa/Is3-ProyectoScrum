@@ -1,40 +1,141 @@
 import pytest
 import pytz
 
-from sprints.models import Sprint, SprintEquipo, SprintBacklog
+from historiasDeUsuario.models import Tipo_Historia_Usuario
+from historiasDeUsuario_proyecto.models import historiaUsuario
+from proyectos.models import Proyecto, participante
+from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog
 from usuarios.models import Usuario
 from django.contrib.auth import get_user_model
 import datetime
 
 @pytest.mark.django_db
-def test_Sprint():
+def test_crearSprint():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
     auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
     auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
-    sprint = Sprint.objects.create(fecha_inicio=auxDateTime1, fecha_fin=auxDateTime2, capacidadEquipo=84, estado='Creado')
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
 
-    assert sprint.__str__() == str([sprint.fecha_inicio, sprint.fecha_fin, sprint.capacidadEquipo, sprint.estado])
+    assert str([sprint.nombre, sprint.descripcion, sprint.cantidadDias, sprint.capacidadEquipo,
+                sprint.proyecto_id]) == str(["Sprint 1", "Descripcion de Sprint", 30, 30, proyecto.id])
 
 
 @pytest.mark.django_db
 def test_SprintBacklog():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
     auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
     auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
-    sprint = Sprint.objects.create(fecha_inicio=auxDateTime1, fecha_fin=auxDateTime2, capacidadEquipo=84, estado='Creado')
-    sprintBacklog = SprintBacklog.objects.create(idSprint=sprint)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+    # Agregamos otro usuario
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    idProyecto = proyecto.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
 
-    assert sprintBacklog.__str__() == str([sprint.id])
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+    idParticipante = part.id
+    datos = {
+        "nombre": "Historia 1",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    datos = {
+        "nombre": "Historia 2",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    listaHUBacklog = SprintBacklog.objects.listarHistoriasUsuario(proyecto_id=proyecto.id, sprint_id=sprint.id)
+    historia1 = historiaUsuario.objects.filter(id=historia1[0].id)
+    historia2 = historiaUsuario.objects.filter(id=historia2[0].id)
+
+    assert str([listaHUBacklog[0].id, listaHUBacklog[1].id]) == str([historia1[0].id, historia2[0].id])
 
 
 @pytest.mark.django_db
 def test_SprintEquipo():
     User = get_user_model()
-    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', nombres='Nombre1 Nombre2', username='Username 1', apellidos='Apellido1 Apellido2',)
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
+                                     nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
     auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
     auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
-    sprint = Sprint.objects.create(fecha_inicio=auxDateTime1, fecha_fin=auxDateTime2, capacidadEquipo=84, estado='Creado')
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
 
-    equipo = SprintEquipo.objects.create(usuario=user1, sprint=sprint, trabajo='Trabajo 1', capacidad=84)
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprint.id,
+        "usuario_id": user1.id
+    }
+    equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
 
-    assert equipo.__str__() == str([equipo.usuario.id, equipo.sprint.id, equipo.trabajo,
-                    equipo.capacidad.__str__()])
-
+    assert str(equipo.__str__()) == str([equipo.usuario.id, equipo.sprint.id, str(equipo.capacidad)])
