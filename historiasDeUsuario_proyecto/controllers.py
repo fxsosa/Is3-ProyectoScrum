@@ -12,7 +12,12 @@ from usuarios.models import Usuario
 class ListaHistoriasUsuario(APIView, CreateView):
 
     def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un proyecto dado
 
+        :param request: Request de la peticion. Contiene como queryParam idProyecto
+
+        :return: HttpResponse
+        """
         user = validarRequest(request)
 
         # Procesamos el request
@@ -32,6 +37,13 @@ class ListaHistoriasUsuario(APIView, CreateView):
 class HistoriaUsuario(APIView, CreateView):
 
     def get(self, request):
+        """Metodo get para obtener una historia de usuario de un proyecto dado
+
+        :param request: Request de la peticion. Contiene como queryParam el idProyecto y idHistoria
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         body = request.data
         try:
@@ -50,6 +62,15 @@ class HistoriaUsuario(APIView, CreateView):
 
 
     def post(self, request, format=None):
+        """Metodo post para crear una historia de usuario y agregar a un proyecto
+
+        :param request: Request de la peticion. Contiene como valores de .data los campos: idProyecto,
+        nombre, descripcion, prioridad_tecnica, prioridad_negocio, estimacion_horas, idTipo, idParticipante.
+        :param format: None
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         body = request.data
@@ -71,6 +92,15 @@ class HistoriaUsuario(APIView, CreateView):
 
 
     def put(self, request):
+        """Metodo para actualizar una historia de usuario.
+
+        :param request: Request de la peticion. Contiene como valores de .data los campos: idProyecto,
+        nombre, descripcion, prioridad_tecnica, prioridad_negocio, estimacion_horas, idTipo, idParticipante.
+        Los valores que sean null no se actualizan.
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         datos = request.data
@@ -90,6 +120,13 @@ class HistoriaUsuario(APIView, CreateView):
             return HttpResponse("Error al actualizar la Historia de Usuario - " + str(e), status=500)
 
     def delete(self, request):
+        """Metodo de delete para borrar una historia de usuario de un proyecto.
+
+        :param request: Request de la peticion, contiene como queryParam el valor del idProyecto, idHistoria
+        a borrar
+
+        :return: HttpResponse
+        """
 
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
