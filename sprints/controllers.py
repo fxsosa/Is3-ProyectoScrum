@@ -232,6 +232,31 @@ class controllerEstadoSprint(APIView):
             print("Error en el controller! " + str(e))
             return HttpResponse("No se pudo cambiar el estado del sprint! " + str(e), status=500)
 
+class ListaHUTipo(APIView):
+    def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un tipo, de un proyecto
+
+        :param request: Request de la peticion. Contiene como queryParam idProyecto, idTipoHU
+
+        :return: HttpResponse
+        """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idproyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idproyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                idTipoHU = request.GET.get('idTipoHU', '')
+                idSprint = request.GET.get('idSprint', '')
+                listaHUTipo = SprintBacklog.objects.listarHUTipo(proyecto_id=idproyecto, tipo_id=idTipoHU, sprint_id=idSprint)
+                serializer = serializers.serialize('json', listaHUTipo)
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
+
 
 def validarRequest(request):
     # Obtenemos los datos del token

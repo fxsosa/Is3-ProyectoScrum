@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.db import models
 import pytz
 
+from historiasDeUsuario.models import Tipo_Historia_Usuario
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
@@ -321,6 +322,50 @@ class ManagerSprintBacklog(models.Manager):
                 return backlog.historiaUsuario.all()
         except Exception as e:
             print("Error al obtener la lista de US! " + str(e))
+            return None
+
+
+    def listarHUTipo(self, proyecto_id, sprint_id, tipo_id):
+        """Retorna la lista de historias de usuario de un tipo, asociadas al sprint del proyecto dado
+
+        :param proyecto_id: ID del proyecto
+        :param sprint_id: ID del sprint
+        :param tipo_id: ID del tipo de US
+
+        :return: QuerySet de lista de US/None
+        """
+        try:
+            try:
+                proyecto = Proyecto.objects.get(id=proyecto_id)
+            except Proyecto.DoesNotExist as e:
+                print("El proyecto no existe!")
+                return None
+
+            try:
+                sprint = Sprint.objects.get(id=sprint_id)
+            except Sprint.DoesNotExist as e:
+                print("El sprint no existe!")
+                return None
+
+            try:
+                tipoHU = Tipo_Historia_Usuario.objects.get(id=tipo_id)
+            except Tipo_Historia_Usuario.DoesNotExist as e:
+                print("El tipo de US no existe!")
+                return None
+
+            # Verificando que el sprint pertenezca al proyecto dado
+            # y que el tipo pertenezca al proyecto
+            if sprint.proyecto_id == proyecto.id and tipoHU.proyecto.filter(id=proyecto_id).exists():
+                try:
+                    backlog = SprintBacklog.objects.get(idSprint=sprint.id)
+                except SprintBacklog.DoesNotExist as e:
+                    print("No existe el sprintbacklog! " + str(e))
+                    return None
+
+                # Retornando la lista de US con el tipo de HU especificado
+                return backlog.historiaUsuario.filter(proyecto_id=proyecto_id, tipo_historia_usuario_id=tipo_id)
+        except Exception as e:
+            print("Error al obtener la lista de US del tipo especificado! " + str(e))
             return None
 
 class Sprint(models.Model):
