@@ -139,3 +139,67 @@ def test_SprintEquipo():
     equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
 
     assert str(equipo.__str__()) == str([equipo.usuario.id, equipo.sprint.id, str(equipo.capacidad)])
+
+@pytest.mark.django_db
+def test_obtenerSprint():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
+                                     nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprintCreado = Sprint.objects.crearSprint(datos=datosSprint)
+    sprintObtenido = Sprint.objects.obtenerSprint(idProyecto=proyecto.id, idSprint=sprintCreado[0].id)
+
+    assert str([sprintObtenido[0].id, sprintObtenido[0].fecha_inicio, sprintObtenido[0].fecha_fin,
+                sprintObtenido[0].cantidadDias, sprintObtenido[0].estado,
+                sprintObtenido[0].capacidadEquipo, sprintObtenido[0].proyecto_id]) == str([sprintCreado[0].id,
+                None, None, 30, 'Planificación', 30, proyecto.id])
+
+@pytest.mark.django_db
+def test_eliminarSprint():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
+                                     nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprintCreado = Sprint.objects.crearSprint(datos=datosSprint)
+    # Esta funcion cambia el estado del sprint a "Cancelado"
+    assert True is Sprint.objects.eliminarSprint(idProyecto=proyecto.id, idSprint=sprintCreado[0].id)
+    sprintCancelado = Sprint.objects.obtenerSprint(idProyecto=proyecto.id, idSprint=sprintCreado[0].id)
+    # Verificamos que el estado del Sprint haya cambiado a "Cancelado"
+    assert str([sprintCancelado[0].id, sprintCancelado[0].fecha_inicio, sprintCancelado[0].fecha_fin,
+                sprintCancelado[0].cantidadDias, sprintCancelado[0].estado,
+                sprintCancelado[0].capacidadEquipo, sprintCancelado[0].proyecto_id]) == str([sprintCreado[0].id,
+                None, None, 30, 'Cancelado', 30, proyecto.id])
