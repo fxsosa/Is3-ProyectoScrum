@@ -85,7 +85,10 @@ class ManagerSprint(models.Manager):
 
             # verificando si existe como historia de usuario del proyecto dado
             if str(sprint.proyecto.id) == str(idProyecto):
-                sprint.delete()
+                # sprint.delete()
+                # Cambiamos el estado del sprint a Cancelado
+                sprint.estado = "Cancelado"
+                sprint.save()
                 return True
             else:
                 print("El sprint no pertenece al proyecto dado...")
