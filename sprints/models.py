@@ -6,6 +6,8 @@ from proyectos.models import Proyecto
 from usuarios.models import Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
 
+import numpy as np
+
 class ManagerSprint(models.Manager):
 
     def crearSprint(self, datos):
@@ -225,6 +227,7 @@ class ManagerSprintBacklog(models.Manager):
         # Lista de HU ordenada por prioridad
         #lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
 
+        self.calcularCapacidadSprint(self, sprint_id)
         self.actualizarPrioridadFinal(self, proyecto_id)
         lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by('prioridad_final').reverse()
 
@@ -258,13 +261,36 @@ class ManagerSprintBacklog(models.Manager):
                     hu.prioridad_final += 3
             hu.save()
 
+    def calcularCapacidadSprint(self, sprint_id):
+        """
+        Calculamos la capacidad total del Sprint
+        :param sprint_id: ID del sprint
+
+        """
+        listaEquipo = Sprint_Miembro_Equipo.objects.filter(sprint_id=sprint_id)
+        capacidad_horas_diarias = 0
+        # Calculamos total de horas por día que se le dedica al sprint
+        for miembro in listaEquipo:
+            capacidad_horas_diarias += miembro.capacidad
+
+        sprint = Sprint.objects.get(id=sprint_id)
+
+        inicio = sprint.fecha_inicio.date()
+        fin = sprint.fecha_fin.date()
+
+        dias_laborales = np.busday_count(inicio, fin)
+
+        capacidad_total = capacidad_horas_diarias*dias_laborales
+
+        sprint.capacidadEquipo = capacidad_total
+        sprint.save()
+
     def listarHistoriasUsuario(self, proyecto_id, sprint_id):
         """Retorna la lista de historias de usuario asociadas al sprint del proyecto dado
 
         :param proyecto_id: ID del proyecto
         :param sprint_id: ID del sprint
 
-        :return: QuerySet de lista de US/None
         """
         try:
             try:
@@ -364,7 +390,7 @@ class Sprint_Miembro_Equipo(models.Model):
 
     usuario = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True)
     sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE)
-    capacidad = models.IntegerField()
+    capacidad = models.IntegerField() # Horas diarias que puede dedicar
 
     objects = ManagerMiembroSprint()
 
