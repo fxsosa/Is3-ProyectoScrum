@@ -1,6 +1,7 @@
 import datetime
-
+from django.utils import timezone
 from django.db import models
+import pytz
 
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
@@ -127,7 +128,8 @@ class ManagerSprint(models.Manager):
                         sprint.estado = "En Ejecución"
 
                         # Agregamos la cantidad de dias de duracion que va a tener el proyecto
-                        fechahoy = datetime.date.today()
+                        # fechahoy = datetime.date.today()
+                        fechahoy = timezone.now()
                         sprint.fecha_inicio = fechahoy
                         sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
                         ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
