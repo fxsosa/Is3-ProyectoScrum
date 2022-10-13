@@ -1,6 +1,7 @@
 import datetime
-
+from django.utils import timezone
 from django.db import models
+import pytz
 
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
@@ -11,10 +12,10 @@ import numpy as np
 class ManagerSprint(models.Manager):
 
     def crearSprint(self, datos):
-        """Crea una historia de usuario
+        """Crea un sprint de proyecto
 
         :param datos: Diccionario (o JSON) con los siguientes valores "key":
-        nombre, descripcion, idProyecto, fechaInicio, fechaFin, capacidadEquipo.
+        nombre, descripcion, idProyecto, cantidadDias, capacidadEquipo.
 
         :return: QuerySet de Sprint Creado / None
         """
@@ -87,7 +88,10 @@ class ManagerSprint(models.Manager):
 
             # verificando si existe como historia de usuario del proyecto dado
             if str(sprint.proyecto.id) == str(idProyecto):
-                sprint.delete()
+                # sprint.delete()
+                # Cambiamos el estado del sprint a Cancelado
+                sprint.estado = "Cancelado"
+                sprint.save()
                 return True
             else:
                 print("El sprint no pertenece al proyecto dado...")
@@ -126,7 +130,8 @@ class ManagerSprint(models.Manager):
                         sprint.estado = "En Ejecución"
 
                         # Agregamos la cantidad de dias de duracion que va a tener el proyecto
-                        fechahoy = datetime.date.today()
+                        # fechahoy = datetime.date.today()
+                        fechahoy = timezone.now()
                         sprint.fecha_inicio = fechahoy
                         sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
                         ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
