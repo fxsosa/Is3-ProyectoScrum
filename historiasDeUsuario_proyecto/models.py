@@ -186,6 +186,38 @@ class managerHistoriaUsuario(models.Manager):
         listaHistorias = historiaUsuario.objects.filter(proyecto=idProyecto)
         return listaHistorias
 
+    def listarHUTipo(self, idProyecto, idTipoHU):
+        """Retorna la lista de historias de usuario de un tipo, asociadas al sprint del proyecto dado
+
+                :param proyecto_id: ID del proyecto
+                :param sprint_id: ID del sprint
+                :param tipo_id: ID del tipo de US
+
+                :return: QuerySet de lista de US/None
+                """
+        try:
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("El proyecto no existe!")
+                return None
+
+            try:
+                tipoHU = Tipo_Historia_Usuario.objects.get(id=idTipoHU)
+            except Tipo_Historia_Usuario.DoesNotExist as e:
+                print("El tipo de US no existe!")
+                return None
+
+            # Verificando que el sprint pertenezca al proyecto dado
+            # y que el tipo pertenezca al proyecto
+            if tipoHU.proyecto.filter(id=idProyecto).exists():
+
+                # Retornando la lista de US con el tipo de HU especificado
+                return historiaUsuario.objects.filter(proyecto_id=idProyecto, tipo_historia_usuario_id=idTipoHU)
+        except Exception as e:
+            print("Error al obtener la lista de US del tipo especificado! " + str(e))
+            return None
+
 
 class historiaUsuario(models.Model):
     # Caracteristicas de la HU
