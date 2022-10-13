@@ -44,7 +44,47 @@ class ManagerSprint(models.Manager):
             return None
 
     def actualizarSprint(self, datos):
-        pass
+        """Actualizar los parametros de un Sprint
+
+        :param datos: Diccionario JSON con los siguientes parametros: "idProyecto", "idSprint" "nombre", "descripcion", "cantidadDias"
+
+        :return: QuerySet de Sprint actualizado/None
+        """
+
+        try:
+            try:
+                proyecto = Proyecto.objects.get(id=datos['idProyecto'])
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto!")
+                return None
+
+            try:
+                sprint = Sprint.objects.get(id=datos["idSprint"])
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint!")
+                return None
+
+            # verificando si existe como sprint del proyecto dado
+            if str(sprint.proyecto.id) == str(proyecto.id):
+                if datos["nombre"] is not None:
+                    sprint.nombre = datos["nombre"]
+
+                if datos["descripcion"] is not None:
+                    sprint.descripcion = datos["descripcion"]
+
+                if datos["cantidadDias"] is not None:
+                    sprint.cantidadDias = datos["cantidadDias"]
+
+                sprint.save()
+
+                return Sprint.objects.filter(id=sprint.id)
+            else:
+                print("El sprint no pertenece al proyecto dado! ")
+                return None
+        except Exception as e:
+            print("No se pudo actualizar sprint! " + str(e))
+            return None
+
 
     def obtenerSprint(self, idProyecto, idSprint):
         """Retorna el Sprint, del proyecto con idProyecto, con el idSprint
@@ -135,11 +175,12 @@ class ManagerSprint(models.Manager):
                         fechahoy = timezone.now()
                         sprint.fecha_inicio = fechahoy
                         sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                        sprint.save()
                         ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
                     elif sprint.estado == "En Ejecución":
                         sprint.estado = "Finalizado"
+                        sprint.save()
 
-                    sprint.save()
                     return Sprint.objects.filter(id=sprint.id)
                 elif opcion == 'Cancelar':
                     sprint.estado = "Cancelado"

@@ -72,7 +72,35 @@ class controllerSprint(APIView):
             return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
 
     def put(self, request):
-        pass
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
+            if user.has_perm('proyectos.actualizar_sprint', obj=proyecto):
+                try:
+                    sprint = Sprint.objects.get(id=datos['idSprint'])
+                except Sprint.DoesNotExist as e:
+                    return HttpResponse("No existe el sprint! ", status=400)
+
+                if sprint.estado == "Planificación":
+                    sprintActualizado = Sprint.objects.actualizarSprint(datos)
+                    if sprintActualizado is not None:
+                        # Retornar el sprint actualizado
+                        sprint_json = serializers.serialize('json', sprintActualizado)
+
+                        # Crear un nuevo miembro del equipo de un Sprint
+                        return HttpResponse(sprint_json, content_type='application/json', status=201)
+                    else:
+                        return HttpResponse("No se pudo actualizar el sprint", status=500)
+                else:
+                    return HttpResponse("No se puede actualizar sprints con estado \"" + str(sprint.estado) + "\"!", status=400)
+
+            else:
+                return HttpResponse("No se tienen los permisos para modificar miembros de Sprints!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
     def delete(self, request):
         user = validarRequest(request)
