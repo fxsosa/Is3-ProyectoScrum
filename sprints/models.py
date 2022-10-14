@@ -176,6 +176,14 @@ class ManagerSprint(models.Manager):
                             print("Ya existe un sprint en ejecucion en este proyecto! ")
                             return "Operación no permitida.\nYa existe un sprint \"En Ejecución\" en este proyecto! "
                         else:
+
+                            # Verificando que el sprint solo puede estar En Ejecucion cuando el proyecto se encuentra
+                            # en estado 'iniciado'
+                            if proyecto.estado != "iniciado":
+                                print("Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!")
+                                return "Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!"
+
+
                             sprint.estado = "En Ejecución"
 
                             # Agregamos la cantidad de dias de duracion que va a tener el proyecto
