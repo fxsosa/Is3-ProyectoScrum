@@ -149,7 +149,7 @@ class ManagerSprint(models.Manager):
         :param opcion: Str, Avanzar/Cancelar
         Avanzar cambia el estado: Planificacion -> En Ejecucion -> Finalizado
 
-        :return: QuerySet del Sprint actualizado/None
+        :return: QuerySet del Sprint actualizado/String
         """
 
         try:
@@ -158,43 +158,51 @@ class ManagerSprint(models.Manager):
                 sprint = Sprint.objects.get(id=idSprint)
             except Sprint.DoesNotExist as e:
                 print("No existe el sprint! " + str(e))
-                return None
+                return "No existe el sprint!"
 
             try:
                 proyecto = Proyecto.objects.get(id=idProyecto)
             except Proyecto.DoesNotExist as e:
                 print("No existe el proyecto! " + str(e))
-                return None
+                return "No existe el proyecto!"
+
             if sprint.proyecto_id == proyecto.id:
                 if opcion == 'Avanzar':
                     if sprint.estado == "Planificación":
-                        sprint.estado = "En Ejecución"
 
-                        # Agregamos la cantidad de dias de duracion que va a tener el proyecto
-                        # fechahoy = datetime.date.today()
-                        fechahoy = timezone.now()
-                        sprint.fecha_inicio = fechahoy
-                        sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
-                        sprint.save()
-                        ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
+                        # Query de todos los sprints del proyecto que tengan estado=En Ejecución
+                        if Sprint.objects.filter(proyecto=proyecto.id, estado="En Ejecución").exists():
+                            print("Ya existe un sprint en ejecucion en este proyecto! ")
+                            return "Operación no permitida.\nYa existe un sprint \"En Ejecución\" en este proyecto! "
+                        else:
+                            sprint.estado = "En Ejecución"
+
+                            # Agregamos la cantidad de dias de duracion que va a tener el proyecto
+                            # fechahoy = datetime.date.today()
+                            fechahoy = timezone.now()
+                            sprint.fecha_inicio = fechahoy
+                            sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                            sprint.save()
+                            ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
                     elif sprint.estado == "En Ejecución":
                         sprint.estado = "Finalizado"
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
+
                 elif opcion == 'Cancelar':
                     sprint.estado = "Cancelado"
                     sprint.save()
                     return Sprint.objects.filter(id=sprint.id)
                 else:
                     print("Opcion invalida! ")
-                    return None
+                    return "No se pudo actualizar el estado del sprint!"
             else:
                 print("El sprint no pertenece al proyecto dado! ")
-                return None
+                return "No se pudo actualizar el estado del sprint! "
         except Exception as e:
             print("No se pudo actualizar el estado del sprint! " + str(e))
-            return None
+            return "No se pudo actualizar el estado del sprint! "
 
 
 

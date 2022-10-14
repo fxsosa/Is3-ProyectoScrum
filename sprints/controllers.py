@@ -244,21 +244,25 @@ class controllerEstadoSprint(APIView):
         try:
             # Obtenemos el cuerpo de la peticion
             body = request.data
-            proyecto = proyectos.models.Proyecto.objects.get(id=body['idProyecto'])
+            try:
+                proyecto = proyectos.models.Proyecto.objects.get(id=body['idProyecto'])
+            except proyectos.models.Proyecto.DoesNotExist as e:
+                return HttpResponse("No existe el proyecto!", status=500)
+
             if user.has_perm('proyectos.actualizar_sprint', obj=proyecto):
-                sprint = Sprint.objects.cambiarEstado(idProyecto=body['idProyecto'], idSprint=body['idSprint'], opcion=body['opcion'])
-                if sprint is not None:
+                sprintRespuesta = Sprint.objects.cambiarEstado(idProyecto=body['idProyecto'], idSprint=body['idSprint'], opcion=body['opcion'])
+                if str(type(sprintRespuesta)) == "<class 'django.db.models.query.QuerySet'>":
                     # Convertimos a json
-                    sprint_json = serializers.serialize('json', sprint)
+                    sprint_json = serializers.serialize('json', sprintRespuesta)
                     # Retornamos el json
                     return HttpResponse(sprint_json, content_type='application/json', status=201)
                 else:
-                    return HttpResponse("No se pudo actualizar el estado del sprint! ", status=500)
+                    return HttpResponse(sprintRespuesta, status=500)
             else:
                 return HttpResponse("No se tienen los permisos para modificar estado de Sprint!", status=403)
         except Exception as e:
             print("Error en el controller! " + str(e))
-            return HttpResponse("No se pudo cambiar el estado del sprint! " + str(e), status=500)
+            return HttpResponse("No se pudo cambiar el estado del sprint! ", status=500)
 
 class ListaHUTipo(APIView):
     def get(self, request):
