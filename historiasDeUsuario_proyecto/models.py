@@ -136,6 +136,12 @@ class managerHistoriaUsuario(models.Manager):
                 if datos['idParticipante'] is not None:
                     historia.desarrollador_asignado = desarrollador
 
+                if datos['horas_trabajadas'] is not None:
+                    historia.horas_trabajadas = datos['horas_trabajadas']
+
+                if datos['estado'] is not None:
+                    historia.estado = datos['estado']
+
                 historia.save()
 
                 historia = historiaUsuario.objects.filter(id=historia.id)
