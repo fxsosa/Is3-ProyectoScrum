@@ -141,6 +141,7 @@ class ManagerSprint(models.Manager):
             print("Error inesperado! " + str(e))
             return False
 
+
     def cambiarEstado(self, idProyecto, idSprint, opcion):
         """Cambia el estado de un sprint
 
@@ -289,6 +290,9 @@ class ManagerSprintBacklog(models.Manager):
         sprint = Sprint.objects.get(id=sprint_id)
         capacidad_sprint = sprint.capacidadEquipo
 
+        print("Capacidad del equipo es: ")
+        print(sprint.capacidadEquipo)
+
         # Crear Sprint Backlog
         sprint_backlog = SprintBacklog.objects.model(idSprint_id=sprint_id)
         sprint_backlog.save()
@@ -416,6 +420,57 @@ class ManagerSprintBacklog(models.Manager):
         except Exception as e:
             print("Error al obtener la lista de US del tipo especificado! " + str(e))
             return None
+
+    def eliminarHUSprintBacklog(self, idProyecto, idSprint, idHistoria):
+        """Eliminar la historia de usuario del sprint backlog
+
+        :param idProyecto: ID del proyecto
+        :param idSprint: ID del sprint
+        :param idHistoria: ID de la historia de usuario a eliminar
+
+        :return: Boolean
+        """
+        try:
+            try:
+                sprint = Sprint.objects.get(id=idSprint)
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint con el ID dado! " + str(e))
+                return False
+
+            try:
+                sprintbacklog = SprintBacklog.objects.get(idSprint=idSprint)
+            except SprintBacklog.DoesNotExist as e:
+                print("No existe el sprintbacklog! " + str(e))
+                return False
+
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto con el ID dado! " + str(e))
+                return False
+
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("No existe la historia de usuario con el ID dado! " + str(e))
+                return False
+
+            # verificando si existe como sprint del proyecto dado
+            # y verificando que la historia de usuario este asociada al sprintbacklog
+            if str(sprint.proyecto.id) == str(idProyecto) \
+                    and sprintbacklog.historiaUsuario.filter(id=idHistoria).exists():
+                # Removemos la historia de usuario del sprint backlog
+                sprintbacklog.historiaUsuario.remove(historia)
+                sprintbacklog.save()
+                return True
+            else:
+                print("El sprint no pertenece al proyecto o la historia no pertenece al sprint...")
+                return False
+        except Exception as e:
+            print("Error inesperado! " + str(e))
+            return False
+
+
 
 class Sprint(models.Model):
     """
