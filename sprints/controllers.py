@@ -95,7 +95,7 @@ class controllerSprint(APIView):
                     else:
                         return HttpResponse("No se pudo actualizar el sprint", status=500)
                 else:
-                    return HttpResponse("No se puede actualizar sprints con estado \"" + str(sprint.estado) + "\"!", status=400)
+                    return HttpResponse("No se puede actualizar sprints con estado \"" + str(sprint.estado) + "\"!", status=403)
 
             else:
                 return HttpResponse("No se tienen los permisos para modificar miembros de Sprints!", status=403)
@@ -257,7 +257,7 @@ class controllerEstadoSprint(APIView):
                     # Retornamos el json
                     return HttpResponse(sprint_json, content_type='application/json', status=201)
                 else:
-                    return HttpResponse(sprintRespuesta, status=500)
+                    return HttpResponse(sprintRespuesta, status=403)
             else:
                 return HttpResponse("No se tienen los permisos para modificar estado de Sprint!", status=403)
         except Exception as e:
