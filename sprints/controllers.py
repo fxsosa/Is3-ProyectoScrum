@@ -236,6 +236,26 @@ class controllerSprintBacklog(APIView):
             return HttpResponse("No se pudo obtener el backlog del sprint! " + str(e), status=500)
 
 
+    def delete(self, request):
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.borrar_historia_sprintbacklog', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                idHistoria = request.GET.get('idHistoria', '')
+
+                if SprintBacklog.objects.eliminarHUSprintBacklog(idProyecto=idProyecto, idSprint=idSprint, idHistoria=idHistoria):
+                    return HttpResponse("Eliminado del sprintbacklog con exito!", status=201)
+                else:
+                    return HttpResponse("No se pudo eliminar del sprintbacklog!", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para borrar del sprintbacklog!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al eliminar US del sprintbacklog - " + str(e), status=500)
+
+
 class controllerEstadoSprint(APIView):
 
     def put(self, request):
