@@ -1,7 +1,7 @@
 from django.db import models
 
 import proyectos
-from historiasDeUsuario.models import Tipo_Historia_Usuario
+from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
 
@@ -101,7 +101,6 @@ class managerHistoriaUsuario(models.Manager):
                     print(datos['idParticipante'])
                     usuarioParticipante = Usuario.objects.get(id=datos['idParticipante'])
                     desarrollador = participante.objects.get(proyecto_id=idProyecto, usuario_id=usuarioParticipante)
-                    print("+++++++++++++++++++++++++++++++++++++++++ ", desarrollador)
                 except participante.DoesNotExist as e:
                     print("Participante no existe! + " + str(e))
                     return None
@@ -140,7 +139,26 @@ class managerHistoriaUsuario(models.Manager):
                     historia.horas_trabajadas = datos['horas_trabajadas']
 
                 if datos['estado'] is not None:
-                    historia.estado = datos['estado']
+                    # obtenemos el tipo y su columna
+                    columnaId = datos['estado']
+                    if columnaId != 'cancelada':
+                        try:
+                            columna = Columna_Tipo_Historia_Usuario.objects.get(id=columnaId)
+
+                            columnaOrden = columna.orden
+                            cantidadCol = len(Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=historia.tipo_historia_usuario_id))
+
+                            # verificar si se paso a la ultima columna
+                            if columnaOrden == cantidadCol:
+                                datos['estado'] = 'finalizada'
+
+                            historia.estado = datos['estado']
+
+                        except Columna_Tipo_Historia_Usuario.DoesNotExist as e:
+                            historia.estado = None
+                            print("No existe la columna!")
+                    else:
+                        historia.estado = 'cancelada'
 
                 historia.save()
 
@@ -151,7 +169,7 @@ class managerHistoriaUsuario(models.Manager):
                 return None
 
         except Exception as e:
-            print(e)
+            print("error en: ",e)
             return None
 
     def obtenerHistoriaUsuario(self, idProyecto, idHistoria):
