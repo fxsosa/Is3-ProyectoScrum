@@ -180,8 +180,16 @@ class ManagerSprint(models.Manager):
                             # Agregamos la cantidad de dias de duracion que va a tener el proyecto
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
+                            fechaFin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+
+                            # Verificamos que la finalizacion del sprint no sea luego de la finalizacion del proyecto
+                            # (solo nos interesan las fechas, no las horas exactas)
+                            if fechaFin.date() > proyecto.fechaFin.date():
+                                print("La fecha de finalizacion del sprint supera la fecha final del proyecto! ")
+                                return "El sprint no puede terminar luego de la finalizacion del proyecto!\nExtienda el plazo del proyecto o disminuya la cantidad dias del sprint!"
+
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                            sprint.fecha_fin = fechaFin
                             sprint.save()
                             ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
                     elif sprint.estado == "En Ejecución":
