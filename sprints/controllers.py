@@ -310,6 +310,36 @@ class ListaHUTipo(APIView):
             return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
 
 
+class controllerListaTipoHU(APIView):
+
+    def get(self, request):
+        """Metodo get para obtener una lista de tipos de US de un sprint
+
+                :param request: Request de la peticion. Contiene como queryParam idProyecto, idSprint
+
+                :return: HttpResponse
+
+                """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                listaTipoHU = SprintBacklog.objects.listarTipoHUSprint(idProyecto=idProyecto, idSprint=idSprint)
+                if listaTipoHU is not None:
+                    serializer = serializers.serialize('json', listaTipoHU)
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudieron obtener los Tipos de Historia! ", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para listar Tipos de Historias!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar los Tipos de Historia!", status=500)
+
+
 def validarRequest(request):
     # Obtenemos los datos del token
     try:

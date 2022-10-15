@@ -313,6 +313,7 @@ class ManagerSprintBacklog(models.Manager):
                 break
 
             if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada"):
+                print("Agregando: \nNombre: " + str(historia_usuario.nombre) + "\nDescripcion: " + str(historia_usuario.descripcion) + "\n")
                 sprint_backlog.historiaUsuario.add(historia_usuario)
                 horas_hu = historia_usuario.estimacion_horas
                 acumulado += horas_hu
@@ -351,6 +352,34 @@ class ManagerSprintBacklog(models.Manager):
 
         sprint.capacidadEquipo = capacidad_total
         sprint.save()
+
+    def listarTipoHUSprint(self, idProyecto, idSprint):
+        """Listar los tipos de HU que pertenecen a un proyecto y se usan en un sprint
+
+        :param idProyecto: ID del proyecto
+        :param idSprint: ID del sprint de proyecto
+
+        :return: QuerySet de Tipos de US/None
+        """
+
+        try:
+            listaUS = self.listarHistoriasUsuario(proyecto_id=idProyecto, sprint_id=idSprint)
+            # Guardamos en un set (no permite duplicados) la lista de IDs de los tipos de US
+            setUSTipo = set()
+            for historia in listaUS:
+                setUSTipo.add(historia.tipo_historia_usuario.id)
+
+            if len(setUSTipo) == 0:
+                print("No hay US asociada a este Sprint")
+                return None
+
+            listatipos = Tipo_Historia_Usuario.objects.filter(id__in=list(setUSTipo))
+
+            return listatipos
+
+        except Exception as e:
+            print("Error al obtener la lista de Tipos de US! " + str(e))
+            return None
 
     def listarHistoriasUsuario(self, proyecto_id, sprint_id):
         """Retorna la lista de historias de usuario asociadas al sprint del proyecto dado
