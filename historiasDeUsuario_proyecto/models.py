@@ -1,10 +1,12 @@
 from django.db import models
 
 import proyectos
+
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
 from itertools import chain
+
 
 
 class managerHistoriaUsuario(models.Manager):
@@ -109,6 +111,7 @@ class managerHistoriaUsuario(models.Manager):
                     print(datos['idParticipante'])
                     usuarioParticipante = Usuario.objects.get(id=datos['idParticipante'])
                     desarrollador = participante.objects.get(proyecto_id=idProyecto, usuario_id=usuarioParticipante)
+
                 except participante.DoesNotExist as e:
                     print("Participante no existe! + " + str(e))
                     return None
