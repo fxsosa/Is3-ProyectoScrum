@@ -4,6 +4,7 @@ import proyectos
 from historiasDeUsuario.models import Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
+from itertools import chain
 
 
 class managerHistoriaUsuario(models.Manager):
@@ -28,6 +29,12 @@ class managerHistoriaUsuario(models.Manager):
             descripcion = datos['descripcion']
             prioridad_tecnica = datos['prioridad_tecnica']
             prioridad_negocio = datos['prioridad_negocio']
+
+            # Agregamos prioridad_general en caso de que ya tengamos la prioridad tecnica y de negocio
+            prioridad_final = None
+            if prioridad_tecnica is not None and prioridad_negocio is not None:
+                prioridad_final = round(0.6 * prioridad_negocio + 0.4 * prioridad_tecnica)  # Redondea el valor decimal
+
             estimacion_horas = datos['estimacion_horas']
             idTipo = datos['idTipo']
             if datos['idTipo']:
@@ -45,6 +52,7 @@ class managerHistoriaUsuario(models.Manager):
                                   prioridad_tecnica=prioridad_tecnica,
                                   prioridad_negocio=prioridad_negocio,
                                   estimacion_horas=estimacion_horas,
+                                  prioridad_final=prioridad_final,
                                   tipo_historia_usuario=tipoHistoria,
                                   desarrollador_asignado=desarrollador,
                                   proyecto=proyecto)
@@ -127,6 +135,10 @@ class managerHistoriaUsuario(models.Manager):
                 if datos['prioridad_negocio'] is not None:
                     historia.prioridad_negocio = datos['prioridad_negocio']
 
+                # Actualizamos la prioridad final en caso de que se haya actualizado alguna prioridad
+                if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
+                    historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
+
                 if datos['estimacion_horas'] is not None:
                     historia.estimacion_horas = datos['estimacion_horas']
 
@@ -177,7 +189,8 @@ class managerHistoriaUsuario(models.Manager):
             return None
 
     def listarHistoriasUsuario(self, idProyecto):
-        """Obtiene la lista completa de historias de usuario
+        """Obtiene la lista completa de historias de usuario. Obtiene la lista completa de historias de usuario. Se ordenan de acuerdo a la prioridad de las US.
+        Las historias canceladas se muestran al final de la lista
 
         :param idProyecto: ID del proyecto
 
@@ -189,7 +202,17 @@ class managerHistoriaUsuario(models.Manager):
             print(e)
             return None
 
-        listaHistorias = historiaUsuario.objects.filter(proyecto=idProyecto)
+        # Extraemos las historias canceladas (para poner al final de la lista retorno)
+        listaHistoriasCanceladas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="cancelada").order_by("-prioridad_final")
+
+        # Lista de historias finalizadas (para poner en el medio de la lista)
+        listaHistoriasFinalizadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="finalizada").order_by("-prioridad_final")
+
+        # Lista de historias no finalizadas ni canceladas
+        listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada"]).order_by("-prioridad_final")
+
+        listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasCanceladas))
+
         return listaHistorias
 
     def listarHUTipo(self, idProyecto, idTipoHU):
