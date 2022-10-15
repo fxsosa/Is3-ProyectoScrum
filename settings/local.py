@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'soportepermisos',
     'proyectos',
     'historiasDeUsuario',
-    'corsheaders'
+    'corsheaders',
+    'historiasDeUsuario_proyecto',
 ]
 
 MIDDLEWARE = [
@@ -63,13 +64,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    #'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8080',
-    'http://localhost:8080'
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'ProyectoScrum.urls'
 

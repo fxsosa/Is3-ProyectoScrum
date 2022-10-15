@@ -4,11 +4,13 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .manager import ManejoUsuarios
-"""
-Este es un comentario de prueva
-"""
+
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
+    """
+    Modelo personalizado de usuario.
+    Este modelo utiliza como clave primaria el valor del email, no el username
+    """
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(_('username'), max_length=80, null=True)
     nombres = models.CharField(_('user names'), max_length=80)
@@ -22,6 +24,10 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     objects = ManejoUsuarios()
 
     def __str__(self):
+        """Generar instancia en string
+
+        :return: "[email, username, nombres, apellidos]"
+        """
         return str([self.email, self.username, self.nombres, self.apellidos])
 
     class Meta:

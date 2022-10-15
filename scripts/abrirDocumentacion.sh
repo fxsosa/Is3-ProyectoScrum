@@ -6,24 +6,21 @@
 #                                            #
 ##############################################
 
-# Actualizamos el index
-cd "./documentacion"
-
-# Actualizamos el index.rst con los modulos del proyecto
-sed -i 's/:caption: Contents:/&\n   modules/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   sprints/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   usuarios/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   tests/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   settings/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   roles/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   ProyectoScrum/' './index.rst'
-sed -i 's/:caption: Contents:/&\n   app/' './index.rst'
-sed -i 's/:caption: Contents:/&\n/' './index.rst'
+# Accediento al directorio
+cd './documentacion'
 
 sphinx-apidoc -o . ..
 
 # Generando archivo html
 make html
 
-# Abriendo en el navegador por defecto
-xdg-open "_build/html/index.html"
+# Abriendo en el navegador disponible (firefox, chrome)
+# xdg-open "_build/html/index.html"
+temp1=$(firefox --version)
+temp2=$('google-chrome' --version)
+
+if [[ "$temp1" =~ "Mozilla Firefox " ]]; then
+  firefox "_build/html/index.html"
+elif [[ "$temp2" =~ "Google Chrome ".* ]]; then
+  'google-chrome' "_build/html/index.html"
+fi

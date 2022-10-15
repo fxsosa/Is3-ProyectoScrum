@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'soportepermisos',
     'proyectos',
     'historiasDeUsuario',
-    'corsheaders'
-    # Falta añadir proyectos e historiasdeUsuario
+    'corsheaders',
+    'historiasDeUsuario_proyecto'
 ]
 
 MIDDLEWARE = [
@@ -70,6 +70,9 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
+    'http://localhost:8000',
+    'https://proyectoscrumgrupo5.herokuapp.com',
+    'https://proyectoscrum5.web.app',
 ]
 
 ROOT_URLCONF = 'ProyectoScrum.urls'
@@ -157,6 +160,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = ['static']
 django_heroku.settings(locals())
 
+
 """
 STATIC_URL = 'static/'
 """
@@ -167,15 +171,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Para usar el usuario personalizado
 AUTH_USER_MODEL = 'usuarios.Usuario'
-
-WEBPACK_LOADER = {
-  'DEFAULT': {
-    'CACHE': not DEBUG,
-    'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
-    'POLL_INTERVAL': 0.1,
-    'IGNORE': [r'.+\.hot-update.js', r'.+\.map'],
-  }
-}
 
 # Elementos necesarios para django allauth
 SITE_ID = 2

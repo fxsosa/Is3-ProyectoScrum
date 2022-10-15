@@ -123,6 +123,20 @@ then
 	tema="sphinx_rtd_theme"
 	editarConfpy './documentacion' "$encabezado" $extensions $tema
 
+  # Actualizamos el index
+  cd "./documentacion"
+
+  # Actualizamos el index.rst con los modulos del proyecto
+  sed -i 's/:caption: Contents:/&\n   modules/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   sprints/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   usuarios/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   tests/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   settings/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   roles/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   tiposHistoriasDeUsuario/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   proyectos/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n   soportepermisos/' './index.rst'
+  sed -i 's/:caption: Contents:/&\n/' './index.rst'
 	
 else
 	echo "No instalamos sphinx."

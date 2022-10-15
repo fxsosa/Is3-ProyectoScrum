@@ -1,15 +1,13 @@
-from django.http import HttpResponse
+from rest_framework.utils import json
 from rest_framework.views import APIView
 from django.core import serializers
-from proyectos.models import Proyecto, participante
 import jwt
 from django.http import HttpResponse
-from django.views.generic import CreateView
-from rest_framework.utils import json
+
+from historiasDeUsuario_proyecto.models import historiaUsuario
 import roles
 from roles.models import Rol, permisosInternos
 from usuarios.models import Usuario
-from itertools import chain
 from proyectos.models import participante
 
 
@@ -18,28 +16,26 @@ from proyectos.models import Proyecto
 
 # Para proyectos individuales
 class controllerProyecto(APIView):
+    """
+        Clase para el manejo de proyectos individuales
+    """
     def get(self, request):
+        """
+            Método para obtener un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
             proyecto = Proyecto.objects.get(id=int(id))
-            #if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
-            serializer = serializers.serialize('json', [proyecto, ])
-            return HttpResponse(serializer, content_type='application/json', status=200)
-            #else:
-              #  return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            if user.has_perm('proyectos.listar_proyectos', obj=proyecto):
+                serializer = serializers.serialize('json', [proyecto, ])
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
@@ -47,18 +43,13 @@ class controllerProyecto(APIView):
 
 
     def post(self, request):
+        """
+            Método para crear un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
 
         try:
@@ -93,18 +84,13 @@ class controllerProyecto(APIView):
 
 
     def put(self, request):
+        """
+            Método para modificar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
 
         try:
@@ -126,20 +112,17 @@ class controllerProyecto(APIView):
 
 # Para proyectos en plural
 class controllerProyectos(APIView):
-
+    """
+        Controlador para Proyectos
+    """
     def get(self, request):
+        """
+            Método para obtener todos los proyectos
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             if user.has_perm('proyectos.listar_proyectos', obj=None):
@@ -154,48 +137,41 @@ class controllerProyectos(APIView):
 
 # Para manejo de los participantes
 class controllerParticipantes(APIView):
+    """
+        Controlador para participantes
+    """
 
     def get(self, request):
+        """
+            Método para obtener un participante
+            :param request: datos del request
+            :return: HttpResponse
+        """
+
+        user = validarRequest(request)
 
         try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
-
-        try:
-            id=request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            correo = request.GET.get('correo', '')
+            idProyecto = request.GET.get('idProyecto', '')
+            usuario = Usuario.objects.get(email=correo)
+            proyecto = Proyecto.objects.get(id=idProyecto)
             try:
-                particip = participante.objects.get(id=int(id))
-            except participante.DoesNotExist as e:
-                return HttpResponse("Error al obtener participante: " + str(e), status=400)
-            if user.has_perm('proyectos.listar_participante', obj=particip.proyecto):
+                particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
                 serializer = serializers.serialize('json', [particip, ])
                 return HttpResponse(serializer, content_type='application/json', status=200)
-            else:
-                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            except participante.DoesNotExist as e:
+                return HttpResponse("NoExiste", status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
     def post(self, request):
+        """
+            Método para crear un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
-
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             datos = request.data
@@ -205,29 +181,25 @@ class controllerParticipantes(APIView):
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             try:
                 usuario = Usuario.objects.get(id=int(datos['idUsuario']))
-            except Proyecto.DoesNotExist as e: # Corregir y ponerle "usuario" en vez de proyecto
+            except Usuario.DoesNotExist as e: # Corregir y ponerle "usuario" en vez de proyecto
                 return HttpResponse("Usuario no existe:" + str(e), status=400)
 
-            #if user.has_perm('participante.crear_participante', obj=proyecto):
-            particip = participante.objects.crearParticipante(datos)
-            return HttpResponse(particip, content_type='application/json', status=200)
-            #else:
-             #   return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+            if user.has_perm('proyectos.agregar_participante', obj=proyecto):
+                particip = participante.objects.crearParticipante(datos)
+                return HttpResponse(particip, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
     def delete(self, request):
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+        """
+            Método para borrar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             print(user)
@@ -236,16 +208,24 @@ class controllerParticipantes(APIView):
                 proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
-            #if user.has_perm('proyectos.borrar_participante', obj=proyecto):
+
             if user.has_perm('proyectos.borrar_participante', obj=proyecto):
                 userBorrar = Usuario.objects.get(email=request.GET.get('email', ''))
-                participante.objects.borrarParticipante(userBorrar,proyecto)
+                # verificamos si es el scrum master del proyecto
+                if proyecto.scrumMaster == userBorrar:
+                    return HttpResponse("No se puede eliminar al Scrum Master del proyecto", status=403)
+                # verificamos que no tenga tareas asignadas
+                participanteBorrar = participante.objects.get(usuario=userBorrar, proyecto=proyecto)
+                esParticipante = historiaUsuario.objects.filter(desarrollador_asignado=participanteBorrar).exists()
+                if esParticipante:
+                    return HttpResponse("No se puede eliminar el participante porque tiene tareas designadas", status=403)
+
+                participante.objects.borrarParticipante(participanteBorrar)
                 return HttpResponse("Borrado exitoso", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
 
-            #else:
-            #    return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+
 
 
         except Exception as e:
@@ -263,18 +243,17 @@ class controllerParticipantes(APIView):
             return HttpResponse("Algo salio mal " + str(e), status=500)
     '''
 class ControllerProyectoParticipantes(APIView):
+    """
+        Controlador para manejar participantes de un proyecto
+    """
     def get(self, request):
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+        """
+            Método para obtener los participantes de un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             idProyecto=request.GET.get('idproyecto', '')
@@ -284,20 +263,41 @@ class ControllerProyectoParticipantes(APIView):
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
 
+
+class ControllerProyectoParticipantes2(APIView):
+    """
+        Controlador para manejar participantes de un proyecto
+    """
+    def get(self, request):
+        """
+            Método para obtener los participantes de un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+
+        try:
+            idProyecto=request.GET.get('idproyecto', '')
+            participantes = participante.objects.filter(proyecto_id=idProyecto)
+            serializer = serializers.serialize('json', participantes)
+            return HttpResponse(serializer, content_type='application/json', status=200)
+        except Exception as e:
+            return HttpResponse("Algo salio mal " + str(e), status=500)
+
 # Controlador para iniciar un proyecto individual
 class controllerProyectosInicio(APIView):
+    """
+        Controlador para iniciar un proyecto individual
+    """
     def put(self, request):
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+        """
+            Método para iniciar un proyecto
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         try:
             datos = request.data
@@ -313,49 +313,80 @@ class controllerProyectosInicio(APIView):
         except Exception as e:
             return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
 class ControllerRolesProyectosUsuarios(APIView):
+    """
+        Controlador para listar roles internos por usuario
+    """
+
     def get(self, request):
+        """
+            Método para obtener la lista de roles internos por usuario
+            :param request: datos del request
+            :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+
         try:
 
             idProyecto = request.GET.get('idproyecto', '')
             email=request.GET.get('email', '')
 
-            res = Rol.objects.listarRolesInternosPorUsuario(email,idProyecto)
-
+            res = Rol.objects.listarRolesInternosPorUsuario(email, idProyecto)
             queryRol_json = serializers.serialize('json', res)
             return HttpResponse(queryRol_json, content_type='application/json', status=201)
+
         except Exception as e:
             return HttpResponse("Error al obtener roles internos! - " + str(e), status=500)
 
 
 
 class controllerProyectosImportar(APIView):
+    """
+        Controlador para importar roles de un proyecto a otro
+    """
 
     def post(self, request):
-        try:
-            token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
-            usuarioJSON = obtenerUsuarioConToken(token)
-        except Exception as e1:
-            return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+        """
+            Método para importar roles de un proyecto a otro
+            :param request: datos del request
+            :return: HttpResponse
+        """
 
-        # Obtenemos el usuario del modelo Usuario
-        try:
-            user = Usuario.objects.get(email=usuarioJSON['email'])
-        except Usuario.DoesNotExist as e:
-            return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+        user = validarRequest(request)
 
         datos = request.data
         try:
             try:
                 proyectoActual = Proyecto.objects.get(id=datos['idProyectoActual'])
-                proyectoExterno = Proyecto.objects.get(id=datos['idProyectoExterno'])
+                rol = Rol.objects.get(id=datos['idRol'])
             except Proyecto.DoesNotExist as e:
-                return HttpResponse("No existe el/los proyectos recibidos! " + str(e))
+                return HttpResponse("No existe el proyectos recibido o el rol! " + str(e))
 
-            listaRol = Proyecto.objects.importarRoles(datos)
-            queryRol_json = serializers.serialize('json', listaRol)
-            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+            if user.has_perm("proyectos.importar_roles_internos", obj=proyectoActual):
+                rolNuevo = Proyecto.objects.importarRoles(datos)
+                return HttpResponse(rolNuevo, content_type='application/json', status=201)
+            else:
+                return HttpResponse("No tienes permiso para importar roles internos", status=400)
         except Exception as e:
             return HttpResponse("Error al importar roles de proyectos: " + str(e), status=500)
+
+
+def validarRequest(request):
+    # Obtenemos los datos del token
+    try:
+        token = request.META['HTTP_AUTHORIZATION'].split(" ")[1]
+        usuarioJSON = obtenerUsuarioConToken(token)
+    except Exception as e1:
+        return HttpResponse("Error al manipular el token! " + str(e1), status=401)
+
+    # Obtenemos el usuario del modelo Usuario
+    try:
+        user = Usuario.objects.get(email=usuarioJSON['email'])
+    except Usuario.DoesNotExist as e:
+        return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
+
+    return user
+
 
 def obtenerUsuarioConToken(token):
     datosUsuario={}
@@ -370,4 +401,3 @@ def obtenerUsuarioConToken(token):
     datosUsuario['username'] = decoded['email'].split("@")[0]
 
     return datosUsuario
-
