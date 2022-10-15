@@ -137,7 +137,8 @@ class managerHistoriaUsuario(models.Manager):
 
                 # Actualizamos la prioridad final en caso de que se haya actualizado alguna prioridad
                 if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
-                    historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
+                    if historia.prioridad_negocio is not None and historia.prioridad_tecnica is not None:
+                        historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
 
                 if datos['estimacion_horas'] is not None:
                     historia.estimacion_horas = datos['estimacion_horas']
