@@ -120,7 +120,7 @@ class controllerProyecto(APIView):
         try:
             print(user)
             try:
-                idproyecto = request.GET.get('idproyecto', '')
+                idproyecto = request.GET.get('idProyecto', '')
                 proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
