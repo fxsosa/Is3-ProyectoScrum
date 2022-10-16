@@ -39,7 +39,7 @@ def test_crearSprint():
 
 
 @pytest.mark.django_db
-def test_SprintBacklog():
+def test_CrearSprintBacklog():
     User = get_user_model()
     user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
     auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
@@ -109,6 +109,214 @@ def test_SprintBacklog():
     historia2 = historiaUsuario.objects.filter(id=historia2[0].id)
 
     assert str([listaHUBacklog[0].id, listaHUBacklog[1].id]) == str([historia1[0].id, historia2[0].id]), "Error al crear el sprint backlog"
+
+
+@pytest.mark.django_db
+def test_ListarTiposHUSprintBacklog():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+    # Agregamos otro usuario
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    idProyecto = proyecto.id
+    tipo1 = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
+
+    tipo2 = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                       "id_proyecto": idProyecto,
+                                                       "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
+    idTipo1 = tipo1.id
+    idTipo2 = tipo2.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+
+    Sprint_Miembro_Equipo.objects.agregarMiembro({"capacidad": 50, "sprint_id": sprint.id,
+                                                  "usuario_id": user1.id})
+
+    idParticipante = part.id
+    datos = {
+        "nombre": "Historia 1",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo1,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    datos = {
+        "nombre": "Historia 2",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo2,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    Proyecto.objects.iniciarProyecto({"id": proyecto.id})
+
+    sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    listaTiposHU = SprintBacklog.objects.listarTipoHUSprint(idProyecto=proyecto.id, idSprint=sprint.id)
+
+    # Verificamos que los ID recibidos de la lista de Tipos, coincidan con los ID de los tipos que cargamos
+    # en las historias del sprint
+    assert str([listaTiposHU[0].id, listaTiposHU[1].id]) == str([tipo1.id, tipo2.id]), "Error al listar Tipos de HU de un Sprint"
+
+
+@pytest.mark.django_db
+def test_ListarHUTipo():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+    # Agregamos otro usuario
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    idProyecto = proyecto.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
+
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+
+    Sprint_Miembro_Equipo.objects.agregarMiembro({"capacidad": 50, "sprint_id": sprint.id,
+                                                  "usuario_id": user1.id})
+
+    idParticipante = part.id
+    datos = {
+        "nombre": "Historia 1",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    datos = {
+        "nombre": "Historia 2",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    Proyecto.objects.iniciarProyecto({"id": proyecto.id})
+
+    sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    listaHU = SprintBacklog.objects.listarHUTipo(proyecto_id=proyecto.id, sprint_id=sprint.id, tipo_id=tipo.id)
+
+    # Verificamos que los US del sprint backlog obtenidos, sean del mismo tipo que el tipo creado
+    assert str([listaHU[0].tipo_historia_usuario.id, listaHU[1].tipo_historia_usuario.id]) == str([tipo.id, tipo.id]), \
+        "Error al listar los US de un Tipo, de un Sprint"
+
+
+@pytest.mark.django_db
+def test_EliminarHUSprintBacklog():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+
+    idProyecto = proyecto.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
+
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+
+    Sprint_Miembro_Equipo.objects.agregarMiembro({"capacidad": 50, "sprint_id": sprint.id,
+                                                  "usuario_id": user1.id})
+
+    idParticipante = part.id
+    datos = {
+        "nombre": "Historia 1",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    Proyecto.objects.iniciarProyecto({"id": proyecto.id})
+
+    sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+
+    # Verificamos que el metodo nos confirme la eliminacion (Boolean)
+    assert SprintBacklog.objects.eliminarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia[0].id) == True, "Error al eliminar HU del Sprint Backlog"
 
 
 @pytest.mark.django_db
