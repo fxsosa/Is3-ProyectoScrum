@@ -146,6 +146,30 @@ class HistoriaUsuario(APIView, CreateView):
         except Exception as e:
             return HttpResponse("Error al eliminar la Historia de Usuario - " + str(e), status=500)
 
+class ListaHUTipo(APIView):
+    def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un tipo, de un proyecto
+
+        :param request: Request de la peticion. Contiene como queryParam idProyecto, idTipoHU
+
+        :return: HttpResponse
+        """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idproyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idproyecto)
+            if user.has_perm('proyectos.listar_historias_usuario', obj=proyecto):
+                idTipo = request.GET.get('idTipoHU', '')
+                listaHUTipo = historiaUsuario.objects.listarHUTipo(idProyecto=idproyecto, idTipoHU=idTipo)
+                serializer = serializers.serialize('json', listaHUTipo)
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
+
 
 def validarRequest(request):
     # Obtenemos los datos del token

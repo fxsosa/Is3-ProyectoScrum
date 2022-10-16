@@ -72,7 +72,35 @@ class controllerSprint(APIView):
             return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
 
     def put(self, request):
-        pass
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
+            if user.has_perm('proyectos.actualizar_sprint', obj=proyecto):
+                try:
+                    sprint = Sprint.objects.get(id=datos['idSprint'])
+                except Sprint.DoesNotExist as e:
+                    return HttpResponse("No existe el sprint! ", status=400)
+
+                if sprint.estado == "Planificación":
+                    sprintActualizado = Sprint.objects.actualizarSprint(datos)
+                    if sprintActualizado is not None:
+                        # Retornar el sprint actualizado
+                        sprint_json = serializers.serialize('json', sprintActualizado)
+
+                        # Crear un nuevo miembro del equipo de un Sprint
+                        return HttpResponse(sprint_json, content_type='application/json', status=201)
+                    else:
+                        return HttpResponse("No se pudo actualizar el sprint", status=500)
+                else:
+                    return HttpResponse("No se puede actualizar sprints con estado \"" + str(sprint.estado) + "\"!", status=403)
+
+            else:
+                return HttpResponse("No se tienen los permisos para modificar miembros de Sprints!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
     def delete(self, request):
         user = validarRequest(request)
@@ -208,6 +236,26 @@ class controllerSprintBacklog(APIView):
             return HttpResponse("No se pudo obtener el backlog del sprint! " + str(e), status=500)
 
 
+    def delete(self, request):
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.borrar_historia_sprintbacklog', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                idHistoria = request.GET.get('idHistoria', '')
+
+                if SprintBacklog.objects.eliminarHUSprintBacklog(idProyecto=idProyecto, idSprint=idSprint, idHistoria=idHistoria):
+                    return HttpResponse("Eliminado del sprintbacklog con exito!", status=201)
+                else:
+                    return HttpResponse("No se pudo eliminar del sprintbacklog!", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para borrar del sprintbacklog!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al eliminar US del sprintbacklog - " + str(e), status=500)
+
+
 class controllerEstadoSprint(APIView):
 
     def put(self, request):
@@ -216,21 +264,80 @@ class controllerEstadoSprint(APIView):
         try:
             # Obtenemos el cuerpo de la peticion
             body = request.data
-            proyecto = proyectos.models.Proyecto.objects.get(id=body['idProyecto'])
+            try:
+                proyecto = proyectos.models.Proyecto.objects.get(id=body['idProyecto'])
+            except proyectos.models.Proyecto.DoesNotExist as e:
+                return HttpResponse("No existe el proyecto!", status=500)
+
             if user.has_perm('proyectos.actualizar_sprint', obj=proyecto):
-                sprint = Sprint.objects.cambiarEstado(idProyecto=body['idProyecto'], idSprint=body['idSprint'], opcion=body['opcion'])
-                if sprint is not None:
+                sprintRespuesta = Sprint.objects.cambiarEstado(idProyecto=body['idProyecto'], idSprint=body['idSprint'], opcion=body['opcion'])
+                if str(type(sprintRespuesta)) == "<class 'django.db.models.query.QuerySet'>":
                     # Convertimos a json
-                    sprint_json = serializers.serialize('json', sprint)
+                    sprint_json = serializers.serialize('json', sprintRespuesta)
                     # Retornamos el json
                     return HttpResponse(sprint_json, content_type='application/json', status=201)
                 else:
-                    return HttpResponse("No se pudo actualizar el estado del sprint! ", status=500)
+                    return HttpResponse(sprintRespuesta, status=403)
             else:
                 return HttpResponse("No se tienen los permisos para modificar estado de Sprint!", status=403)
         except Exception as e:
             print("Error en el controller! " + str(e))
-            return HttpResponse("No se pudo cambiar el estado del sprint! " + str(e), status=500)
+            return HttpResponse("No se pudo cambiar el estado del sprint! ", status=500)
+
+class ListaHUTipo(APIView):
+    def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un tipo, de un proyecto
+
+        :param request: Request de la peticion. Contiene como queryParam idProyecto, idTipoHU
+
+        :return: HttpResponse
+        """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idproyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idproyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                idTipoHU = request.GET.get('idTipoHU', '')
+                idSprint = request.GET.get('idSprint', '')
+                listaHUTipo = SprintBacklog.objects.listarHUTipo(proyecto_id=idproyecto, tipo_id=idTipoHU, sprint_id=idSprint)
+                serializer = serializers.serialize('json', listaHUTipo)
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
+
+
+class controllerListaTipoHU(APIView):
+
+    def get(self, request):
+        """Metodo get para obtener una lista de tipos de US de un sprint
+
+                :param request: Request de la peticion. Contiene como queryParam idProyecto, idSprint
+
+                :return: HttpResponse
+
+                """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                idSprint = request.GET.get('idSprint', '')
+                listaTipoHU = SprintBacklog.objects.listarTipoHUSprint(idProyecto=idProyecto, idSprint=idSprint)
+                if listaTipoHU is not None:
+                    serializer = serializers.serialize('json', listaTipoHU)
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudieron obtener los Tipos de Historia! ", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para listar Tipos de Historias!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar los Tipos de Historia!", status=500)
 
 
 def validarRequest(request):
