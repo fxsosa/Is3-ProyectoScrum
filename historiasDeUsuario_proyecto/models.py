@@ -29,13 +29,13 @@ class managerHistoriaUsuario(models.Manager):
         try:
             nombre = datos['nombre']
             descripcion = datos['descripcion']
-            prioridad_tecnica = datos['prioridad_tecnica']
-            prioridad_negocio = datos['prioridad_negocio']
+            prioridad_tecnica = int(datos['prioridad_tecnica'])
+            prioridad_negocio = int(datos['prioridad_negocio'])
 
             # Agregamos prioridad_general en caso de que ya tengamos la prioridad tecnica y de negocio
             prioridad_final = None
             if prioridad_tecnica is not None and prioridad_negocio is not None:
-                prioridad_final = round(0.6 * prioridad_negocio + 0.4 * prioridad_tecnica)  # Redondea el valor decimal
+                prioridad_final = round(0.6 * prioridad_negocio + 0.4 * prioridad_tecnica) # Redondea el valor decimal
 
             estimacion_horas = datos['estimacion_horas']
             idTipo = datos['idTipo']
