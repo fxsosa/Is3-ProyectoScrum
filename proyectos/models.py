@@ -1,5 +1,6 @@
 from django.db import models
 import datetime
+from django.utils import timezone
 
 from usuarios.models import Usuario
 from django.apps import apps
@@ -85,7 +86,8 @@ class ManejoProyectos(models.Manager):
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.estado = "iniciado"
-        proyecto.fechaInicio = datetime.date.today()
+#        proyecto.fechaInicio = datetime.date.today()
+        proyecto.fechaInicio = timezone.now()
         proyecto.save()
         return proyecto
 

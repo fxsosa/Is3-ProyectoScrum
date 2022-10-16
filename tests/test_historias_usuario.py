@@ -90,7 +90,14 @@ def test_actualizarHistoriaUsuario():
     part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
     idParticipante = part.id
     historia = historiaUsuario.objects.create(nombre="Nombre Prueba", descripcion="Descripcion de Prueba", prioridad_tecnica=1, prioridad_negocio=2, estimacion_horas=10, tipo_historia_usuario=tipo, desarrollador_asignado=part, proyecto=proyectoPrueba)
-    actualizado = historiaUsuario.objects.actualizarHistoriaUsuario({"idProyecto": idProyecto, "idHistoria": historia.id, "idParticipante": None, "idTipo": None, "nombre": "Nuevo Nombre", "descripcion": None, "prioridad_tecnica": None, "prioridad_negocio": None, "estimacion_horas": None})
+    actualizado = historiaUsuario.objects.actualizarHistoriaUsuario({"idProyecto": idProyecto,
+                                                                     "idHistoria": historia.id, "idParticipante": None,
+                                                                     "idTipo": None, "nombre": "Nuevo Nombre",
+                                                                     "descripcion": None, "prioridad_tecnica": None,
+                                                                     "horas_trabajadas": None,
+                                                                     "prioridad_negocio": None,
+                                                                     "estimacion_horas": None,
+                                                                     "estado": None})
     assert str([actualizado[0].nombre, actualizado[0].descripcion, actualizado[0].prioridad_tecnica, actualizado[0].prioridad_negocio, actualizado[0].estimacion_horas, str(actualizado[0].tipo_historia_usuario.id), str(actualizado[0].desarrollador_asignado.id), str(actualizado[0].proyecto.id)]) == str(["Nuevo Nombre", "Descripcion de Prueba", 1, 2, 10, str(tipo.id), str(part.id), str(proyectoPrueba.id)]), "Error al actualizar la historia de usuario"
 
 @pytest.mark.django_db

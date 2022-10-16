@@ -73,6 +73,10 @@ def test_SprintBacklog():
     idTipo = tipo.id
     idUsuario = user1.id
     part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+
+    Sprint_Miembro_Equipo.objects.agregarMiembro({"capacidad": 50, "sprint_id": sprint.id,
+                                                  "usuario_id": user1.id})
+
     idParticipante = part.id
     datos = {
         "nombre": "Historia 1",
@@ -96,6 +100,8 @@ def test_SprintBacklog():
         "idProyecto": idProyecto,
     }
     historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    Proyecto.objects.iniciarProyecto({"id": proyecto.id})
 
     sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
     listaHUBacklog = SprintBacklog.objects.listarHistoriasUsuario(proyecto_id=proyecto.id, sprint_id=sprint.id)
@@ -234,6 +240,8 @@ def test_cambiarEstadoSprint():
                                                       "id_proyecto": idProyecto,
                                                       "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
 
+    Sprint_Miembro_Equipo.objects.agregarMiembro({"capacidad": 50, "sprint_id": sprintCreado[0].id,
+                                                  "usuario_id": user1.id})
     idTipo = tipo.id
     idUsuario = user1.id
     part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
@@ -261,16 +269,19 @@ def test_cambiarEstadoSprint():
     }
     historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
 
+    # Actualizamos el estado del proyecto
+    Proyecto.objects.iniciarProyecto({"id": idProyecto})
+
     sprintActualizado = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprintCreado[0].id, opcion="Avanzar")
 
     # Verificamos que el estado del Sprint haya cambiado a "En Ejecucion"
     assert str([sprintActualizado[0].id, sprintActualizado[0].fecha_inicio, sprintActualizado[0].fecha_fin,
                 sprintActualizado[0].cantidadDias, sprintActualizado[0].estado,
-                sprintActualizado[0].capacidadEquipo, sprintActualizado[0].proyecto_id]) == str([sprintCreado[0].id,
-                                                                                                sprintCreado[0].fecha_inicio,
-                                                                                                sprintCreado[0].fecha_fin, 30,
-                                                                                                'En Ejecución', 30,
-                                                                                                proyecto.id]), "Error al pasar de estado Planificacion a En Ejecucion"
+                sprintActualizado[0].proyecto_id]) == str([sprintCreado[0].id,
+                                                        sprintCreado[0].fecha_inicio,
+                                                        sprintCreado[0].fecha_fin, 30,
+                                                        'En Ejecución',
+                                                        proyecto.id]), "Error al pasar de estado Planificacion a En Ejecucion"
 
     # Verificamos que el estado del Sprint haya cambiado a "Finalizado"
     sprintActualizado = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprintCreado[0].id,
@@ -278,11 +289,11 @@ def test_cambiarEstadoSprint():
     # Verificamos que el estado del Sprint haya cambiado a "En Ejecucion"
     assert str([sprintActualizado[0].id, sprintActualizado[0].fecha_inicio, sprintActualizado[0].fecha_fin,
                 sprintActualizado[0].cantidadDias, sprintActualizado[0].estado,
-                sprintActualizado[0].capacidadEquipo, sprintActualizado[0].proyecto_id]) == str([sprintCreado[0].id,
-                                                                                                 sprintCreado[0].fecha_inicio,
-                                                                                                 sprintCreado[0].fecha_fin, 30,
-                                                                                                'Finalizado', 30,
-                                                                                                proyecto.id]), "Error al pasar de estado En Ejecucion a Finalizado"
+                sprintActualizado[0].proyecto_id]) == str([sprintCreado[0].id,
+                                                         sprintCreado[0].fecha_inicio,
+                                                         sprintCreado[0].fecha_fin, 30,
+                                                        'Finalizado',
+                                                        proyecto.id]), "Error al pasar de estado En Ejecucion a Finalizado"
 
 @pytest.mark.django_db
 def test_listarSprints():
