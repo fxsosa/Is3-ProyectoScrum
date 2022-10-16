@@ -12,6 +12,14 @@ from usuarios.models import Usuario
 class controllerListarSprints(APIView):
 
     def get(self, request):
+        """Metodo get para listar todos los sprints de un proyecto dado.
+
+        :param request: Request, donde los parametros recibidos por queryParam son
+        "idProyecto" para el ID del proyecto, y "idSprint" para el ID del sprint
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Procesamos el request
         try:
@@ -33,6 +41,14 @@ class controllerListarSprints(APIView):
 class controllerSprint(APIView):
 
     def post(self, request):
+        """Metodo para crear un sprint de un proyecto
+
+        :param request: Request, con request.data con los siguientes parametros:
+        "idProyecto", "nombre", "descripcion", "capacidadEquipo", "cantidadDias"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         body = request.data
@@ -53,6 +69,13 @@ class controllerSprint(APIView):
             return HttpResponse("Error al registrar sprint - " + str(e), status=500)
 
     def get(self, request):
+        """Metodo para obtener un Sprint de un Proyecto
+
+        :param request: Request. Los parametros del queryparam son "idProyecto" y "idSprint"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         try:
             idProyecto = request.GET.get('idProyecto', '')
@@ -72,6 +95,14 @@ class controllerSprint(APIView):
             return HttpResponse("No se pudo obtener el sprint del proyecto! " + str(e), status=500)
 
     def put(self, request):
+        """Metodo para actualizar un sprint de un proyecto
+
+        :param request: Request. Los parametros del request.data son:
+        "idProyecto", "idSprint", "nombre", "descripcion", "cantidadDias"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         body = request.data
@@ -103,6 +134,13 @@ class controllerSprint(APIView):
             return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
     def delete(self, request):
+        """Metodo para cancelar un sprint
+
+        :param request: Request, los parametros por queryParam son "idProyecto" y "idSprint"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         try:
@@ -124,6 +162,12 @@ class controllerEquipoSprint(APIView):
 
     # Retorna todos los miembros del equipo de un Sprint
     def get(self, request):
+        """Metodo de para obtener todos los miembros del equipo de un sprint
+
+        :param request: Request, recibe por queryParam "idProyecto", "idSprint"
+
+        :return: HttpResponse
+        """
 
         user = validarRequest(request)
         try:
@@ -147,6 +191,14 @@ class controllerEquipoSprint(APIView):
 
         # Añade a un usuario al equipo de un Sprint
     def post(self, request):
+        """Metodo para agregar un miembro de equipo en un sprint
+
+        :param request: Request. Recibe en el request.data los siguientes parametros:
+        "proyecto_id", "capacidad", "usuario_id", "sprint_id"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         body = request.data
@@ -170,6 +222,13 @@ class controllerEquipoSprint(APIView):
             return HttpResponse("Error al registrar miembro de Sprint: " + str(e), status=500)
 
     def put(self, request):
+        """Metodo para actualizar la capacidad de un participante de un proyecto
+
+        :param request: Request, con el request.data con los siguientes parametros:
+        "proyecto_id", "capacidad", "miembro_equipo_id"
+
+        :return: HttpResponse
+        """
 
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
@@ -194,6 +253,13 @@ class controllerEquipoSprint(APIView):
             return HttpResponse("Error al modificar miembro de Sprint: " + str(e), status=500)
 
     def delete(self, request):
+        """Metodo para eliminar un miembro de equipo de un sprint de proyecto
+
+        :param request: Request, con los siguientes parametros en el query: "idProyecto",
+        "idSprint", "idMiembroEquipo"
+
+        :return: HttpResponse
+        """
 
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
@@ -216,6 +282,13 @@ class controllerEquipoSprint(APIView):
 class controllerSprintBacklog(APIView):
 
     def get(self, request):
+        """Metodo para obtener la lista de US de un Sprint Backlog
+
+        :param request: Request. Recibe como parametros del query "idProyecto", "idSprint"
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request=request)
         try:
             idProyecto = request.GET.get('idProyecto', '')
@@ -237,6 +310,14 @@ class controllerSprintBacklog(APIView):
 
 
     def delete(self, request):
+        """Metodo para eliminar un US del sprint backlog
+
+        :param request: Request. Recibe como parametros del query: "idProyecto",
+        "idSprint", "idHistoria"
+
+        :return:
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         try:
@@ -259,6 +340,17 @@ class controllerSprintBacklog(APIView):
 class controllerEstadoSprint(APIView):
 
     def put(self, request):
+        """Metodo para cambiar el estado de un sprint
+        Los estados cambian en el siguiente orden: Planificacion -> En Ejecucion -> Finalizado
+        Tambien se puede definir el estado del sprint como Cancelado.
+
+        :param request: Request. Recibe como datos en el request.data:
+        "idProyecto", "idSprint", "opcion" (Avanzar para pasar al siguiente estado/Cancelar para
+        cancelar el proyecto)
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
 
         try:
