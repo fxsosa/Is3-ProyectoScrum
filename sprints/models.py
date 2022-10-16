@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import models
 import pytz
 
-from historiasDeUsuario.models import Tipo_Historia_Usuario
+from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
@@ -358,6 +358,13 @@ class ManagerSprintBacklog(models.Manager):
             # 1. Estado de la US no sea cancelada ni finalizada
             # 2. Tiene desarrollador asignado encargado de la US
             if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada" or historia_usuario.desarrollador_asignado is None):
+                # obtenemos el tipoHU y le asignamos el primer estado
+                if historia_usuario.estado == None:
+                    columnas = Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=historia_usuario.tipo_historia_usuario_id).order_by('orden')
+                    historia_usuario.estado = columnas[0].id
+                    print('historia_usuario.estado',historia_usuario.estado)
+                    historia_usuario.save()
+
                 sprint_backlog.historiaUsuario.add(historia_usuario)
                 horas_hu = historia_usuario.estimacion_horas
                 acumulado += horas_hu
@@ -459,7 +466,7 @@ class ManagerSprintBacklog(models.Manager):
                     print("No existe el sprintbacklog! " + str(e))
                     return None
 
-                return backlog.historiaUsuario.all()
+                return backlog.historiaUsuario.all().order_by('-prioridad_final')
         except Exception as e:
             print("Error al obtener la lista de US! " + str(e))
             return None
