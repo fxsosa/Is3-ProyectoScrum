@@ -357,17 +357,18 @@ class ManagerSprintBacklog(models.Manager):
             # Verificamos:
             # 1. Estado de la US no sea cancelada ni finalizada
             # 2. Tiene desarrollador asignado encargado de la US
+            # 3. El desarrollador asignado es miembro del equipo del sprint al cual se agrega la US
             if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada" or historia_usuario.desarrollador_asignado is None):
-                # obtenemos el tipoHU y le asignamos el primer estado
-                if historia_usuario.estado == None:
+                # Verificamos el Nro. 3
+                if Sprint_Miembro_Equipo.objects.filter(usuario_id=historia_usuario.desarrollador_asignado.usuario.id, sprint_id=sprint.id).exists():
                     columnas = Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=historia_usuario.tipo_historia_usuario_id).order_by('orden')
                     historia_usuario.estado = columnas[0].id
-                    print('historia_usuario.estado',historia_usuario.estado)
+                    print('historia_usuario.estado', historia_usuario.estado)
                     historia_usuario.save()
 
-                sprint_backlog.historiaUsuario.add(historia_usuario)
-                horas_hu = historia_usuario.estimacion_horas
-                acumulado += horas_hu
+                    sprint_backlog.historiaUsuario.add(historia_usuario)
+                    horas_hu = historia_usuario.estimacion_horas
+                    acumulado += horas_hu
 
     def actualizarPrioridadFinal(self, proyecto_id):
         """Actualiza las prioridades de los US de un proyecto.
