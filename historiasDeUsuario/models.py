@@ -199,20 +199,52 @@ class ManejoColumasUH(models.Manager):
         """
         Elimina una columna de un tipo de HU
         :param datos:
+        orden: Recibe un orden numérico
         :return:
         """
+        from sprints.models import SprintBacklog  # Importando así evitamos el error de "importe circular"
+
+
         id_tipo_HU = datos['id_tipo_HU']
         orden = datos['orden']
         indice_orden = orden - 1
+
 
         lista_columnas_tipo_HU = list(Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=id_tipo_HU).order_by('orden'))
         orden_maximo = lista_columnas_tipo_HU[-1].orden
         indice_orden_maximo = orden_maximo - 1
 
+
+
+
+        # TODO: Evitar borrar columna si tiene una HU ahí
+
+
+        # Se evita borrar una columna si tiene HU en esa posición
+        lista_backlog = SprintBacklog.objects.all()
+        lista = []
+
+        for backlog in lista_backlog:
+            lista_hu = backlog.historiaUsuario.all()
+            for hu in lista_hu:
+                if hu.tipo_historia_usuario.id == int(id_tipo_HU):
+                    lista.append(hu)
+
+        # Se maneja el orden como cadena para el frontend
+        if orden == orden_maximo:
+            estado_col_a_borrar = "finalizada"
+        else:
+            estado_col_a_borrar = str(orden)
+
+        for hu in lista: # Si existe una HU en la columna, entonces no podemos borrarla
+            if hu.estado == estado_col_a_borrar:
+                return False
+
+
+        #Proceso de borrado
         if(indice_orden == indice_orden_maximo):
             columna = lista_columnas_tipo_HU[indice_orden_maximo]
             columna.delete()
-            # TODO: Añadir método para migrar HU de la columna borrada a la siguiente a la izquierda
         else:
             columna = lista_columnas_tipo_HU[indice_orden]
             columna.delete()
@@ -223,9 +255,8 @@ class ManejoColumasUH(models.Manager):
                 columna.orden = columna.orden - 1
                 columna.save()
 
+        return True
 
-
-            #TODO: Añadir método para migrar HU de la columna borrada a la siguiente a la derecha
 
 
 class Tipo_Historia_Usuario(models.Model):
