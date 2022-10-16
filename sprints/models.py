@@ -115,6 +115,14 @@ class ManagerSprint(models.Manager):
             return None
 
     def eliminarSprint(self, idProyecto, idSprint):
+        """Eliminar un sprint de un proyecto
+
+        :param idProyecto: ID del proyecto
+        :param idSprint: ID de un sprint
+
+        :return: Boolean
+        """
+
         try:
             try:
                 sprint = Sprint.objects.get(id=idSprint)
@@ -240,6 +248,12 @@ class ManagerSprint(models.Manager):
 class ManagerMiembroSprint(models.Manager):
 
     def agregarMiembro(self, datos):
+        """Agrega a un usuario como miembro de un sprint.
+
+        :param datos: Diccionario. Tiene los siguientes parametros: "capacidad" (Entero), "sprint_id", "usuario_id"
+
+        :return: Objeto Miembro Sprint
+        """
 
         capacidad = datos['capacidad']
         sprint_id = datos['sprint_id']
@@ -251,6 +265,15 @@ class ManagerMiembroSprint(models.Manager):
         return miembro_equipo
 
     def modificarMiembro(self, datos):
+        """Modifica los datos de un usuario asignado como miembro de sprint
+
+        :param datos: Diccionario. Tiene los siguientes parametros:
+        "capacidad": Capacidad en horas que un usuario puede trabajar al dia
+        "miembro_id": ID del miembro del sprint
+
+        :return:
+        """
+
         capacidad = datos['capacidad']
         miembro_id = datos['miembro_equipo_id']
 
@@ -261,6 +284,15 @@ class ManagerMiembroSprint(models.Manager):
         return miembro_equipo
 
     def eliminarMiembro(self, idSprint, idProyecto, id_miembro_equipo):
+        """Elimina un miembro de un sprint
+
+        :param idSprint: ID del sprint
+        :param idProyecto: ID del proyecto
+        :param id_miembro_equipo: ID del miembro de un equipo
+
+        :return: Boolean
+        """
+
         try:
             try:
                 sprint = Sprint.objects.get(id=idSprint)
@@ -292,7 +324,12 @@ class ManagerMiembroSprint(models.Manager):
 
 class ManagerSprintBacklog(models.Manager):
     def crearSprintBacklog(self, proyecto_id, sprint_id):
+        """Crea un sprint backlog. Agrega las US permitidas del proyecto.
 
+        :param proyecto_id: ID del proyecto
+        :param sprint_id: ID del sprint
+
+        """
         # Lista de HU ordenada por prioridad
         #lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
 
@@ -326,6 +363,12 @@ class ManagerSprintBacklog(models.Manager):
                 acumulado += horas_hu
 
     def actualizarPrioridadFinal(self, proyecto_id):
+        """Actualiza las prioridades de los US de un proyecto.
+
+        :param proyecto_id:
+        :return: None
+        """
+
         lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by(
             'prioridad_tecnica').reverse()
 
