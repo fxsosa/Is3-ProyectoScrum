@@ -2,6 +2,7 @@ from django.db import models
 import datetime
 from django.utils import timezone
 
+import sprints
 from usuarios.models import Usuario
 from django.apps import apps
 
@@ -103,6 +104,11 @@ class ManejoProyectos(models.Manager):
         proyecto.estado = "cancelado"
         proyecto.save()
 
+        listaSprints = sprints.models.Sprint.objects.filter(proyecto_id=proyecto.id)
+        if len(listaSprints) > 0:
+            for sprint in listaSprints:
+                sprint.estado = "Cancelado"
+                sprint.save()
 
 
 class ManejoParticipantes(models.Manager):
