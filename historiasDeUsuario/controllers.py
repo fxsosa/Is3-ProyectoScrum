@@ -244,7 +244,7 @@ class controllerColumnasTipoHU(APIView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         try:
-            id_columna = request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            id_columna = request.GET.get('idColumna', '') #Recibe el parámetro "idColumna" de la url
             columna_tipo_HU = Columna_Tipo_Historia_Usuario.objects.get(id=int(id_columna))
             print(columna_tipo_HU)
             
@@ -360,7 +360,6 @@ class controllerColumnasTipoHU(APIView):
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Error encontrado:" + str(e), status=500)
-
 
 
 def obtenerUsuarioConToken(token):

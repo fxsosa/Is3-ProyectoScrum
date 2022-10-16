@@ -194,7 +194,7 @@ class controllerParticipantes(APIView):
 
     def delete(self, request):
         """
-            Método para borrar un proyecto
+            Método para borrar un participante del proyecto
             :param request: datos del request
             :return: HttpResponse
         """

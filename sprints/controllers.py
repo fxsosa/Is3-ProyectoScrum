@@ -258,6 +258,23 @@ class controllerSprintBacklog(APIView):
 
 class controllerEstadoSprint(APIView):
 
+    def get(self, request):
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_sprint', obj=proyecto):
+                try:
+                    sprint = Sprint.objects.get(proyecto=proyecto, estado='En Ejecución')
+                    jsonRespuesta = serializers.serialize('json', [sprint, ])
+
+                    return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+                except Sprint.DoesNotExist:
+                    return HttpResponse('No hay sprint en ejecucion', status=200)
+
+        except Exception as e:
+            return HttpResponse("Error al obtener sprint - " + str(e), status=500)
     def put(self, request):
         user = validarRequest(request)
 
