@@ -3,7 +3,6 @@ from datetime import datetime
 import pytz
 from proyectos.models import Proyecto
 
-
 class ManejoTipoHU(models.Manager):
     """
         Manager para manejar tipos de Historias de Usuario
@@ -55,8 +54,30 @@ class ManejoTipoHU(models.Manager):
             :param datos: datos del request
             :return: null
         """
+
+        # Evitamos borrar el tipo de HU si está en algún Sprint Backlog
+        from sprints.models import SprintBacklog # Importando así evitamos el error de "importe circular"
+
+        lista_backlog = SprintBacklog.objects.all()
+        lista_tipo_hu_id = []
+
+        # Obtenemos todas las id de los tipos de HU presentes en los Sprint Backlog
+        for backlog in lista_backlog:
+            lista_hu = backlog.historiaUsuario.all()
+            for hu in lista_hu:
+                lista_tipo_hu_id.append(hu.tipo_historia_usuario.id)
+
+        print('Lista:')
+        print(lista_tipo_hu_id)
+        # Si el tipo de HU que se desea eliminar existe en un Sprint Backlog entonces no puede ser eliminado
+        for id_tipo_hu in lista_tipo_hu_id:
+            if int(id) == id_tipo_hu:
+                return False
+
+
         tipoHU = Tipo_Historia_Usuario.objects.get(id=id)
         tipoHU.delete()
+        return True
 
 
     def importarTipoHU(self, datos):

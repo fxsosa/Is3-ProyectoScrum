@@ -183,6 +183,11 @@ class ManagerSprint(models.Manager):
                                 print("Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!")
                                 return "Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!"
 
+                            # Verificando que el sprint tenga al menos un desarrollador asignado para poder iniciar
+                            if Sprint_Miembro_Equipo.objects.filter(sprint_id=sprint.id).count() == 0:
+                                print("Operacion no permitida.\nEl sprint no puede iniciarse sin participantes!")
+                                return "Operacion no permitida.\nEl sprint no puede iniciarse sin participantes!"
+
 
                             sprint.estado = "En Ejecución"
 
@@ -312,7 +317,10 @@ class ManagerSprintBacklog(models.Manager):
             if acumulado >= capacidad_sprint: # Si llenamos la capacidad del Sprint, terminamos de añadir HU
                 break
 
-            if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada"):
+            # Verificamos:
+            # 1. Estado de la US no sea cancelada ni finalizada
+            # 2. Tiene desarrollador asignado encargado de la US
+            if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada" or historia_usuario.desarrollador_asignado is None):
                 sprint_backlog.historiaUsuario.add(historia_usuario)
                 horas_hu = historia_usuario.estimacion_horas
                 acumulado += horas_hu
@@ -351,6 +359,34 @@ class ManagerSprintBacklog(models.Manager):
 
         sprint.capacidadEquipo = capacidad_total
         sprint.save()
+
+    def listarTipoHUSprint(self, idProyecto, idSprint):
+        """Listar los tipos de HU que pertenecen a un proyecto y se usan en un sprint
+
+        :param idProyecto: ID del proyecto
+        :param idSprint: ID del sprint de proyecto
+
+        :return: QuerySet de Tipos de US/None
+        """
+
+        try:
+            listaUS = self.listarHistoriasUsuario(proyecto_id=idProyecto, sprint_id=idSprint)
+            # Guardamos en un set (no permite duplicados) la lista de IDs de los tipos de US
+            setUSTipo = set()
+            for historia in listaUS:
+                setUSTipo.add(historia.tipo_historia_usuario.id)
+
+            if len(setUSTipo) == 0:
+                print("No hay US asociada a este Sprint")
+                return None
+
+            listatipos = Tipo_Historia_Usuario.objects.filter(id__in=list(setUSTipo))
+
+            return listatipos
+
+        except Exception as e:
+            print("Error al obtener la lista de Tipos de US! " + str(e))
+            return None
 
     def listarHistoriasUsuario(self, proyecto_id, sprint_id):
         """Retorna la lista de historias de usuario asociadas al sprint del proyecto dado

@@ -101,15 +101,17 @@ class controllerTipoHU(APIView):
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
             if user.has_perm('proyectos.borrar_tipo_HU', obj=proyecto):
-
-                Tipo_Historia_Usuario.objects.borrarTipoHU(idtipoHU)
-                return HttpResponse("Borrado exitoso", status=200)
+                resultado = Tipo_Historia_Usuario.objects.borrarTipoHU(idtipoHU)
+                if resultado:
+                    return HttpResponse("Borrado exitoso", status=200)
+                else:
+                    return HttpResponse("No se pudo borrar el tipo de HU por ser usado en un Sprint Backlog", status=403)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
 
 
         except Exception as e:
-            return HttpResponse("Algo salio mal " + str(e), status=500)
+            return HttpResponse("Error encontrado: " + str(e), status=500)
 
 
 
