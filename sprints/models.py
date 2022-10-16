@@ -312,8 +312,10 @@ class ManagerSprintBacklog(models.Manager):
             if acumulado >= capacidad_sprint: # Si llenamos la capacidad del Sprint, terminamos de añadir HU
                 break
 
-            if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada"):
-                print("Agregando: \nNombre: " + str(historia_usuario.nombre) + "\nDescripcion: " + str(historia_usuario.descripcion) + "\n")
+            # Verificamos:
+            # 1. Estado de la US no sea cancelada ni finalizada
+            # 2. Tiene desarrollador asignado encargado de la US
+            if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada" or historia_usuario.desarrollador_asignado is None):
                 sprint_backlog.historiaUsuario.add(historia_usuario)
                 horas_hu = historia_usuario.estimacion_horas
                 acumulado += horas_hu

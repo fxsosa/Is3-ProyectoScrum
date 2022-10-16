@@ -43,12 +43,20 @@ class managerHistoriaUsuario(models.Manager):
                 tipoHistoria = Tipo_Historia_Usuario.objects.get(id=idTipo)
             else:
                 tipoHistoria = None
+
+            proyecto = Proyecto.objects.get(id=datos['idProyecto'])
+
             idParticipante = datos['idParticipante'] # Participante asignado
             if datos['idParticipante']:
-                desarrollador = participante.objects.get(id=idParticipante)
+                # Verificamos el desarrollador pertenezca al proyecto recibido
+                try:
+                    desarrollador = participante.objects.get(id=idParticipante, proyecto_id=proyecto.id)
+                except participante.DoesNotExist as e:
+                    print(e)
+                    desarrollador = None
             else:
                 desarrollador = None
-            proyecto = Proyecto.objects.get(id=datos['idProyecto'])
+
 
             historia = self.model(nombre=nombre, descripcion=descripcion,
                                   prioridad_tecnica=prioridad_tecnica,
