@@ -112,7 +112,7 @@ def test_SprintBacklog():
 
 
 @pytest.mark.django_db
-def test_SprintEquipo():
+def test_AgregarMiembroSprint():
     User = get_user_model()
     user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
                                      nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
@@ -144,7 +144,87 @@ def test_SprintEquipo():
     }
     equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
 
-    assert str(equipo.__str__()) == str([equipo.usuario.id, equipo.sprint.id, str(equipo.capacidad)]), "Error al crear un Equipo de Sprint"
+    assert str(equipo.__str__()) == str([equipo.usuario.id, equipo.sprint.id, str(equipo.capacidad)]), "Error al crear miembro de un Sprint"
+
+@pytest.mark.django_db
+def test_ModificarMiembroSprint():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
+                                     nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+
+    # Los datos originales de este miembro de sprint
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprint.id,
+        "usuario_id": user1.id
+    }
+    equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
+
+    # Modificamos las capacidad de 5 a 10 para este miembro del sprint
+    equipoActualizado = Sprint_Miembro_Equipo.objects.modificarMiembro({"miembro_equipo_id": equipo.id, "capacidad": 8})
+
+    assert str(equipoActualizado.__str__()) == str([equipo.usuario.id, equipo.sprint.id, '8']), "Error al modificar miembro de un Sprint"
+
+@pytest.mark.django_db
+def test_EliminarMiembroSprint():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1',
+                                     nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2', )
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+    sprint = Sprint.objects.crearSprint(datos=datosSprint)
+    sprint = Sprint.objects.get(id=sprint[0].id)
+
+    # Los datos originales de este miembro de sprint
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprint.id,
+        "usuario_id": user1.id
+    }
+    miembro_equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
+
+    assert Sprint_Miembro_Equipo.objects.eliminarMiembro(idSprint=sprint.id,
+                                                         idProyecto=proyecto.id,
+                                                         id_miembro_equipo=miembro_equipo.id) == True, \
+        "Error al eliminar miembro de un Sprint"
+
+
 
 @pytest.mark.django_db
 def test_obtenerSprint():
