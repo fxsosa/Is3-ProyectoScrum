@@ -183,6 +183,11 @@ class ManagerSprint(models.Manager):
                                 print("Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!")
                                 return "Operacion no permitida.\nEl sprint no puede iniciarse hasta que el proyecto sea iniciado!"
 
+                            # Verificando que el sprint tenga al menos un desarrollador asignado para poder iniciar
+                            if Sprint_Miembro_Equipo.objects.filter(sprint_id=sprint.id).count() == 0:
+                                print("Operacion no permitida.\nEl sprint no puede iniciarse sin participantes!")
+                                return "Operacion no permitida.\nEl sprint no puede iniciarse sin participantes!"
+
 
                             sprint.estado = "En Ejecución"
 
