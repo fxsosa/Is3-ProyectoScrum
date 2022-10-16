@@ -89,6 +89,20 @@ class ManejoProyectos(models.Manager):
         proyecto.save()
         return proyecto
 
+    def cancelarProyecto(self, id_proyecto):
+        """
+        Método para cancelar un proyecto (eliminación lógica)
+
+        :param id_proyecto:
+        :return:
+        """
+
+        proyecto = Proyecto.objects.get(id=int(id_proyecto))
+        proyecto.estado = "cancelado"
+        proyecto.save()
+
+
+
 class ManejoParticipantes(models.Manager):
     """
     Manager del modelo de Participantes de proyecto
