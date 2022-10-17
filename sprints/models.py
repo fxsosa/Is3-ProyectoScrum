@@ -388,8 +388,7 @@ class ManagerSprintBacklog(models.Manager):
             hu.save()
 
     def calcularCapacidadSprint(self, sprint_id):
-        """
-        Calculamos la capacidad total del Sprint
+        """Calculamos la capacidad total del Sprint
         :param sprint_id: ID del sprint
 
         """

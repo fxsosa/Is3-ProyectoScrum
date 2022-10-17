@@ -16,6 +16,7 @@ permisosExternos = [
     'usuarios.modificar_roles_externos_de_usuario',
     'proyectos.listar_proyectos',
     'proyectos.crear_proyecto',
+    'proyectos.crear_rol_interno'
 ]
 
 permisosInternos = [

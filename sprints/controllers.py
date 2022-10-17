@@ -1,11 +1,9 @@
 import jwt
 from django.http import HttpResponse
-from django.views.generic import CreateView
 from rest_framework.views import APIView
 from django.core import serializers
 
 import proyectos.models
-from historiasDeUsuario_proyecto.models import historiaUsuario
 from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog
 from usuarios.models import Usuario
 
