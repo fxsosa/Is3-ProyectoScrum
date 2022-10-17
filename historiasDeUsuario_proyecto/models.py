@@ -104,7 +104,7 @@ class managerHistoriaUsuario(models.Manager):
             print(e)
             return False
 
-    def actualizarHistoriaUsuario(self, datos):
+    def actualizarHistoriaUsuario(self, datos, esDev):
         try:
             idProyecto = datos['idProyecto']
             idHistoria = datos['idHistoria']
@@ -113,84 +113,89 @@ class managerHistoriaUsuario(models.Manager):
             except historiaUsuario.DoesNotExist as e:
                 print(e)
                 return None
+            # actualizaciones solo para scrum masters
+            if not esDev:
+                if datos['idParticipante'] is not None:
+                    try:
+                        print(datos['idParticipante'])
+                        usuarioParticipante = Usuario.objects.get(id=datos['idParticipante'])
+                        desarrollador = participante.objects.get(proyecto_id=idProyecto, usuario_id=usuarioParticipante)
 
-            if datos['idParticipante'] is not None:
-                try:
-                    print(datos['idParticipante'])
-                    usuarioParticipante = Usuario.objects.get(id=datos['idParticipante'])
-                    desarrollador = participante.objects.get(proyecto_id=idProyecto, usuario_id=usuarioParticipante)
-
-                except participante.DoesNotExist as e:
-                    print("Participante no existe! + " + str(e))
-                    return None
-
-            if datos['idTipo'] is not None:
-                try:
-                    tipoHistoria = Tipo_Historia_Usuario.objects.get(id=datos['idTipo'])
-                except Tipo_Historia_Usuario.DoesNotExist as e:
-                    print("Tipo de historia de usuario no existe! + " + str(e))
-                    return None
-
-            # verificando si existe como historia de usuario del proyecto dado
-            if str(historia.proyecto.id) == str(idProyecto):
-                if datos['nombre'] is not None:
-                    historia.nombre = datos['nombre']
-
-                if datos['descripcion'] is not None:
-                    historia.descripcion = datos['descripcion']
-
-                if datos['prioridad_tecnica'] is not None:
-                    historia.prioridad_tecnica = datos['prioridad_tecnica']
-
-                if datos['prioridad_negocio'] is not None:
-                    historia.prioridad_negocio = datos['prioridad_negocio']
-
-                # Actualizamos la prioridad final en caso de que se haya actualizado alguna prioridad
-                if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
-                    if historia.prioridad_negocio is not None and historia.prioridad_tecnica is not None:
-                        historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
-
-                if datos['estimacion_horas'] is not None:
-                    historia.estimacion_horas = datos['estimacion_horas']
+                    except participante.DoesNotExist as e:
+                        print("Participante no existe! + " + str(e))
+                        return None
 
                 if datos['idTipo'] is not None:
-                    historia.tipo_historia_usuario = tipoHistoria
+                    try:
+                        tipoHistoria = Tipo_Historia_Usuario.objects.get(id=datos['idTipo'])
+                    except Tipo_Historia_Usuario.DoesNotExist as e:
+                        print("Tipo de historia de usuario no existe! + " + str(e))
+                        return None
 
-                if datos['idParticipante'] is not None:
-                    historia.desarrollador_asignado = desarrollador
+                # verificando si existe como historia de usuario del proyecto dado
+                if str(historia.proyecto.id) == str(idProyecto):
+                    if datos['nombre'] is not None:
+                        historia.nombre = datos['nombre']
 
-                if datos['horas_trabajadas'] is not None:
-                    historia.horas_trabajadas = datos['horas_trabajadas']
+                    if datos['descripcion'] is not None:
+                        historia.descripcion = datos['descripcion']
 
-                if datos['estado'] is not None:
-                    # obtenemos el tipo y su columna
-                    columnaId = datos['estado']
-                    if columnaId != 'cancelada':
-                        try:
-                            columna = Columna_Tipo_Historia_Usuario.objects.get(id=columnaId)
+                    if datos['prioridad_tecnica'] is not None:
+                        historia.prioridad_tecnica = datos['prioridad_tecnica']
 
-                            columnaOrden = columna.orden
-                            cantidadCol = len(Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=historia.tipo_historia_usuario_id))
+                    if datos['prioridad_negocio'] is not None:
+                        historia.prioridad_negocio = datos['prioridad_negocio']
 
-                            # verificar si se paso a la ultima columna
-                            if columnaOrden == cantidadCol:
-                                datos['estado'] = 'finalizada'
+                    # Actualizamos la prioridad final en caso de que se haya actualizado alguna prioridad
+                    if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
+                        if historia.prioridad_negocio is not None and historia.prioridad_tecnica is not None:
+                            historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
 
-                            historia.estado = datos['estado']
+                    if datos['estimacion_horas'] is not None:
+                        historia.estimacion_horas = datos['estimacion_horas']
 
-                        except Columna_Tipo_Historia_Usuario.DoesNotExist as e:
-                            historia.estado = None
-                            print("No existe la columna!")
-                    else:
-                        historia.estado = 'cancelada'
+                    if datos['idTipo'] is not None:
+                        historia.tipo_historia_usuario = tipoHistoria
 
-                historia.save()
+                    if datos['idParticipante'] is not None:
+                        historia.desarrollador_asignado = desarrollador
 
-                historia = historiaUsuario.objects.filter(id=historia.id)
-                return historia
-            else:
-                print("La historia de usuario no pertenece al proyecto dado...")
-                return None
+                else:
+                    print("La historia de usuario no pertenece al proyecto dado...")
+                    return None
+
+            # actualizaciones para devs
+            if datos['horas_trabajadas'] is not None:
+                historia.horas_trabajadas = datos['horas_trabajadas']
+
+
+            if datos['estado'] is not None:
+                # obtenemos el tipo y su columna
+                columnaId = datos['estado']
+                if columnaId != 'cancelada':
+                    try:
+                        columna = Columna_Tipo_Historia_Usuario.objects.get(id=columnaId)
+
+                        columnaOrden = columna.orden
+                        cantidadCol = len(Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=historia.tipo_historia_usuario_id))
+
+                        # verificar si se paso a la ultima columna
+                        if columnaOrden == cantidadCol:
+                            datos['estado'] = 'finalizada'
+
+                        historia.estado = datos['estado']
+
+                    except Columna_Tipo_Historia_Usuario.DoesNotExist as e:
+                        historia.estado = None
+                        print("No existe la columna!")
+                else:
+                    historia.estado = 'cancelada'
+
+            historia.save()
+
+            historia = historiaUsuario.objects.filter(id=historia.id)
+            return historia
+
 
         except Exception as e:
             print("error en: ",e)

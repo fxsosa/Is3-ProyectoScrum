@@ -7,6 +7,7 @@ from django.core import serializers
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
 from usuarios.models import Usuario
+from proyectos.models import participante
 
 
 class ListaHistoriasUsuario(APIView, CreateView):
@@ -108,14 +109,24 @@ class HistoriaUsuario(APIView, CreateView):
         try:
             proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
             if user.has_perm('proyectos.actualizar_historia_usuario', obj=proyecto):
-                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos)
+                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=False)
                 if historia is not None:
                     queryRol_json = serializers.serialize('json', historia)
                     return HttpResponse(queryRol_json, content_type='application/json', status=201)
                 else:
                     return HttpResponse("No se pudo actualizar la historia de usuario", status=500)
             else:
-                return HttpResponse("No se tienen los permisos para actualizar historias de usuario!", status=403)
+                historiaUsu = historiaUsuario.objects.get(id=datos['idHistoria'])
+                desarrolladorSolicitante = participante.objects.get(usuario=user, proyecto=proyecto)
+                if historiaUsu.desarrollador_asignado == desarrolladorSolicitante:
+                    historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=True)
+                    if historia is not None:
+                        queryRol_json = serializers.serialize('json', historia)
+                        return HttpResponse(queryRol_json, content_type='application/json', status=201)
+                    else:
+                        return HttpResponse("No se pudo actualizar la historia de usuario", status=500)
+                else:
+                    return HttpResponse("No se tienen los permisos para actualizar historias de usuario!", status=403)
         except Exception as e:
             return HttpResponse("Error al actualizar la Historia de Usuario - " + str(e), status=500)
 
