@@ -1,6 +1,8 @@
 from django.db import models
 import datetime
+from django.utils import timezone
 
+import sprints
 from usuarios.models import Usuario
 from django.apps import apps
 
@@ -85,9 +87,29 @@ class ManejoProyectos(models.Manager):
         """
         proyecto = Proyecto.objects.get(id=int(datos['id']))
         proyecto.estado = "iniciado"
-        proyecto.fechaInicio = datetime.date.today()
+#        proyecto.fechaInicio = datetime.date.today()
+        proyecto.fechaInicio = timezone.now()
         proyecto.save()
         return proyecto
+
+    def cancelarProyecto(self, id_proyecto):
+        """
+        Método para cancelar un proyecto (eliminación lógica)
+
+        :param id_proyecto:
+        :return:
+        """
+
+        proyecto = Proyecto.objects.get(id=int(id_proyecto))
+        proyecto.estado = "cancelado"
+        proyecto.save()
+
+        listaSprints = sprints.models.Sprint.objects.filter(proyecto_id=proyecto.id)
+        if len(listaSprints) > 0:
+            for sprint in listaSprints:
+                sprint.estado = "Cancelado"
+                sprint.save()
+
 
 class ManejoParticipantes(models.Manager):
     """
@@ -230,7 +252,17 @@ class Proyecto(models.Model):
             ('obtener_historia_usuario', 'Obtener una historia de usuario de un proyecto'),
             ('crear_historia_usuario', 'Crear y agregar una historia de usuario a un proyecto'),
             ('actualizar_historia_usuario', 'Actualizar una historia de usuario de un proyecto'),
-            ('borrar_historia_usuario', 'Borrar una historia de usuario de un proyecto')
+            ('borrar_historia_usuario', 'Borrar una historia de usuario de un proyecto'),
+            ('listar_sprint_proyecto', 'Listar los sprints de un proyecto'),
+            ('crear_sprint', 'Crear y agregar un sprint a un proyecto'),
+            ('obtener_sprint', 'Obtiene un sprint de un proyecto'),
+            ('borrar_sprint', 'Borrar un sprint de un proyecto'),
+            ('ver_equipo_sprint', 'Ver miembros del equipo de un Sprint'),
+            ('agregar_miembro_sprint', 'Agregar un miembro al equipo del Sprint'),
+            ('modificar_miembro_sprint', 'Modifica los datos de un miembro del Sprint'),
+            ('borrar_miembro_sprint', 'Borra a un miembro del equipo del Sprint'),
+            ('actualizar_sprint', 'Actualizar/modificar los parametros de un sprint'),
+            ('borrar_historia_sprintbacklog', 'Borrar una historia de usuario del sprint backlog')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):

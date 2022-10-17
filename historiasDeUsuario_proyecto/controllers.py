@@ -7,12 +7,18 @@ from django.core import serializers
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
 from usuarios.models import Usuario
+from proyectos.models import participante
 
 
 class ListaHistoriasUsuario(APIView, CreateView):
 
     def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un proyecto dado
 
+        :param request: Request de la peticion. Contiene como queryParam idProyecto
+
+        :return: HttpResponse
+        """
         user = validarRequest(request)
 
         # Procesamos el request
@@ -32,6 +38,13 @@ class ListaHistoriasUsuario(APIView, CreateView):
 class HistoriaUsuario(APIView, CreateView):
 
     def get(self, request):
+        """Metodo get para obtener una historia de usuario de un proyecto dado
+
+        :param request: Request de la peticion. Contiene como queryParam el idProyecto y idHistoria
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         body = request.data
         try:
@@ -50,6 +63,15 @@ class HistoriaUsuario(APIView, CreateView):
 
 
     def post(self, request, format=None):
+        """Metodo post para crear una historia de usuario y agregar a un proyecto
+
+        :param request: Request de la peticion. Contiene como valores de .data los campos: idProyecto,
+        nombre, descripcion, prioridad_tecnica, prioridad_negocio, estimacion_horas, idTipo, idParticipante.
+        :param format: None
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         body = request.data
@@ -71,6 +93,15 @@ class HistoriaUsuario(APIView, CreateView):
 
 
     def put(self, request):
+        """Metodo para actualizar una historia de usuario.
+
+        :param request: Request de la peticion. Contiene como valores de .data los campos: idProyecto,
+        nombre, descripcion, prioridad_tecnica, prioridad_negocio, estimacion_horas, idTipo, idParticipante.
+        Los valores que sean null no se actualizan.
+
+        :return: HttpResponse
+        """
+
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
         datos = request.data
@@ -78,18 +109,35 @@ class HistoriaUsuario(APIView, CreateView):
         try:
             proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
             if user.has_perm('proyectos.actualizar_historia_usuario', obj=proyecto):
-                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos)
+                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=False)
                 if historia is not None:
                     queryRol_json = serializers.serialize('json', historia)
                     return HttpResponse(queryRol_json, content_type='application/json', status=201)
                 else:
                     return HttpResponse("No se pudo actualizar la historia de usuario", status=500)
             else:
-                return HttpResponse("No se tienen los permisos para actualizar historias de usuario!", status=403)
+                historiaUsu = historiaUsuario.objects.get(id=datos['idHistoria'])
+                desarrolladorSolicitante = participante.objects.get(usuario=user, proyecto=proyecto)
+                if historiaUsu.desarrollador_asignado == desarrolladorSolicitante:
+                    historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=True)
+                    if historia is not None:
+                        queryRol_json = serializers.serialize('json', historia)
+                        return HttpResponse(queryRol_json, content_type='application/json', status=201)
+                    else:
+                        return HttpResponse("No se pudo actualizar la historia de usuario", status=500)
+                else:
+                    return HttpResponse("No se tienen los permisos para actualizar historias de usuario!", status=403)
         except Exception as e:
             return HttpResponse("Error al actualizar la Historia de Usuario - " + str(e), status=500)
 
     def delete(self, request):
+        """Metodo de delete para borrar una historia de usuario de un proyecto.
+
+        :param request: Request de la peticion, contiene como queryParam el valor del idProyecto, idHistoria
+        a borrar
+
+        :return: HttpResponse
+        """
 
         user = validarRequest(request)
         # Obtenemos el cuerpo de la peticion
@@ -108,6 +156,30 @@ class HistoriaUsuario(APIView, CreateView):
                 return HttpResponse("No se tienen los permisos para borrar historias de usuario!", status=403)
         except Exception as e:
             return HttpResponse("Error al eliminar la Historia de Usuario - " + str(e), status=500)
+
+class ListaHUTipo(APIView):
+    def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario de un tipo, de un proyecto
+
+        :param request: Request de la peticion. Contiene como queryParam idProyecto, idTipoHU
+
+        :return: HttpResponse
+        """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idproyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idproyecto)
+            if user.has_perm('proyectos.listar_historias_usuario', obj=proyecto):
+                idTipo = request.GET.get('idTipoHU', '')
+                listaHUTipo = historiaUsuario.objects.listarHUTipo(idProyecto=idproyecto, idTipoHU=idTipo)
+                serializer = serializers.serialize('json', listaHUTipo)
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
 
 
 def validarRequest(request):
