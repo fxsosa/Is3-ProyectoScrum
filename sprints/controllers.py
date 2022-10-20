@@ -309,6 +309,43 @@ class controllerSprintBacklog(APIView):
             return HttpResponse("No se pudo obtener el backlog del sprint! " + str(e), status=500)
 
 
+    def post(self, request):
+        """Metodo para agregar un miembro de equipo en un sprint
+
+                :param request: Request. Recibe en el request.data los siguientes parametros:
+                "proyecto_id", "capacidad", "usuario_id", "sprint_id"
+
+                :return: HttpResponse
+                """
+
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['proyecto_id'])
+            idProyecto = datos['proyecto_id']
+            idSprint = datos['sprint_id']
+            idHistoria = datos['idHistoria']
+            idSprintBacklog = datos['idSprintBacklog']
+
+            if user.has_perm('proyectos.agregar_historia_sprintbacklog', obj=proyecto):
+                sprint = Sprint.objects.obtenerSprint(idProyecto=datos['proyecto_id'], idSprint=datos['sprint_id'])
+                #miembro_equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos)
+                if sprint is not None:
+                    resultado = SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=idSprint, idHistoria=idHistoria, idSprintBacklog=idSprintBacklog)
+
+                    # Crear un nuevo miembro del equipo de un Sprint
+                    if resultado:
+                        return HttpResponse('Se ha agregado exitosamente la historia de usuario al Sprint Backlog', status=201)
+                    else:
+                        return HttpResponse("No se pudo agregar la historia de usuario al Sprint Backlog", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para agregar historias de Usuario en el Sprint Backlog!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al agregar historia de usuario al Sprint Backlog: " + str(e), status=500)
+
+
     def delete(self, request):
         """Metodo para eliminar un US del sprint backlog
 
