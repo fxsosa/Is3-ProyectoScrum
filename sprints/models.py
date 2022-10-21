@@ -177,7 +177,17 @@ class ManagerSprint(models.Manager):
 
             if sprint.proyecto_id == proyecto.id:
                 if opcion == 'Avanzar':
-                    if sprint.estado == "Planificación":
+
+                    if sprint.estado == "Creado": # Este sería un Sprint creado que no está en planificación
+                        if Sprint.objects.filter(proyecto=proyecto.id, estado="Planificación").exists():
+                            print("Ya existe un sprint en planificación en este proyecto! ")
+                            return "Operación no permitida.\nYa existe un sprint \"En Planificación\" en este proyecto! "
+                        else:
+                            sprint.estado = "Planificación"
+                            print('entra')
+                            sprint.save()
+
+                    elif sprint.estado == "Planificación":
 
                         # Query de todos los sprints del proyecto que tengan estado=En Ejecución
                         if Sprint.objects.filter(proyecto=proyecto.id, estado="En Ejecución").exists():
