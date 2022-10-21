@@ -1,4 +1,7 @@
 import pytest
+from django.contrib.auth import get_user_model
+import datetime
+import pytz
 
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
@@ -159,3 +162,67 @@ def test_listarHistoriasUsuario():
     }
     historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
     assert historiaUsuario.objects.listarHistoriasUsuario(idProyecto=idProyecto) is not None, "Error al listar historias de usuario de un proyecto"
+
+
+@pytest.mark.django_db
+def test_listarHUTipo():
+    User = get_user_model()
+    user1 = User.objects.create_user(email='user@email.com', password='abcdefg', username='username1', nombres='Nombre1 Nombre2', apellidos='Apellido1 Apellido2',)
+    auxDateTime1 = datetime.datetime(2022, 8, 10, 8, 00, 00, tzinfo=pytz.UTC)
+    auxDateTime2 = datetime.datetime(2022, 12, 10, 17, 00, 00, tzinfo=pytz.UTC)
+    datosProyecto = {
+        "nombre": "Proyecto Prueba",
+        "descripcion": "Proyecto de Prueba",
+        "fechaInicio": auxDateTime1,
+        "fechaFin": auxDateTime2,
+        "scrumMaster": "user@email.com",
+        "estado": "En Espera"
+    }
+    proyecto = Proyecto.objects.crearProyecto(datos=datosProyecto)
+    datosSprint = {
+        "idProyecto": proyecto.id,
+        "descripcion": "Descripcion de Sprint",
+        "nombre": "Sprint 1",
+        "cantidadDias": 30,
+        "capacidadEquipo": 30
+    }
+
+    idProyecto = proyecto.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3"]})
+
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+    idParticipante = part.id
+    datos = {
+        "nombre": "Historia 1",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    datos = {
+        "nombre": "Historia 2",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto,
+    }
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+
+    Proyecto.objects.iniciarProyecto({"id": proyecto.id})
+
+    listaHU = historiaUsuario.objects.listarHUTipo(idProyecto=proyecto.id, idTipoHU=idTipo)
+
+    # Verificamos que los US del sprint backlog obtenidos, sean del mismo tipo que el tipo creado
+    assert str([listaHU[0].tipo_historia_usuario.id, listaHU[1].tipo_historia_usuario.id]) == str([tipo.id, tipo.id]), \
+        "Error al listar los US de un Tipo, de un Proyecto"
