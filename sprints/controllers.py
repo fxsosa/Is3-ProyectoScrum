@@ -310,10 +310,10 @@ class controllerSprintBacklog(APIView):
 
 
     def post(self, request):
-        """Metodo para agregar un miembro de equipo en un sprint
+        """Metodo para agregar una hisotira a un sprint
 
                 :param request: Request. Recibe en el request.data los siguientes parametros:
-                "proyecto_id", "capacidad", "usuario_id", "sprint_id"
+                proyecto_id, proyecto_id, sprint_id, idHistoria, idSprintBacklog
 
                 :return: HttpResponse
                 """

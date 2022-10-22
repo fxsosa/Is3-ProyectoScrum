@@ -475,7 +475,7 @@ class ManagerSprintBacklog(models.Manager):
                     backlog = SprintBacklog.objects.get(idSprint=sprint.id)
                 except SprintBacklog.DoesNotExist as e:
                     print("No existe el sprintbacklog! " + str(e))
-                    return None
+                    return []
 
                 return backlog.historiaUsuario.all().order_by('-prioridad_final')
         except Exception as e:
