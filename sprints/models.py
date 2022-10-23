@@ -36,6 +36,8 @@ class ManagerSprint(models.Manager):
                                 cantidadDias=cantidadDias,
                                 capacidadEquipo=capacidadEquipo)
             sprint.save()
+            # creamos el sprint backlog
+            SprintBacklog.objects.crearSprintBacklog(sprint.id)
 
             sprint = Sprint.objects.filter(id=sprint.id)
             return sprint
@@ -333,7 +335,12 @@ class ManagerMiembroSprint(models.Manager):
 
 
 class ManagerSprintBacklog(models.Manager):
-    def crearSprintBacklog(self, proyecto_id, sprint_id):
+
+    def crearSprintBacklog(self, sprint_id):
+        sprint_backlog = SprintBacklog.objects.model(idSprint_id=sprint_id)
+        sprint_backlog.save()
+
+    def crearSprintBacklogViejo(self, proyecto_id, sprint_id):
         """Crea un sprint backlog. Agrega las US permitidas del proyecto.
 
         :param proyecto_id: ID del proyecto
@@ -475,7 +482,7 @@ class ManagerSprintBacklog(models.Manager):
                     backlog = SprintBacklog.objects.get(idSprint=sprint.id)
                 except SprintBacklog.DoesNotExist as e:
                     print("No existe el sprintbacklog! " + str(e))
-                    return []
+                    return None
 
                 return backlog.historiaUsuario.all().order_by('-prioridad_final')
         except Exception as e:
@@ -526,7 +533,7 @@ class ManagerSprintBacklog(models.Manager):
             print("Error al obtener la lista de US del tipo especificado! " + str(e))
             return None
 
-    def agregarHUSprintBacklog(self, idProyecto, idSprint, idHistoria, idSprintBacklog):
+    def agregarHUSprintBacklog(self, idProyecto, idSprint, idHistoria):
         """Agrega una historia de usuario al sprint backlog
 
             :param idProyecto: ID del proyecto
@@ -543,7 +550,7 @@ class ManagerSprintBacklog(models.Manager):
                 return False
 
             try:
-                sprintbacklog = SprintBacklog.objects.get(id=idSprintBacklog)
+                sprintbacklog = SprintBacklog.objects.get(idSprint=idSprint)
             except SprintBacklog.DoesNotExist as e:
                 print("No existe el sprintbacklog! " + str(e))
                 return False

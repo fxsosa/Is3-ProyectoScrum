@@ -64,7 +64,7 @@ class managerHistoriaUsuario(models.Manager):
                                   estimacion_horas=estimacion_horas,
                                   prioridad_final=prioridad_final,
                                   tipo_historia_usuario=tipoHistoria,
-                                  desarrollador_asignado=desarrollador,
+                                  desarrollador_asignado=None,
                                   proyecto=proyecto)
             historia.save()
 

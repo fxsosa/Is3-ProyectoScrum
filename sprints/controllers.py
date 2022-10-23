@@ -327,13 +327,12 @@ class controllerSprintBacklog(APIView):
             idProyecto = datos['proyecto_id']
             idSprint = datos['sprint_id']
             idHistoria = datos['idHistoria']
-            idSprintBacklog = datos['idSprintBacklog']
 
             if user.has_perm('proyectos.agregar_historia_sprintbacklog', obj=proyecto):
                 sprint = Sprint.objects.obtenerSprint(idProyecto=datos['proyecto_id'], idSprint=datos['sprint_id'])
                 #miembro_equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos)
                 if sprint is not None:
-                    resultado = SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=idSprint, idHistoria=idHistoria, idSprintBacklog=idSprintBacklog)
+                    resultado = SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=idSprint, idHistoria=idHistoria)
 
                     # Crear un nuevo miembro del equipo de un Sprint
                     if resultado:
