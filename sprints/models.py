@@ -186,7 +186,6 @@ class ManagerSprint(models.Manager):
                             return "Operación no permitida.\nYa existe un sprint \"En Planificación\" en este proyecto! "
                         else:
                             sprint.estado = "Planificación"
-                            print('entra')
                             sprint.save()
 
                     elif sprint.estado == "Planificación":
@@ -655,7 +654,7 @@ class Sprint(models.Model):
     fecha_fin = models.DateTimeField(null=True)
     cantidadDias = models.IntegerField(null=True)
     capacidadEquipo = models.IntegerField(null=False)
-    estado = models.TextField(max_length=20, default='Planificación')
+    estado = models.TextField(max_length=20, default='Creado')
     proyecto = models.ForeignKey(Proyecto, null=False, on_delete=models.CASCADE)
 
     objects = ManagerSprint()
