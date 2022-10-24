@@ -103,7 +103,7 @@ class managerHistoriaUsuario(models.Manager):
                 historia.estado = "cancelada"
                 historia.changed_by = user
                 historia.save()
-
+                cambiarMotivoHistorial(historia, "Cancelado")
                 return True
             else:
                 print("La historia de usuario no pertenece al proyecto dado...")
@@ -121,6 +121,9 @@ class managerHistoriaUsuario(models.Manager):
             except historiaUsuario.DoesNotExist as e:
                 print(e)
                 return None
+
+            modificado = False
+
             # actualizaciones solo para scrum masters
             if not esDev:
                 if datos['idParticipante'] is not None:
@@ -144,15 +147,19 @@ class managerHistoriaUsuario(models.Manager):
                 if str(historia.proyecto.id) == str(idProyecto):
                     if datos['nombre'] is not None:
                         historia.nombre = datos['nombre']
+                        modificado = True
 
                     if datos['descripcion'] is not None:
                         historia.descripcion = datos['descripcion']
+                        modificado = True
 
                     if datos['prioridad_tecnica'] is not None:
                         historia.prioridad_tecnica = datos['prioridad_tecnica']
+                        modificado = True
 
                     if datos['prioridad_negocio'] is not None:
                         historia.prioridad_negocio = datos['prioridad_negocio']
+                        modificado = True
 
                     # Actualizamos la prioridad final en caso de que se haya actualizado alguna prioridad
                     if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
@@ -161,12 +168,15 @@ class managerHistoriaUsuario(models.Manager):
 
                     if datos['estimacion_horas'] is not None:
                         historia.estimacion_horas = datos['estimacion_horas']
+                        modificado = True
 
                     if datos['idTipo'] is not None:
                         historia.tipo_historia_usuario = tipoHistoria
+                        modificado = True
 
                     if datos['idParticipante'] is not None:
                         historia.desarrollador_asignado = desarrollador
+                        modificado = True
 
                 else:
                     print("La historia de usuario no pertenece al proyecto dado...")
@@ -175,6 +185,7 @@ class managerHistoriaUsuario(models.Manager):
             # actualizaciones para devs
             if datos['horas_trabajadas'] is not None:
                 historia.horas_trabajadas = datos['horas_trabajadas']
+                modificado = True
 
 
             if datos['estado'] is not None:
@@ -190,8 +201,11 @@ class managerHistoriaUsuario(models.Manager):
                         # verificar si se paso a la ultima columna
                         if columnaOrden == cantidadCol:
                             datos['estado'] = 'finalizada'
+                            modificado = True
 
-                        historia.estado = datos['estado']
+                        if historia.estado != datos['estado']:
+                            historia.estado = datos['estado']
+                            modificado = True
 
                     except Columna_Tipo_Historia_Usuario.DoesNotExist as e:
                         historia.estado = None
@@ -199,8 +213,10 @@ class managerHistoriaUsuario(models.Manager):
                 else:
                     historia.estado = 'cancelada'
 
-            historia.changed_by = user
-            historia.save()
+            if modificado is True:
+                historia.changed_by = user
+                historia.save()
+                cambiarMotivoHistorial(historia, "Actualizado")
 
             historia = historiaUsuario.objects.filter(id=historia.id)
             return historia
@@ -307,7 +323,8 @@ class managerHistoriaUsuario(models.Manager):
 
         # verificando si existe como historia de usuario del proyecto dado
         if str(historia.proyecto.id) == str(idProyecto):
-            return historia.history.all()
+            historial = historia.history.all()
+            return historial
         else:
             print("La historia de usuario no pertenece al proyecto dado...")
             return None
@@ -360,6 +377,8 @@ class managerHistoriaUsuario(models.Manager):
                 versionFinal = historia.history.latest()
                 versionFinal.history_user = user
                 versionFinal.save()
+                cambiarMotivoHistorial(historia, "Restaurado")
+
                 historia = historiaUsuario.objects.filter(id=historia.id)
                 return historia
             else:
@@ -406,3 +425,18 @@ class historiaUsuario(models.Model):
                     self.prioridad_negocio, self.estimacion_horas,
                     self.tipo_historia_usuario, self.desarrollador_asignado,
                     self.proyecto, self.horas_trabajadas])
+
+
+def cambiarMotivoHistorial(historia, motivo):
+    """Cambia el campo history_change_reason con el motivo recibido
+        Este metodo se llama cuando se acaba de realizar una modificacion al US
+
+    :param version: Instancia historial_us
+    :param motivo: String, motivo del cambio
+
+    :return: None
+    """
+
+    ultimaVersion = historia.history.latest()
+    ultimaVersion.history_change_reason = motivo
+    ultimaVersion.save()

@@ -177,18 +177,29 @@ class controllerListarHistorialUS(APIView):
                 idHistoria = request.GET.get('idHistoria', '')
                 historial = historiaUsuario.objects.listarHistorialUS(idProyecto=idProyecto, idHistoria=idHistoria)
                 # Convertimos a json
-                jsonRespuesta = serializers.serialize('json', historial)
+                jsonRespuesta = serializers.serialize('json', historial, fields=('nombre',
+                                                                                 'descripcion',
+                                                                                 'history_change_reason',
+                                                                                 'prioridad_tecnica',
+                                                                                 'prioridad_negocio',
+                                                                                 'estimacion_horas',
+                                                                                 'tipo_historia_usuario',
+                                                                                 'desarrollador_asignado',
+                                                                                 'proyecto',
+                                                                                 'horas_trabajadas',
+                                                                                 'prioridad_final',
+                                                                                 'estado'))
                 return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
             else:
                 return HttpResponse("No se tienen los permisos para obtener historias de usuario!", status=403)
         except Exception as e:
-            return HttpResponse("No se pudo obtener la historia de usuario! " + str(e), status=500)
+            return HttpResponse("No se pudo obtener el historial de usuario! " + str(e), status=500)
 
 
 class controllerHistorialUS(APIView):
 
     def get(self, request):
-        """Metodo get para obtener el historial de un US, de un proyecto dado
+        """Metodo get para obtener una version anterior de un US, de un proyecto dado
 
                 :param request: Request de la peticion. Contiene como queryParam el idProyecto y idHistoria
 
@@ -207,7 +218,19 @@ class controllerHistorialUS(APIView):
                                                                        idHistoria=idHistoria,
                                                                        idVersion=idVersion)
                 # Convertimos a json
-                jsonRespuesta = serializers.serialize('json', version)
+                jsonRespuesta = serializers.serialize('json', version, fields=('nombre',
+                                                                               'descripcion',
+                                                                               'history_change_reason',
+                                                                               'prioridad_tecnica',
+                                                                               'prioridad_negocio',
+                                                                               'estimacion_horas',
+                                                                               'tipo_historia_usuario',
+                                                                               'desarrollador_asignado',
+                                                                               'proyecto',
+                                                                               'horas_trabajadas',
+                                                                               'prioridad_final',
+                                                                               'estado'))
+                
                 return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
             else:
                 return HttpResponse("No se tienen los permisos para obtener versiones de historias de usuario!", status=403)
@@ -239,7 +262,18 @@ class controllerHistorialUS(APIView):
                                                                                   idVersion=idVersion,
                                                                                   user=user)
                 if versionRestaurada is not None:
-                    queryUS_json = serializers.serialize('json', versionRestaurada)
+                    queryUS_json = serializers.serialize('json', versionRestaurada, fields=('nombre',
+                                                                                            'descripcion',
+                                                                                            'history_change_reason',
+                                                                                            'prioridad_tecnica',
+                                                                                            'prioridad_negocio',
+                                                                                            'estimacion_horas',
+                                                                                            'tipo_historia_usuario',
+                                                                                            'desarrollador_asignado',
+                                                                                            'proyecto',
+                                                                                            'horas_trabajadas',
+                                                                                            'prioridad_final',
+                                                                                            'estado'))
                     return HttpResponse(queryUS_json, content_type='application/json', status=201)
                 else:
                     return HttpResponse("No se pudo restaurar la historia de usuario", status=500)
