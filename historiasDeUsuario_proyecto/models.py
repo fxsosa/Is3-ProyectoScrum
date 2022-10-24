@@ -1,6 +1,9 @@
+from django.conf import settings
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 import proyectos
+import usuarios.models
 
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
@@ -10,7 +13,7 @@ from itertools import chain
 
 
 class managerHistoriaUsuario(models.Manager):
-    def crearHistoriaUsuario(self, datos):
+    def crearHistoriaUsuario(self, datos, user):
         """Crea una historia de usuario
 
         :param datos: Diccionario (o JSON) con los siguientes valores "key":
@@ -22,6 +25,7 @@ class managerHistoriaUsuario(models.Manager):
         - idTipo: ID del registro del modelo Tipo_Historia_Usuario,
         - idParticipante: ID del participante del proyecto,
         - idProyecto: ID del proyecto al cual pertenecera esta historia de usuario
+        user: Instancia de Custom Usuario que realiza el cambio
 
         :return: QuerySet de Historia de Usuario Creada / None
         """
@@ -66,6 +70,7 @@ class managerHistoriaUsuario(models.Manager):
                                   tipo_historia_usuario=tipoHistoria,
                                   desarrollador_asignado=desarrollador,
                                   proyecto=proyecto)
+            historia.changed_by = user
             historia.save()
 
             historia = historiaUsuario.objects.filter(id=historia.id)
@@ -74,12 +79,13 @@ class managerHistoriaUsuario(models.Manager):
             print(e)
             return None
 
-    def eliminarHistoriaUsuario(self, idProyecto, idHistoria):
+    def eliminarHistoriaUsuario(self, idProyecto, idHistoria, user):
         """Elimina de forma lógica una Historia de Usuario
 
         :param datos:
         - idHistoria: ID de la Historia de Usuario,
         - idProyecto: ID del proyecto al cual pertenecera esta historia de usuario
+        - user: Instancia de Custom Usuario que realiza el cambio
 
         :return: boolean
         """
@@ -95,7 +101,9 @@ class managerHistoriaUsuario(models.Manager):
             if str(historia.proyecto.id) == str(idProyecto): # Procede a realizar la eliminación lógica
                 #historia.delete()
                 historia.estado = "cancelada"
+                historia.changed_by = user
                 historia.save()
+
                 return True
             else:
                 print("La historia de usuario no pertenece al proyecto dado...")
@@ -104,7 +112,7 @@ class managerHistoriaUsuario(models.Manager):
             print(e)
             return False
 
-    def actualizarHistoriaUsuario(self, datos, esDev):
+    def actualizarHistoriaUsuario(self, datos, esDev, user):
         try:
             idProyecto = datos['idProyecto']
             idHistoria = datos['idHistoria']
@@ -191,6 +199,7 @@ class managerHistoriaUsuario(models.Manager):
                 else:
                     historia.estado = 'cancelada'
 
+            historia.changed_by = user
             historia.save()
 
             historia = historiaUsuario.objects.filter(id=historia.id)
@@ -282,6 +291,85 @@ class managerHistoriaUsuario(models.Manager):
             print("Error al obtener la lista de US del tipo especificado! " + str(e))
             return None
 
+    def listarHistorialUS(self, idProyecto, idHistoria):
+        """Retorna el historial de cambios de una historia de usuario, de un proyecto con el id idHistoria
+
+                :param idProyecto: ID del proyecto
+                :param idHistoria: ID de la Historia de Usuario del proyecto
+
+                :return: QuerySet / None
+                """
+        try:
+            historia = historiaUsuario.objects.get(id=idHistoria)
+        except historiaUsuario.DoesNotExist as e:
+            print(e)
+            return None
+
+        # verificando si existe como historia de usuario del proyecto dado
+        if str(historia.proyecto.id) == str(idProyecto):
+            return historia.history.all()
+        else:
+            print("La historia de usuario no pertenece al proyecto dado...")
+            return None
+
+
+    def obtenerHistorialUS(self, idProyecto, idHistoria, idVersion):
+        """Retorna la version del historial de US, del proyecto dado, con el id idHistoria y version idVersion
+
+                :param idProyecto: ID del proyecto
+                :param idHistoria: ID de la Historia de Usuario del proyecto
+                :param idVersion: ID de la version del US
+
+                :return: QuerySet / None
+                """
+        try:
+            historia = historiaUsuario.objects.get(id=idHistoria)
+        except historiaUsuario.DoesNotExist as e:
+            print(e)
+            return None
+
+        # verificando si existe como historia de usuario del proyecto dado
+        if str(historia.proyecto.id) == str(idProyecto):
+            return historia.history.filter(history_id=idVersion)
+        else:
+            print("La version de la historia de usuario no existe en el proyecto dado...")
+            return None
+
+
+    def restaurarHistorialUS(self, idProyecto, idHistoria, idVersion, user):
+        """Restaura una Historia de Usuario a una version anterior con el id de versiones dado.
+
+        :param idProyecto: ID del proyecto
+        :param idHistoria: ID de la Historia de Usuario del proyecto
+        :param idVersion: ID de la Version a la cual restaurar el US
+        :param user: Instancia de usuario que realiza la accion de restaurar
+
+        :return: QuerySet / None
+        """
+        try:
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print(e)
+                return None
+
+            # verificando si existe como historia de usuario del proyecto dado
+            if str(historia.proyecto.id) == str(idProyecto):
+                version = historia.history.get(history_id=idVersion)
+                version.instance.save()
+                versionFinal = historia.history.latest()
+                versionFinal.history_user = user
+                versionFinal.save()
+                historia = historiaUsuario.objects.filter(id=historia.id)
+                return historia
+            else:
+                print("La historia de usuario no pertenece al proyecto dado...")
+                return None
+        except Exception as e:
+            print("Error al restaurar la version de una US!")
+            return None
+
+
 
 class historiaUsuario(models.Model):
     # Caracteristicas de la HU
@@ -297,14 +385,21 @@ class historiaUsuario(models.Model):
     prioridad_final = models.IntegerField(null=True)
     estado = models.CharField(max_length=200, null=True)
 
-    # TODO: Agregar Sprints a todo esto (aun no es necesario para la iteracion del 26)
-    # ?????
+
+
+
+    # Para registrar los cambios del historial
+    history = HistoricalRecords(user_model=Usuario)
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
     objects = managerHistoriaUsuario()
-
-
-    # TODO: Para los comentarios, se tiene que crear un modelo aparte que apunte a
-    # la historia de usuario a la cual hacen referencia.
 
     def __str__(self):
         return str([self.nombre, self.descripcion, self.prioridad_tecnica,
