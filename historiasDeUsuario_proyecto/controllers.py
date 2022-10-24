@@ -3,7 +3,9 @@ from django.http import HttpResponse
 from django.views.generic import CreateView
 from rest_framework.views import APIView
 from django.core import serializers
-
+from usuarios.models import Usuario
+from itertools import chain
+import json
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
 from usuarios.models import Usuario
@@ -218,20 +220,9 @@ class controllerHistorialUS(APIView):
                                                                        idHistoria=idHistoria,
                                                                        idVersion=idVersion)
                 # Convertimos a json
-                jsonRespuesta = serializers.serialize('json', version, fields=('nombre',
-                                                                               'descripcion',
-                                                                               'history_change_reason',
-                                                                               'prioridad_tecnica',
-                                                                               'prioridad_negocio',
-                                                                               'estimacion_horas',
-                                                                               'tipo_historia_usuario',
-                                                                               'desarrollador_asignado',
-                                                                               'proyecto',
-                                                                               'horas_trabajadas',
-                                                                               'prioridad_final',
-                                                                               'estado'))
-                
-                return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+                jsonRespuesta = serializers.serialize('json', version[0], fields=('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado'))
+                diferencias = json.dumps(version[1])
+                return HttpResponse([jsonRespuesta, diferencias], content_type='application/json', status=200)
             else:
                 return HttpResponse("No se tienen los permisos para obtener versiones de historias de usuario!", status=403)
         except Exception as e:

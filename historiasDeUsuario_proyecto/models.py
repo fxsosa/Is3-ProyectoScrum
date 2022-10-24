@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.db import models
+from django.db.migrations import serializer
 from simple_history.models import HistoricalRecords
-
+import json
 import proyectos
 import usuarios.models
+from django.core import serializers
 
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
@@ -347,7 +349,18 @@ class managerHistoriaUsuario(models.Manager):
 
         # verificando si existe como historia de usuario del proyecto dado
         if str(historia.proyecto.id) == str(idProyecto):
-            return historia.history.filter(history_id=idVersion)
+            versionBuscada = historia.history.filter(history_id=idVersion)
+            aux = historia.history.filter(history_id=idVersion).only('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado')
+            versionUltima = historia.history.latest()
+            diff = versionUltima.diff_against(versionBuscada[0], included_fields=('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado'))
+
+            diferencias = list()
+
+            for cambio in diff.changes:
+                diferencias.append(dict({"campo": cambio.field, "anterior": cambio.old, "actual": cambio.new}))
+                #print("{} <<{}>> ==> <<{}>>".format(cambio.field, cambio.old, cambio.new))
+
+            return [versionBuscada, diferencias]
         else:
             print("La version de la historia de usuario no existe en el proyecto dado...")
             return None
