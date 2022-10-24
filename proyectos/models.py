@@ -92,7 +92,7 @@ class ManejoProyectos(models.Manager):
         proyecto.save()
         return proyecto
 
-    def cancelarProyecto(self, id_proyecto):
+    def cancelarProyecto(self, id_proyecto, mensaje):
         """
         Método para cancelar un proyecto (eliminación lógica)
 
@@ -102,7 +102,11 @@ class ManejoProyectos(models.Manager):
 
         proyecto = Proyecto.objects.get(id=int(id_proyecto))
         proyecto.estado = "cancelado"
+        proyecto.motivCancelacion = mensaje
+
         proyecto.save()
+
+
 
         listaSprints = sprints.models.Sprint.objects.filter(proyecto_id=proyecto.id)
         if len(listaSprints) > 0:
@@ -214,6 +218,7 @@ class Proyecto(models.Model):
     fechaFin = models.DateTimeField(null=True)
     scrumMaster = models.ForeignKey(Usuario, on_delete=models.PROTECT, null=True) #Evita que se borre, se soluciona cambiando de Scrum Master y luego borrando al usuario
     estado = models.CharField(max_length=30)
+    motivCancelacion = models.CharField(max_length=200, null=True) # Si se cancela el proyecto, aquí se guarda el motivo
 
     objects = ManejoProyectos()
     def __str__(self):
