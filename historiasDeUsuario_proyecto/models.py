@@ -155,11 +155,11 @@ class managerHistoriaUsuario(models.Manager):
                         historia.descripcion = datos['descripcion']
                         modificado = True
 
-                    if datos['prioridad_tecnica'] is not None:
+                    if datos['prioridad_tecnica'] is not None and datos['prioridad_tecnica'] >= 0 and datos['prioridad_tecnica'] <= 10:
                         historia.prioridad_tecnica = datos['prioridad_tecnica']
                         modificado = True
 
-                    if datos['prioridad_negocio'] is not None:
+                    if datos['prioridad_negocio'] is not None and datos['prioridad_negocio'] >= 0 and datos['prioridad_negocio'] <=10:
                         historia.prioridad_negocio = datos['prioridad_negocio']
                         modificado = True
 
