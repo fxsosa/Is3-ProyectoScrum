@@ -177,6 +177,12 @@ class controllerListarHistorialUS(APIView):
             proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
             if user.has_perm('proyectos.obtener_historia_usuario', obj=proyecto):
                 idHistoria = request.GET.get('idHistoria', '')
+                historia = historiaUsuario.objects.get(id=idHistoria)
+
+                # Si no es scrum master ni desarrollador asignado al US
+                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                    return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
+
                 historial = historiaUsuario.objects.listarHistorialUS(idProyecto=idProyecto, idHistoria=idHistoria)
                 # Convertimos a json
                 jsonRespuesta = serializers.serialize('json', historial, fields=('nombre',
@@ -215,6 +221,12 @@ class controllerHistorialUS(APIView):
             proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
             if user.has_perm('proyectos.obtener_historia_usuario', obj=proyecto):
                 idHistoria = request.GET.get('idHistoria', '')
+                historia = historiaUsuario.objects.get(id=idHistoria)
+
+                # Si no es scrum master ni desarrollador asignado al US
+                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                    return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
+
                 idVersion = request.GET.get('idVersion', '')
                 version = historiaUsuario.objects.obtenerHistorialUS(idProyecto=idProyecto,
                                                                        idHistoria=idHistoria,
