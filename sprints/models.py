@@ -216,7 +216,6 @@ class ManagerSprint(models.Manager):
                             sprint.fecha_inicio = fechahoy
                             sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
                             sprint.save()
-                            ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
                     elif sprint.estado == "En Ejecución":
                         sprint.estado = "Finalizado"
                         sprint.save()
@@ -423,9 +422,10 @@ class ManagerSprintBacklog(models.Manager):
 
         sprint = Sprint.objects.get(id=sprint_id)
 
+        print('aaaaaaaaaaaaaaaaaaaaaaaaaa')
         inicio = sprint.fecha_inicio.date()
         fin = sprint.fecha_fin.date()
-
+        print('aaaaaaaaaaaaaaaaaaaaaaaaaa')
         dias_laborales = np.busday_count(inicio, fin)
 
         capacidad_total = capacidad_horas_diarias*dias_laborales
