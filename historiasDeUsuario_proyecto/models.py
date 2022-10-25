@@ -41,6 +41,14 @@ class managerHistoriaUsuario(models.Manager):
             # Agregamos prioridad_general en caso de que ya tengamos la prioridad tecnica y de negocio
             prioridad_final = None
             if prioridad_tecnica is not None and prioridad_negocio is not None:
+                # Verificamos que este dentro de [0;10], sino, dejamos en cero
+                if prioridad_tecnica < 0 or prioridad_tecnica > 10:
+                    prioridad_tecnica = 0
+
+                # Verificamos que este dentro de [0;10], sino, dejamos en cero
+                if prioridad_negocio < 0 or prioridad_negocio > 10:
+                    prioridad_negocio = 0
+
                 prioridad_final = round(0.6 * prioridad_negocio + 0.4 * prioridad_tecnica) # Redondea el valor decimal
 
             estimacion_horas = datos['estimacion_horas']
