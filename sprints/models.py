@@ -270,8 +270,10 @@ class ManagerMiembroSprint(models.Manager):
         sprint_id = datos['sprint_id']
         usuario_id = datos['usuario_id']
 
-        miembro_equipo = self.model(sprint_id=sprint_id, usuario_id=usuario_id, capacidad=capacidad)
+        miembro_equipo = Sprint_Miembro_Equipo(sprint_id=sprint_id, usuario_id=usuario_id, capacidad=capacidad)
         miembro_equipo.save()
+
+        ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, sprint_id)
 
         return miembro_equipo
 
@@ -287,10 +289,13 @@ class ManagerMiembroSprint(models.Manager):
 
         capacidad = datos['capacidad']
         miembro_id = datos['miembro_equipo_id']
+        sprint_id = datos['sprint_id']
 
         miembro_equipo = Sprint_Miembro_Equipo.objects.get(id=miembro_id)
         miembro_equipo.capacidad = capacidad
         miembro_equipo.save()
+
+        ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, sprint_id)
 
         return miembro_equipo
 
@@ -321,6 +326,7 @@ class ManagerMiembroSprint(models.Manager):
                 try:
                     miembro = Sprint_Miembro_Equipo.objects.get(id=id_miembro_equipo)
                     miembro.delete()
+                    ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, idSprint)
                 except Sprint_Miembro_Equipo.DoesNotExist as e:
                     print('No existe el miembro con el id dado:' + str(e))
 
