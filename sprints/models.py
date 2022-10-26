@@ -274,6 +274,7 @@ class ManagerMiembroSprint(models.Manager):
 
         ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, sprint_id)
 
+
         return miembro_equipo
 
     def modificarMiembro(self, datos):
@@ -422,11 +423,7 @@ class ManagerSprintBacklog(models.Manager):
 
         sprint = Sprint.objects.get(id=sprint_id)
 
-        print('aaaaaaaaaaaaaaaaaaaaaaaaaa')
-        inicio = sprint.fecha_inicio.date()
-        fin = sprint.fecha_fin.date()
-        print('aaaaaaaaaaaaaaaaaaaaaaaaaa')
-        dias_laborales = np.busday_count(inicio, fin)
+        dias_laborales = sprint.cantidadDias
 
         capacidad_total = capacidad_horas_diarias*dias_laborales
 
