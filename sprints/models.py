@@ -214,9 +214,11 @@ class ManagerSprint(models.Manager):
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                            sprint.fecha_fin = self.calcularFechaFinal(self, fechahoy, sprint.cantidadDias)
                             sprint.save()
                     elif sprint.estado == "En Ejecución":
+                        fechahoy = timezone.now()
+                        sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
                         sprint.save()
 
@@ -237,6 +239,31 @@ class ManagerSprint(models.Manager):
             return "No se pudo actualizar el estado del sprint! "
 
 
+    def calcularFechaFinal(self, fecha_inicio, cantidadDias):
+        """
+        Retorna la fecha final luego de que pasen una cierta cantidad de días laborales (cantidadDias)
+        Parameters
+        ----------
+        fecha_inicio: date
+        cantidadDias: integer
+
+        Returns date
+        -------
+
+        """
+
+        dias_acumulados = 0
+        fecha_fin = fecha_inicio + datetime.timedelta(days=cantidadDias)
+        dias_laborales = np.busday_count(fecha_inicio.date(), fecha_fin.date())
+
+
+        while dias_laborales < cantidadDias-1: # Por alguna razón el -1 hace que sí de el resultado correcto xd
+            dias_acumulados += 1
+            dias_totales = cantidadDias + dias_acumulados
+            fecha_fin = fecha_inicio + datetime.timedelta(days=dias_totales)
+            dias_laborales = np.busday_count(fecha_inicio.date(), fecha_fin.date())
+
+        return fecha_fin
 
     def listarSprints(self, idProyecto):
         """Obtiene la lista completa de sprints de un proyecto
