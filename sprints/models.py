@@ -214,7 +214,7 @@ class ManagerSprint(models.Manager):
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = self.calcularFechaFinal(self, fechahoy, sprint.cantidadDias)
+                            sprint.fecha_fin = self.calcularFechaFinal( fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
                             sprint.save()
                     elif sprint.estado == "En Ejecución":
                         fechahoy = timezone.now()
