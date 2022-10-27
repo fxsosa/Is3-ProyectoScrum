@@ -243,10 +243,44 @@ class managerHistoriaUsuario(models.Manager):
         # Lista de historias finalizadas (para poner en el medio de la lista)
         listaHistoriasFinalizadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="finalizada").order_by("-prioridad_final")
 
-        # Lista de historias no finalizadas ni canceladas
+        # Lista de historias aceptadas (cuyo release fue aceptado por el Scrum Master
+        listaHistoriasAceptadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="aceptada").order_by(
+            "-prioridad_final")
+
+        # Lista de historias no finalizadas ni canceladas ni aceptadas (estas historias incluyen las rechazadas por el Scrum Master)
         listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada"]).order_by("-prioridad_final")
 
-        listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasCanceladas))
+        listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasAceptadas, listaHistoriasCanceladas))
+
+        return listaHistorias
+
+
+    def listarHistoriasFinalizadas(self, idProyecto):
+        """
+        Método para obtener las Historia de Usuario Finalizadas
+        Tiene utilidad para el Scrum Master, que podrá revisar las historias finalizadas
+        para aprobar o rechazar su release
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+
+        Returns listaHistorias: Lista de Historias Finalizadas
+        -------
+
+        """
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print(e)
+            return None
+
+        # Lista de historias finalizadas (para poner en el medio de la lista)
+        listaHistoriasFinalizadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="finalizada").order_by(
+            "-prioridad_final")
+
+
+        listaHistorias = list(listaHistoriasFinalizadas)
 
         return listaHistorias
 
