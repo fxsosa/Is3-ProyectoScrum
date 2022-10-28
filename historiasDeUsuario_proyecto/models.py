@@ -172,7 +172,13 @@ class managerHistoriaUsuario(models.Manager):
             if datos['estado'] is not None:
                 # obtenemos el tipo y su columna
                 columnaId = datos['estado']
-                if columnaId != 'cancelada':
+                if columnaId == 'rechazada' or columnaId == 'aceptada':
+                    if esDev:
+                        print('No es Scrum Master, no se puede cambiar estado')
+                    else:
+                        historia.estado = datos['estado']
+
+                elif columnaId != 'cancelada':
                     try:
                         columna = Columna_Tipo_Historia_Usuario.objects.get(id=columnaId)
 
@@ -248,7 +254,7 @@ class managerHistoriaUsuario(models.Manager):
             "-prioridad_final")
 
         # Lista de historias no finalizadas ni canceladas ni aceptadas (estas historias incluyen las rechazadas por el Scrum Master)
-        listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada"]).order_by("-prioridad_final")
+        listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada", "aceptada"]).order_by("-prioridad_final")
 
         listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasAceptadas, listaHistoriasCanceladas))
 
