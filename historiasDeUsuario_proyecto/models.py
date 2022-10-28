@@ -78,7 +78,7 @@ class managerHistoriaUsuario(models.Manager):
                                   estimacion_horas=estimacion_horas,
                                   prioridad_final=prioridad_final,
                                   tipo_historia_usuario=tipoHistoria,
-                                  desarrollador_asignado=desarrollador,
+                                  desarrollador_asignado=None,
                                   proyecto=proyecto)
             historia.changed_by = user
             historia.save()
@@ -201,7 +201,13 @@ class managerHistoriaUsuario(models.Manager):
             if datos['estado'] is not None:
                 # obtenemos el tipo y su columna
                 columnaId = datos['estado']
-                if columnaId != 'cancelada':
+                if columnaId == 'rechazada' or columnaId == 'aceptada':
+                    if esDev:
+                        print('No es Scrum Master, no se puede cambiar estado')
+                    else:
+                        historia.estado = datos['estado']
+
+                elif columnaId != 'cancelada':
                     try:
                         columna = Columna_Tipo_Historia_Usuario.objects.get(id=columnaId)
 
@@ -278,10 +284,44 @@ class managerHistoriaUsuario(models.Manager):
         # Lista de historias finalizadas (para poner en el medio de la lista)
         listaHistoriasFinalizadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="finalizada").order_by("-prioridad_final")
 
-        # Lista de historias no finalizadas ni canceladas
-        listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada"]).order_by("-prioridad_final")
+        # Lista de historias aceptadas (cuyo release fue aceptado por el Scrum Master
+        listaHistoriasAceptadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="aceptada").order_by(
+            "-prioridad_final")
 
-        listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasCanceladas))
+        # Lista de historias no finalizadas ni canceladas ni aceptadas (estas historias incluyen las rechazadas por el Scrum Master)
+        listaHistoriasRestantes = historiaUsuario.objects.filter(proyecto=idProyecto).exclude(estado__in=["cancelada", "finalizada", "aceptada"]).order_by("-prioridad_final")
+
+        listaHistorias = list(chain(listaHistoriasRestantes, listaHistoriasFinalizadas, listaHistoriasAceptadas, listaHistoriasCanceladas))
+
+        return listaHistorias
+
+
+    def listarHistoriasFinalizadas(self, idProyecto):
+        """
+        Método para obtener las Historia de Usuario Finalizadas
+        Tiene utilidad para el Scrum Master, que podrá revisar las historias finalizadas
+        para aprobar o rechazar su release
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+
+        Returns listaHistorias: Lista de Historias Finalizadas
+        -------
+
+        """
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print(e)
+            return None
+
+        # Lista de historias finalizadas (para poner en el medio de la lista)
+        listaHistoriasFinalizadas = historiaUsuario.objects.filter(proyecto=idProyecto, estado="finalizada").order_by(
+            "-prioridad_final")
+
+
+        listaHistorias = list(listaHistoriasFinalizadas)
 
         return listaHistorias
 

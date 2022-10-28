@@ -310,6 +310,30 @@ class ListaHUTipo(APIView):
         except Exception as e:
             return HttpResponse("No se pudieron listar las Historias de Usuario!", status=500)
 
+class HistoriasUsuarioFinalizadas (APIView, CreateView):
+    def get(self, request):
+        """Metodo get para obtener una lista de historias de usuario finalizadas de un proyecto dado
+        Usado por el Scrum Master para aceptar o rechazar releases
+
+        :param request: Request de la peticion. Contiene como queryParam idProyecto
+
+        :return: HttpResponse
+        """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idproyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idproyecto)
+            if user.has_perm('proyectos.listar_historias_usuario', obj=proyecto):
+                listaHistoriasUsuario = historiaUsuario.objects.listarHistoriasFinalizadas(idProyecto=idproyecto)
+                serializer = serializers.serialize('json', listaHistoriasUsuario)
+                return HttpResponse(serializer, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron listar las Historias de Usuario! - " + str(e), status=500)
+
 
 def validarRequest(request):
     # Obtenemos los datos del token
