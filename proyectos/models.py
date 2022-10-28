@@ -269,6 +269,7 @@ class Proyecto(models.Model):
             ('actualizar_sprint', 'Actualizar/modificar los parametros de un sprint'),
             ('borrar_historia_sprintbacklog', 'Borrar una historia de usuario del sprint backlog'),
             ('agregar_historia_sprintbacklog', 'Agregar una historia de usuario al sprint backlog')
+            ('restaurar_historia_usuario', 'Restaurar una historia de usuario a una version anterior')
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):

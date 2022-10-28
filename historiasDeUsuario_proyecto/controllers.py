@@ -3,7 +3,9 @@ from django.http import HttpResponse
 from django.views.generic import CreateView
 from rest_framework.views import APIView
 from django.core import serializers
-
+from usuarios.models import Usuario
+from itertools import chain
+import json
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
 from usuarios.models import Usuario
@@ -79,7 +81,7 @@ class HistoriaUsuario(APIView, CreateView):
             datos = body
             proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
             if user.has_perm('proyectos.crear_historia_usuario', obj=proyecto):
-                historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+                historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user)
                 if historia is not None:
                     # Retornar el rol creado
                     queryRol_json = serializers.serialize('json', historia)
@@ -109,7 +111,7 @@ class HistoriaUsuario(APIView, CreateView):
         try:
             proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
             if user.has_perm('proyectos.actualizar_historia_usuario', obj=proyecto):
-                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=False)
+                historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=False, user=user)
                 if historia is not None:
                     queryRol_json = serializers.serialize('json', historia)
                     return HttpResponse(queryRol_json, content_type='application/json', status=201)
@@ -119,7 +121,7 @@ class HistoriaUsuario(APIView, CreateView):
                 historiaUsu = historiaUsuario.objects.get(id=datos['idHistoria'])
                 desarrolladorSolicitante = participante.objects.get(usuario=user, proyecto=proyecto)
                 if historiaUsu.desarrollador_asignado == desarrolladorSolicitante:
-                    historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=True)
+                    historia = historiaUsuario.objects.actualizarHistoriaUsuario(datos=datos, esDev=True, user=user)
                     if historia is not None:
                         queryRol_json = serializers.serialize('json', historia)
                         return HttpResponse(queryRol_json, content_type='application/json', status=201)
@@ -148,7 +150,7 @@ class HistoriaUsuario(APIView, CreateView):
             proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
             if user.has_perm('proyectos.borrar_historia_usuario', obj=proyecto):
                 idHistoria = request.GET.get('idHistoria', '')
-                if historiaUsuario.objects.eliminarHistoriaUsuario(idProyecto=idProyecto, idHistoria=idHistoria):
+                if historiaUsuario.objects.eliminarHistoriaUsuario(idProyecto=idProyecto, idHistoria=idHistoria, user=user):
                     return HttpResponse("Historia de Usuario eliminada con exito!", status=201)
                 else:
                     return HttpResponse("No se pudo eliminar la historia de usuario!", status=500)
@@ -156,6 +158,133 @@ class HistoriaUsuario(APIView, CreateView):
                 return HttpResponse("No se tienen los permisos para borrar historias de usuario!", status=403)
         except Exception as e:
             return HttpResponse("Error al eliminar la Historia de Usuario - " + str(e), status=500)
+
+
+class controllerListarHistorialUS(APIView):
+
+    def get(self, request):
+        """Metodo get para obtener el historial de un US, de un proyecto dado
+
+        :param request: Request de la peticion. Contiene como queryParam el idProyecto y idHistoria
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+        body = request.data
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_historia_usuario', obj=proyecto):
+                idHistoria = request.GET.get('idHistoria', '')
+                historia = historiaUsuario.objects.get(id=idHistoria)
+
+                # Si no es scrum master ni desarrollador asignado al US
+                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                    return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
+
+                historial = historiaUsuario.objects.listarHistorialUS(idProyecto=idProyecto, idHistoria=idHistoria)
+                # Convertimos a json
+                jsonRespuesta = serializers.serialize('json', historial, fields=('nombre',
+                                                                                 'descripcion',
+                                                                                 'history_change_reason',
+                                                                                 'prioridad_tecnica',
+                                                                                 'prioridad_negocio',
+                                                                                 'estimacion_horas',
+                                                                                 'tipo_historia_usuario',
+                                                                                 'desarrollador_asignado',
+                                                                                 'proyecto',
+                                                                                 'horas_trabajadas',
+                                                                                 'prioridad_final',
+                                                                                 'estado'))
+                return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener el historial de usuario! " + str(e), status=500)
+
+
+class controllerHistorialUS(APIView):
+
+    def get(self, request):
+        """Metodo get para obtener una version anterior de un US, de un proyecto dado
+
+                :param request: Request de la peticion. Contiene como queryParam el idProyecto y idHistoria
+
+                :return: HttpResponse
+                """
+
+        user = validarRequest(request)
+        body = request.data
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_historia_usuario', obj=proyecto):
+                idHistoria = request.GET.get('idHistoria', '')
+                historia = historiaUsuario.objects.get(id=idHistoria)
+
+                # Si no es scrum master ni desarrollador asignado al US
+                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                    return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
+
+                idVersion = request.GET.get('idVersion', '')
+                version = historiaUsuario.objects.obtenerHistorialUS(idProyecto=idProyecto,
+                                                                       idHistoria=idHistoria,
+                                                                       idVersion=idVersion)
+                # Convertimos a json
+                jsonRespuesta = serializers.serialize('json', version[0], fields=('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado'))
+                diferencias = json.dumps(version[1])
+                return HttpResponse([jsonRespuesta, diferencias], content_type='application/json', status=200)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener versiones de historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener la version de la historia de usuario! " + str(e), status=500)
+
+
+    def put(self, request):
+        """Metodo para restaurar una version de una historia de usuario.
+
+        :param request: Request de la peticion, contiene como queryParam el valor del idProyecto, idHistoria, idVersion
+        a restaurar
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+
+        try:
+            idProyecto = body['idProyecto']
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.restaurar_historia_usuario', obj=proyecto):
+                idHistoria = body['idHistoria']
+                idVersion = body['idVersion']
+                versionRestaurada = historiaUsuario.objects.restaurarHistorialUS(idProyecto=idProyecto,
+                                                                                  idHistoria=idHistoria,
+                                                                                  idVersion=idVersion,
+                                                                                  user=user)
+                if versionRestaurada is not None:
+                    queryUS_json = serializers.serialize('json', versionRestaurada, fields=('nombre',
+                                                                                            'descripcion',
+                                                                                            'history_change_reason',
+                                                                                            'prioridad_tecnica',
+                                                                                            'prioridad_negocio',
+                                                                                            'estimacion_horas',
+                                                                                            'tipo_historia_usuario',
+                                                                                            'desarrollador_asignado',
+                                                                                            'proyecto',
+                                                                                            'horas_trabajadas',
+                                                                                            'prioridad_final',
+                                                                                            'estado'))
+                    return HttpResponse(queryUS_json, content_type='application/json', status=201)
+                else:
+                    return HttpResponse("No se pudo restaurar la historia de usuario", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para restaurar historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al restaurar la Historia de Usuario - " + str(e), status=500)
+
 
 class ListaHUTipo(APIView):
     def get(self, request):
