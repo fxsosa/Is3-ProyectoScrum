@@ -10,7 +10,7 @@ urlpatterns = [
     path('listar', ListaHistoriasUsuario.as_view(), name="listar"),
     path('', HistoriaUsuario.as_view(), name="historiaUsuario"),
     path('listar-por-tipo', ListaHUTipo.as_view(), name="listarHUTipo"),
-    path('historias-finalizadas', HistoriasUsuarioFinalizadas.as_view(), name="listarHuFinalizadas")
+    path('historias-finalizadas', HistoriasUsuarioFinalizadas.as_view(), name="listarHuFinalizadas"),
     path('historial/listar', controllerListarHistorialUS.as_view(), name="listarHistorial"),
     path('historial', controllerHistorialUS.as_view(), name="historial")
 ]
