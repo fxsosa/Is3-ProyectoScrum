@@ -56,7 +56,11 @@ permisosInternos = [
     'proyectos.borrar_miembro_sprint',
     'proyectos.borrar_historia_sprintbacklog',
     'proyectos.agregar_historia_sprintbacklog'
-    'proyectos.restaurar_historia_usuario'
+    'proyectos.restaurar_historia_usuario',
+    'proyectos.obtener_actividad_historia_usuario',
+    'proyectos.eliminar_actividad_historia_usuario',
+    'proyectos.crear_actividad_historia_usuario',
+    'proyectos.listar_actividad_historia_usuario'
 ]
 
 class ManejoRol(models.Manager):

@@ -4,6 +4,7 @@ from django.db.migrations import serializer
 from simple_history.models import HistoricalRecords
 import json
 import proyectos
+import sprints
 import usuarios.models
 from django.core import serializers
 
@@ -451,6 +452,224 @@ class managerHistoriaUsuario(models.Manager):
 
 
 
+class managerActividadesUS(models.Manager):
+    def crearActividad(self, datos, user):
+        """Crear una actividad de una historia de usuario y asociar a la historia.
+
+        :param datos: Dict. con los siguientes datos:
+
+        - titulo: String titulo de la actividad.
+        - descripcion: String descripcion de la actividad.
+        - idHistoria: ID de US.
+        - horasTrabajadas: Cant. de horas trabajadas en esta actividad.
+        - idProyecto: ID del proyecto al que pertenece la US.
+        - idSprint: ID del sprint actual al que pertenece el US.
+
+        :param user: Instancia usuario que realiza el request.
+        Debe ser el usuario actualmente asignado a la US
+
+        :return: QuerySet / None
+        """
+        try:
+            titulo = datos['titulo']
+            descripcion = datos['descripcion']
+            idHistoria = datos['idHistoria']
+            horasTrabajadas = datos['horasTrabajadas']
+            idProyecto = datos['idProyecto']
+            idSprint = datos['idSprint']
+
+            # Verificamos el proyecto exista
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("El proyecto no existe!")
+                return None
+
+            # Verificamos la historia de usuario exista
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("La historia de usuario no existe!")
+                return None
+
+            # Verificamos el sprint exista
+            try:
+                sprint = sprints.models.Sprint.objects.get(id=idSprint)
+            except sprints.models.Sprint.DoesNotExist as e:
+                print("El sprint no existe!")
+                return None
+
+            # Verificamos el usuario sea participante del proyecto
+            try:
+                part = participante.objects.get(proyecto=proyecto, usuario=user)
+            except participante.DoesNotExist as e:
+                print("El usuario no es participante del proyecto!")
+                return None
+
+            # Verificamos el estado del US
+            if historia.estado == "finalizado" or historia.estado == "cancelado" or historia.estado == "aceptado" or historia.estado is None:
+                print("No puede agregarse actividad cuando el US no esta en ejecucion!")
+                return None
+
+            # Verificamos el US pertenece al sprint
+            if not sprints.models.SprintBacklog.objects.filter(historiaUsuario=historia, idSprint=sprint).exists():
+                print("El US no pertenece al sprint dado!")
+                return None
+
+            # Verificamos el Sprint esta en ejecucion
+            if sprint.estado != "En Ejecución":
+                print("El Sprint no se encuentra en ejecucion!")
+                return None
+
+            # Verificamos el usuario pertenece al sprint (como miembro de sprint)
+            if not sprints.models.Sprint_Miembro_Equipo.objects.filter(usuario=user, sprint=sprint).exists():
+                print("El usuario no es miembro del sprint!")
+                return None
+
+            # Verificamos el US tenga como participante asignado al usuario
+            if historia.desarrollador_asignado != part:
+                print("El usuario no tiene asignado la historia de usuario!")
+                return None
+
+            # Verificamos los datos de entrada son validos (titulo, descripcion, horasTrabajadas)
+            if not [x for x in (titulo, descripcion, horasTrabajadas) if x is None] and horasTrabajadas > 0:
+                actividad = self.model(titulo=titulo,
+                                       descripcion=descripcion,
+                                       horasTrabajadas=horasTrabajadas,
+                                       participante=part)
+                # Guardamos las horas trabajadas que se menciona en la actividad
+                historia.horas_trabajadas += horasTrabajadas
+                actividad.save()
+                historia.actividades.add(actividad)
+                historia.save()
+
+
+                actividad = ActividadesUS.objects.filter(id=actividad.id)
+                return actividad
+            else:
+                return None
+
+        except Exception as e:
+            print("Error al crear actividad de historia de usuario! + " + str(e))
+            return None
+
+
+    def obtenerActividad(self, datos):
+        """Obtener una actividad de un US
+
+        :param datos: Dict. Con los siguientes valores:
+
+        - idHistoria : ID de la Historia de Usuario
+        - idActividad : ID de la Actividad a obtener
+
+        :return: Boolean
+        """
+
+        try:
+            idHistoria = datos['idHistoria']
+            idActividad = datos['idActividad']
+
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("No existe la historia de usuario!")
+                return False
+
+            try:
+                actividad = ActividadesUS.objects.get(id=idActividad)
+            except ActividadesUS.DoesNotExist as e:
+                print("No existe la actividad!")
+                return False
+
+            # Verificamos si existe como actividad del US y si se encuentra en desarrollo actualmente
+            if historia.actividades.filter(id=actividad.id).exists():
+                actividad = ActividadesUS.objects.filter(id=actividad.id)
+                return actividad
+            else:
+                return None
+        except Exception as e:
+            print("Error al obtener actividad de historias de usuario! + " + str(e))
+            return None
+
+    def eliminarActividad(self, datos):
+        """Elimina una actividad de un US
+
+        :param datos: Dict. Con los siguientes valores:
+
+        - idHistoria : ID de la Historia de Usuario
+        - idActividad : ID de la Actividad a eliminar
+
+        :return: Boolean
+        """
+        try:
+            idHistoria = datos['idHistoria']
+            idActividad = datos['idActividad']
+
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("No existe la historia de usuario!")
+                return False
+
+            try:
+                actividad = ActividadesUS.objects.get(id=idActividad)
+            except ActividadesUS.DoesNotExist as e:
+                print("No existe la actividad!")
+                return False
+
+            # Verificamos si existe como actividad del US y si se encuentra en desarrollo actualmente
+            if historia.actividades.filter(id=actividad.id).exists() and historia.estado != "aceptado" and historia.estado != "cancelado" and historia.estado != "finalizado":
+                # Actualizamos las horas trabajadas
+                historia.horas_trabajadas -= actividad.horasTrabajadas
+
+                historia.save()
+                actividad.delete()
+                return True
+            else:
+                return None
+        except Exception as e:
+            print("Error al eliminar actividad de historias de usuario! + " + str(e))
+            return None
+
+
+    def listarActividadesUS(self, datos):
+        """
+
+        :param datos: Dict. Los valores que contiene son:
+
+        - idHistoria: ID de la Historia de Usuario
+
+        :return: QuerySet / None
+        """
+        try:
+            idHistoria = datos['idHistoria']
+
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("No existe la historia de usuario!")
+                return None
+
+            listaActividades = historia.actividades.all()
+
+            return listaActividades
+        except Exception as e:
+            print("Error en listar actividades de US! + " + str(e))
+            return None
+
+
+class ActividadesUS(models.Model):
+    titulo = models.CharField(max_length=50)
+    descripcion = models.CharField(max_length=500)
+    horasTrabajadas = models.IntegerField(null=True)
+    participante = models.ForeignKey(participante, null=True, on_delete=models.SET_NULL)
+
+    # Aceptado/Rechazado?, depende de si el eliminar es logico/fisico
+    estado = models.CharField(max_length=20, null=True)
+
+    objects = managerActividadesUS()
+
+
 class historiaUsuario(models.Model):
     # Caracteristicas de la HU
     nombre = models.CharField(max_length=80)
@@ -465,11 +684,11 @@ class historiaUsuario(models.Model):
     prioridad_final = models.IntegerField(null=True)
     estado = models.CharField(max_length=200, null=True)
 
-
-
+    # Para registrar las actividades/comentarios como parte del historial de una version
+    actividades = models.ManyToManyField(ActividadesUS)
 
     # Para registrar los cambios del historial
-    history = HistoricalRecords(user_model=Usuario)
+    history = HistoricalRecords(user_model=Usuario, m2m_fields=[actividades])
 
     @property
     def _history_user(self):

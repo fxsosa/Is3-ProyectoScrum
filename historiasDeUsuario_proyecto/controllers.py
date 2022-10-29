@@ -7,7 +7,7 @@ from usuarios.models import Usuario
 from itertools import chain
 import json
 import proyectos.models
-from historiasDeUsuario_proyecto.models import historiaUsuario
+from historiasDeUsuario_proyecto.models import historiaUsuario, ActividadesUS
 from usuarios.models import Usuario
 from proyectos.models import participante
 
@@ -333,6 +333,137 @@ class HistoriasUsuarioFinalizadas (APIView, CreateView):
                 return HttpResponse("No se tienen los permisos para listar historias de usuario!", status=403)
         except Exception as e:
             return HttpResponse("No se pudieron listar las Historias de Usuario! - " + str(e), status=500)
+
+
+class controllerActividadesUS(APIView):
+    
+    def get(self, request):
+        """Metodo get para obtener una actividad de US
+
+        :param request: Request de la peticion. Contiene como queryParam el idProyecto, idHistoria y idActividad
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+        body = request.data
+        try:
+            idProyecto=request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.obtener_actividad_historia_usuario', obj=proyecto):
+                idHistoria=request.GET.get('idHistoria', '')
+                idActividad=request.GET.get('idActividad', '')
+
+                actividad = ActividadesUS.objects.obtenerActividad(
+                    datos={"idHistoria": idHistoria, "idActividad": idActividad})
+
+                if actividad is not None:
+                    # Convertimos a json
+                    jsonRespuesta = serializers.serialize('json', actividad)
+                    return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudo obtener la actividad de historia de usuario!", status=400)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener actividad!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener la actividad de historia de usuario! " + str(e), status=500)
+
+
+    def post(self, request):
+        """Metodo post para crear una actividad de historia de usuario
+
+        :param request: Request de la peticion. Contiene como valores de .data los campos:
+        - titulo: String titulo de la actividad.
+        - descripcion: String descripcion de la actividad.
+        - idHistoria: ID de US.
+        - horasTrabajadas: Cant. de horas trabajadas en esta actividad.
+        - idProyecto: ID del proyecto al que pertenece la US.
+        - idSprint: ID del sprint actual al que pertenece el US.
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+        # Obtenemos el cuerpo de la peticion
+        body = request.data
+        try:
+            datos = body
+            proyecto = proyectos.models.Proyecto.objects.get(id=datos['idProyecto'])
+            if user.has_perm('proyectos.crear_actividad_historia_usuario', obj=proyecto):
+                actividad = ActividadesUS.objects.crearActividad(datos=datos, user=user)
+                if actividad is not None:
+                    # Retornar el rol creado
+                    queryRol_json = serializers.serialize('json', actividad)
+                    return HttpResponse(queryRol_json, content_type='application/json', status=201)
+                else:
+                    return HttpResponse("No se pudo crear la actividad de historia de usuario", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para crear actividades de historias de usuario!", status=403)
+        except Exception as e:
+            return HttpResponse("Error al registrar actividades historia de usuario - " + str(e), status=500)
+
+    def delete(self, request):
+        """Metodo para eliminar una actividad de US
+
+        :param request: Request de la peticion. Contiene como queryParam el idProyecto, idHistoria y idActividad
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+        body = request.data
+        try:
+            idProyecto=request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.eliminar_actividad_historia_usuario', obj=proyecto):
+                idHistoria=request.GET.get('idHistoria', '')
+                idActividad=request.GET.get('idActividad', '')
+
+                respuesta = ActividadesUS.objects.eliminarActividad(
+                    datos={"idHistoria": idHistoria, "idActividad": idActividad})
+
+                if respuesta:
+                    return HttpResponse("Eliminado con exito!", status=200)
+                else:
+                    return HttpResponse("No se pudo eliminar!", status=404)
+            else:
+                return HttpResponse("No se tienen los permisos para obtener actividad!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudo obtener la actividad de historia de usuario! " + str(e), status=500)
+
+
+
+class controllerListarActividadesUS(APIView):
+
+    def get(self, request):
+        """Metodo get para obtener una actividad de US
+
+                :param request: Request de la peticion. Contiene como queryParam el idProyecto, idHistoria
+
+                :return: HttpResponse
+                """
+
+        user = validarRequest(request)
+        body = request.data
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.listar_actividad_historia_usuario', obj=proyecto):
+                idHistoria = request.GET.get('idHistoria', '')
+
+                listaActividades = ActividadesUS.objects.listarActividadesUS(datos={"idHistoria": idHistoria})
+
+                if listaActividades is not None:
+                    # Convertimos a json
+                    jsonRespuesta = serializers.serialize('json', listaActividades)
+                    return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("No se pudieron listar las actividades!", status=400)
+            else:
+                return HttpResponse("No se tienen los permisos para listar actividades!", status=403)
+        except Exception as e:
+            print("No se pudo obtener la lista de actividades de historias de usuario! " + str(e))
+            return HttpResponse("No se pudo obtener la lista de actividades de historias de usuario! ", status=500)
 
 
 def validarRequest(request):

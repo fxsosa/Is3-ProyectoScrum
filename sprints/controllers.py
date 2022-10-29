@@ -313,7 +313,7 @@ class controllerSprintBacklog(APIView):
         """Metodo para agregar una hisotira a un sprint
 
                 :param request: Request. Recibe en el request.data los siguientes parametros:
-                proyecto_id, proyecto_id, sprint_id, idHistoria, idSprintBacklog
+                proyecto_id, proyecto_id, sprint_id, idHistoria
 
                 :return: HttpResponse
                 """
