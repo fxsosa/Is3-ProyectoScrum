@@ -206,6 +206,7 @@ class managerHistoriaUsuario(models.Manager):
                         print('No es Scrum Master, no se puede cambiar estado')
                     else:
                         historia.estado = datos['estado']
+                        modificado = True
 
                 elif columnaId != 'cancelada':
                     try:
