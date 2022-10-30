@@ -196,7 +196,8 @@ class controllerListarHistorialUS(APIView):
                                                                                  'proyecto',
                                                                                  'horas_trabajadas',
                                                                                  'prioridad_final',
-                                                                                 'estado'))
+                                                                                 'estado',
+                                                                                 'actividades'))
                 return HttpResponse(jsonRespuesta, content_type='application/json', status=200)
             else:
                 return HttpResponse("No se tienen los permisos para obtener historias de usuario!", status=403)
@@ -232,7 +233,7 @@ class controllerHistorialUS(APIView):
                                                                        idHistoria=idHistoria,
                                                                        idVersion=idVersion)
                 # Convertimos a json
-                jsonRespuesta = serializers.serialize('json', version[0], fields=('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado'))
+                jsonRespuesta = serializers.serialize('json', version[0], fields=('nombre', 'descripcion', 'history_change_reason', 'prioridad_tecnica', 'prioridad_negocio', 'estimacion_horas', 'tipo_historia_usuario', 'desarrollador_asignado', 'proyecto', 'horas_trabajadas', 'prioridad_final', 'estado', 'actividades'))
                 diferencias = json.dumps(version[1])
                 return HttpResponse([jsonRespuesta, diferencias], content_type='application/json', status=200)
             else:
@@ -276,7 +277,8 @@ class controllerHistorialUS(APIView):
                                                                                             'proyecto',
                                                                                             'horas_trabajadas',
                                                                                             'prioridad_final',
-                                                                                            'estado'))
+                                                                                            'estado',
+                                                                                            'actividades'))
                     return HttpResponse(queryUS_json, content_type='application/json', status=201)
                 else:
                     return HttpResponse("No se pudo restaurar la historia de usuario", status=500)

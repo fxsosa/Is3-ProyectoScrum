@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.db import models
 from django.db.migrations import serializer
+from simple_history.management.commands.populate_history import get_model
 from simple_history.models import HistoricalRecords
 import json
 import proyectos
 import sprints
 import usuarios.models
 from django.core import serializers
-
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
@@ -434,11 +434,50 @@ class managerHistoriaUsuario(models.Manager):
 
             # verificando si existe como historia de usuario del proyecto dado
             if str(historia.proyecto.id) == str(idProyecto):
+                # Restauramos la version anterior
                 version = historia.history.get(history_id=idVersion)
                 version.instance.save()
                 versionFinal = historia.history.latest()
                 versionFinal.history_user = user
                 versionFinal.save()
+
+
+
+                # Problema: Desactivar crear historial cuando se add/remove de un m2m
+                # Solucion temporal: Borrar todos los registros del historial que se encuentren
+                # luego de la version restaurada.
+                ultimaVersion = historia.history.latest()
+
+                # Obtenemos todos los ids de actividades actuales
+                queryActividades = historia.actividades.all()
+                # Eliminamos
+                for x in queryActividades:
+                    historia.actividades.remove(x.id)
+
+                # Guardamos en la version actual las actividades de la version restaurada.
+                m2m_actividades = get_model("historiasDeUsuario_proyecto", "historicalhistoriaUsuario_actividades")
+                lista = m2m_actividades.objects.filter(history_id=idVersion).values("actividadesus_id")
+
+                # Guardamos las actividades de la version a restaurar
+                for x in lista:
+                   historia.actividades.add(x['actividadesus_id'])
+
+
+                # Guardamos los cambios sin crear nueva version en el historial
+                historia.save_without_historical_record()
+
+
+                # Borramos las versiones posteriores
+                aux1 = ultimaVersion.next_record
+                while aux1 is not None:
+                    # Borramos del m2m historico
+                    m2m_actividades.objects.filter(history_id=aux1.history_id).delete()
+                    aux2 = aux1
+                    aux1 = aux1.next_record
+                    # Borramos de la tabla de historica de US
+                    aux2.delete()
+
+                # Definimos el motivo del cambio
                 cambiarMotivoHistorial(historia, "Restaurado")
 
                 historia = historiaUsuario.objects.filter(id=historia.id)
@@ -447,7 +486,7 @@ class managerHistoriaUsuario(models.Manager):
                 print("La historia de usuario no pertenece al proyecto dado...")
                 return None
         except Exception as e:
-            print("Error al restaurar la version de una US!")
+            print("Error al restaurar la version de una US! + " + str(e))
             return None
 
 
@@ -541,8 +580,7 @@ class managerActividadesUS(models.Manager):
                 historia.horas_trabajadas += horasTrabajadas
                 actividad.save()
                 historia.actividades.add(actividad)
-                historia.save()
-
+                cambiarMotivoHistorial(historia, "Actividad Agregada")
 
                 actividad = ActividadesUS.objects.filter(id=actividad.id)
                 return actividad
@@ -621,9 +659,9 @@ class managerActividadesUS(models.Manager):
             if historia.actividades.filter(id=actividad.id).exists() and historia.estado != "aceptado" and historia.estado != "cancelado" and historia.estado != "finalizado":
                 # Actualizamos las horas trabajadas
                 historia.horas_trabajadas -= actividad.horasTrabajadas
-
-                historia.save()
-                actividad.delete()
+                historia.actividades.remove(actividad)
+                cambiarMotivoHistorial(historia, "Actividad Eliminada")
+                # actividad.delete()
                 return True
             else:
                 return None
@@ -688,7 +726,7 @@ class historiaUsuario(models.Model):
     actividades = models.ManyToManyField(ActividadesUS)
 
     # Para registrar los cambios del historial
-    history = HistoricalRecords(user_model=Usuario, m2m_fields=[actividades])
+    history = HistoricalRecords(m2m_fields=[actividades, ], user_model=Usuario)
 
     @property
     def _history_user(self):
@@ -699,6 +737,17 @@ class historiaUsuario(models.Model):
         self.changed_by = value
 
     objects = managerHistoriaUsuario()
+
+
+    # Para guardar sin registrar en el historial
+    def save_without_historical_record(self, *args, **kwargs):
+        self.skip_history_when_saving = True
+        try:
+            ret = self.save(*args, **kwargs)
+        finally:
+            del self.skip_history_when_saving
+        return ret
+
 
     def __str__(self):
         return str([self.nombre, self.descripcion, self.prioridad_tecnica,
