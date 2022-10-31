@@ -269,7 +269,12 @@ class Proyecto(models.Model):
             ('actualizar_sprint', 'Actualizar/modificar los parametros de un sprint'),
             ('borrar_historia_sprintbacklog', 'Borrar una historia de usuario del sprint backlog'),
             ('agregar_historia_sprintbacklog', 'Agregar una historia de usuario al sprint backlog'),
-            ('restaurar_historia_usuario', 'Restaurar una historia de usuario a una version anterior')
+            ('restaurar_historia_usuario', 'Restaurar una historia de usuario a una version anterior'),
+            ('obtener_actividad_historia_usuario', 'Obtener una actividad de US'),
+            ('listar_actividad_historia_usuario', 'Listar actividades de US'),
+            ('eliminar_actividad_historia_usuario', 'Eliminar actividad de un US'),
+            ('crear_actividad_historia_usuario', 'Crear actividad de un US')
+
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
