@@ -244,7 +244,7 @@ class controllerColumnasTipoHU(APIView):
             return HttpResponse("Error al verificar al usuario! - " + str(e), status=401)
 
         try:
-            id_columna = request.GET.get('q', '') #Recibe el parámetro "q" de la url
+            id_columna = request.GET.get('idColumna', '') #Recibe el parámetro "idColumna" de la url
             columna_tipo_HU = Columna_Tipo_Historia_Usuario.objects.get(id=int(id_columna))
             print(columna_tipo_HU)
             
@@ -351,14 +351,15 @@ class controllerColumnasTipoHU(APIView):
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
 
             if user.has_perm('proyectos.modificar_columnas_tipo_HU', obj=proyecto):
-                Columna_Tipo_Historia_Usuario.objects.eliminarColumna(datos)
-
-                return HttpResponse("Se ha borrado la columna exitosamente", status=200)
+                resultado = Columna_Tipo_Historia_Usuario.objects.eliminarColumna(datos)
+                if resultado:
+                    return HttpResponse("Se ha borrado la columna exitosamente", status=200)
+                else:
+                    return HttpResponse("Existen Historias de Usuario en esa columna en un Sprint Backlog, no se puede eliminar", status=403)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
         except Exception as e:
             return HttpResponse("Error encontrado:" + str(e), status=500)
-
 
 
 def obtenerUsuarioConToken(token):

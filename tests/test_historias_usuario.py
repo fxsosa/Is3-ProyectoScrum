@@ -100,7 +100,7 @@ def test_actualizarHistoriaUsuario():
                                                                      "horas_trabajadas": None,
                                                                      "prioridad_negocio": None,
                                                                      "estimacion_horas": None,
-                                                                     "estado": None})
+                                                                     "estado": None}, False)
     assert str([actualizado[0].nombre, actualizado[0].descripcion, actualizado[0].prioridad_tecnica, actualizado[0].prioridad_negocio, actualizado[0].estimacion_horas, str(actualizado[0].tipo_historia_usuario.id), str(actualizado[0].desarrollador_asignado.id), str(actualizado[0].proyecto.id)]) == str(["Nuevo Nombre", "Descripcion de Prueba", 1, 2, 10, str(tipo.id), str(part.id), str(proyectoPrueba.id)]), "Error al actualizar la historia de usuario"
 
 @pytest.mark.django_db

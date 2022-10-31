@@ -3,12 +3,13 @@ from django.utils import timezone
 from django.db import models
 import pytz
 
-from historiasDeUsuario.models import Tipo_Historia_Usuario
+from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 class ManagerSprint(models.Manager):
 
@@ -36,6 +37,8 @@ class ManagerSprint(models.Manager):
                                 cantidadDias=cantidadDias,
                                 capacidadEquipo=capacidadEquipo)
             sprint.save()
+            # creamos el sprint backlog
+            SprintBacklog.objects.crearSprintBacklog(sprint.id)
 
             sprint = Sprint.objects.filter(id=sprint.id)
             return sprint
@@ -177,7 +180,16 @@ class ManagerSprint(models.Manager):
 
             if sprint.proyecto_id == proyecto.id:
                 if opcion == 'Avanzar':
-                    if sprint.estado == "Planificación":
+
+                    if sprint.estado == "Creado": # Este sería un Sprint creado que no está en planificación
+                        if Sprint.objects.filter(proyecto=proyecto.id, estado="Planificación").exists():
+                            print("Ya existe un sprint en planificación en este proyecto! ")
+                            return "Operación no permitida.\nYa existe un sprint \"En Planificación\" en este proyecto! "
+                        else:
+                            sprint.estado = "Planificación"
+                            sprint.save()
+
+                    elif sprint.estado == "Planificación":
 
                         # Query de todos los sprints del proyecto que tengan estado=En Ejecución
                         if Sprint.objects.filter(proyecto=proyecto.id, estado="En Ejecución").exists():
@@ -203,10 +215,15 @@ class ManagerSprint(models.Manager):
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = fechahoy + datetime.timedelta(days=sprint.cantidadDias)
+                            sprint.fecha_fin = self.calcularFechaFinal(fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
                             sprint.save()
-                            ManagerSprintBacklog.crearSprintBacklog(ManagerSprintBacklog, proyecto_id=idProyecto, sprint_id=idSprint)
+                            # Agregamos la cantidad total de horas pendientes del proyecto hasta el momento (para el burndown chart)
+
+
+
                     elif sprint.estado == "En Ejecución":
+                        fechahoy = timezone.now()
+                        sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
                         sprint.save()
 
@@ -227,6 +244,31 @@ class ManagerSprint(models.Manager):
             return "No se pudo actualizar el estado del sprint! "
 
 
+    def calcularFechaFinal(self, fecha_inicio, cantidadDias):
+        """
+        Retorna la fecha final luego de que pasen una cierta cantidad de días laborales (cantidadDias)
+        Parameters
+        ----------
+        fecha_inicio: date
+        cantidadDias: integer
+
+        Returns date
+        -------
+
+        """
+
+        dias_acumulados = 0
+        fecha_fin = fecha_inicio + datetime.timedelta(days=cantidadDias)
+        dias_laborales = np.busday_count(fecha_inicio.date(), fecha_fin.date())
+
+
+        while dias_laborales < cantidadDias-1: # Por alguna razón el -1 hace que sí de el resultado correcto xd
+            dias_acumulados += 1
+            dias_totales = cantidadDias + dias_acumulados
+            fecha_fin = fecha_inicio + datetime.timedelta(days=dias_totales)
+            dias_laborales = np.busday_count(fecha_inicio.date(), fecha_fin.date())
+
+        return fecha_fin
 
     def listarSprints(self, idProyecto):
         """Obtiene la lista completa de sprints de un proyecto
@@ -245,6 +287,65 @@ class ManagerSprint(models.Manager):
         return listaSprints
 
 
+    def generarBurndownChart(self, idProyecto):
+        """
+        Genera la gráfica del Burndown Chart
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+
+        Returns
+        -------
+
+        """
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print("No existe el proyecto con el ID dado! " + str(e))
+            return None
+
+        listaSprints = Sprint.objects.filter(proyecto=idProyecto, estado="Finalizado").order_by('fecha_inicio')
+
+        print(listaSprints)
+
+        x = []
+        y = []
+
+        contSprints = 0
+        y.append(listaSprints[0].horas_pendientes_inicial)
+        for sprint in listaSprints:
+            y.append(sprint.horas_pendientes_final)
+            contSprints+=1
+
+        # Contaremos desde 0 sprints hasta la cantidad total de sprints finalizados
+        for i in range(0, contSprints+1):
+            x.append(i)
+
+        # Para hacer que el gráfico empiece en (0,0)
+        plt.xlim([0, max(x)])
+        plt.ylim([0, max(y)])
+
+        # Nombre para cada eje
+        plt.xlabel("Sprints")
+        plt.ylabel("Horas pendientes")
+
+        # Nombre de la gráfica
+        plt.title("Burndown Chart")
+
+        # Hacer que el eje x tome valores discretos
+        plt.xticks(x)
+
+        for i in range(0, len(x), 1):
+            plt.plot(x[i:i + 2], y[i:i + 2], 'ro-')
+
+        plt.show()
+
+
+
+
+
+
 class ManagerMiembroSprint(models.Manager):
 
     def agregarMiembro(self, datos):
@@ -259,8 +360,11 @@ class ManagerMiembroSprint(models.Manager):
         sprint_id = datos['sprint_id']
         usuario_id = datos['usuario_id']
 
-        miembro_equipo = self.model(sprint_id=sprint_id, usuario_id=usuario_id, capacidad=capacidad)
+        miembro_equipo = Sprint_Miembro_Equipo(sprint_id=sprint_id, usuario_id=usuario_id, capacidad=capacidad)
         miembro_equipo.save()
+
+        ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, sprint_id)
+
 
         return miembro_equipo
 
@@ -276,10 +380,13 @@ class ManagerMiembroSprint(models.Manager):
 
         capacidad = datos['capacidad']
         miembro_id = datos['miembro_equipo_id']
+        sprint_id = datos['sprint_id']
 
         miembro_equipo = Sprint_Miembro_Equipo.objects.get(id=miembro_id)
         miembro_equipo.capacidad = capacidad
         miembro_equipo.save()
+
+        ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, sprint_id)
 
         return miembro_equipo
 
@@ -310,6 +417,7 @@ class ManagerMiembroSprint(models.Manager):
                 try:
                     miembro = Sprint_Miembro_Equipo.objects.get(id=id_miembro_equipo)
                     miembro.delete()
+                    ManagerSprintBacklog.calcularCapacidadSprint(ManagerSprintBacklog, idSprint)
                 except Sprint_Miembro_Equipo.DoesNotExist as e:
                     print('No existe el miembro con el id dado:' + str(e))
 
@@ -323,7 +431,12 @@ class ManagerMiembroSprint(models.Manager):
 
 
 class ManagerSprintBacklog(models.Manager):
-    def crearSprintBacklog(self, proyecto_id, sprint_id):
+
+    def crearSprintBacklog(self, sprint_id):
+        sprint_backlog = SprintBacklog.objects.model(idSprint_id=sprint_id)
+        sprint_backlog.save()
+
+    def crearSprintBacklogViejo(self, proyecto_id, sprint_id):
         """Crea un sprint backlog. Agrega las US permitidas del proyecto.
 
         :param proyecto_id: ID del proyecto
@@ -357,10 +470,18 @@ class ManagerSprintBacklog(models.Manager):
             # Verificamos:
             # 1. Estado de la US no sea cancelada ni finalizada
             # 2. Tiene desarrollador asignado encargado de la US
+            # 3. El desarrollador asignado es miembro del equipo del sprint al cual se agrega la US
             if not (historia_usuario.estado=="cancelada" or historia_usuario.estado=="finalizada" or historia_usuario.desarrollador_asignado is None):
-                sprint_backlog.historiaUsuario.add(historia_usuario)
-                horas_hu = historia_usuario.estimacion_horas
-                acumulado += horas_hu
+                # Verificamos el Nro. 3
+                if Sprint_Miembro_Equipo.objects.filter(usuario_id=historia_usuario.desarrollador_asignado.usuario.id, sprint_id=sprint.id).exists():
+                    columnas = Columna_Tipo_Historia_Usuario.objects.filter(tipoHU_id=historia_usuario.tipo_historia_usuario_id).order_by('orden')
+                    historia_usuario.estado = columnas[0].id
+                    print('historia_usuario.estado', historia_usuario.estado)
+                    historia_usuario.save()
+
+                    sprint_backlog.historiaUsuario.add(historia_usuario)
+                    horas_hu = historia_usuario.estimacion_horas
+                    acumulado += horas_hu
 
     def actualizarPrioridadFinal(self, proyecto_id):
         """Actualiza las prioridades de los US de un proyecto.
@@ -393,10 +514,7 @@ class ManagerSprintBacklog(models.Manager):
 
         sprint = Sprint.objects.get(id=sprint_id)
 
-        inicio = sprint.fecha_inicio.date()
-        fin = sprint.fecha_fin.date()
-
-        dias_laborales = np.busday_count(inicio, fin)
+        dias_laborales = sprint.cantidadDias
 
         capacidad_total = capacidad_horas_diarias*dias_laborales
 
@@ -459,7 +577,7 @@ class ManagerSprintBacklog(models.Manager):
                     print("No existe el sprintbacklog! " + str(e))
                     return None
 
-                return backlog.historiaUsuario.all()
+                return backlog.historiaUsuario.all().order_by('-prioridad_final')
         except Exception as e:
             print("Error al obtener la lista de US! " + str(e))
             return None
@@ -507,6 +625,55 @@ class ManagerSprintBacklog(models.Manager):
         except Exception as e:
             print("Error al obtener la lista de US del tipo especificado! " + str(e))
             return None
+
+    def agregarHUSprintBacklog(self, idProyecto, idSprint, idHistoria):
+        """Agrega una historia de usuario al sprint backlog
+
+            :param idProyecto: ID del proyecto
+            :param idSprint: ID del sprint
+            :param idHistoria: ID de la historia de usuario a eliminar
+
+            :return: Boolean
+            """
+        try:
+            try:
+                sprint = Sprint.objects.get(id=idSprint)
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint con el ID dado! " + str(e))
+                return False
+
+            try:
+                sprintbacklog = SprintBacklog.objects.get(idSprint=idSprint)
+            except SprintBacklog.DoesNotExist as e:
+                print("No existe el sprintbacklog! " + str(e))
+                return False
+
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto con el ID dado! " + str(e))
+                return False
+
+            try:
+                historia = historiaUsuario.objects.get(id=idHistoria)
+            except historiaUsuario.DoesNotExist as e:
+                print("No existe la historia de usuario con el ID dado! " + str(e))
+                return False
+
+            # verificando si existe como sprint del proyecto dado
+            # y verificando que la historia de usuario este asociada al sprintbacklog
+            if str(sprint.proyecto.id) == str(idProyecto):
+                # Removemos la historia de usuario del sprint backlog
+                sprintbacklog.historiaUsuario.add(historia)
+                return True
+            else:
+                print("El sprint no pertenece al proyecto")
+                return False
+        except Exception as e:
+            print("Error inesperado: " + str(e))
+            return False
+
+
 
     def eliminarHUSprintBacklog(self, idProyecto, idSprint, idHistoria):
         """Eliminar la historia de usuario del sprint backlog
@@ -581,8 +748,11 @@ class Sprint(models.Model):
     fecha_fin = models.DateTimeField(null=True)
     cantidadDias = models.IntegerField(null=True)
     capacidadEquipo = models.IntegerField(null=False)
-    estado = models.TextField(max_length=20, default='Planificación')
+    estado = models.TextField(max_length=20, default='Creado')
     proyecto = models.ForeignKey(Proyecto, null=False, on_delete=models.CASCADE)
+    # Campos útiles para graficar el burndown chart
+    horas_pendientes_inicial = models.IntegerField(null=True)  # Horas pendientes del proyecto al inicio del Sprint
+    horas_pendientes_final = models.IntegerField(null=True)  # Horas pendientes del proyecto al final del Sprint
 
     objects = ManagerSprint()
 

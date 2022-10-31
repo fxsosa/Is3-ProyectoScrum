@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'proyectos',
     'historiasDeUsuario',
     'corsheaders',
-    'historiasDeUsuario_proyecto'
+    'historiasDeUsuario_proyecto',
+    'simple_history'
 ]
 
 MIDDLEWARE = [
@@ -188,3 +189,6 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+# Aceptamos modificar campo history_change_reason
+SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXT_FIELD=True

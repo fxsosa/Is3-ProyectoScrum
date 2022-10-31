@@ -108,6 +108,31 @@ class controllerProyecto(APIView):
         except Exception as e:
             return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
 
+    def delete(self, request):
+        """
+            Método para cancelar un proyecto (eliminación lógica)
+            :param request: datos del request
+            :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+
+        try:
+            print(user)
+            try:
+                idproyecto = request.GET.get('idProyecto', '')
+                mensaje = request.GET.get('mensaje', '')
+                proyecto = Proyecto.objects.get(id=int(idproyecto))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+
+            if user.has_perm('proyectos.eliminar_proyecto', obj=proyecto):
+                Proyecto.objects.cancelarProyecto(idproyecto, mensaje)
+                return HttpResponse("Cancelación exitosa", status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Error encontrado: " + str(e), status=500)
 
 
 # Para proyectos en plural
@@ -194,7 +219,7 @@ class controllerParticipantes(APIView):
 
     def delete(self, request):
         """
-            Método para borrar un proyecto
+            Método para borrar un participante del proyecto
             :param request: datos del request
             :return: HttpResponse
         """
