@@ -6,7 +6,7 @@ import pytz
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
-from historiasDeUsuario_proyecto.models import historiaUsuario
+from historiasDeUsuario_proyecto.models import historiaUsuario, managerHistoriaUsuario
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -210,6 +210,7 @@ class ManagerSprint(models.Manager):
 
 
                             sprint.estado = "En Ejecución"
+                            sprint.horas_pendientes_inicial = self.calcularHorasPendientesProyecto(idProyecto)
 
                             # Agregamos la cantidad de dias de duracion que va a tener el proyecto
                             # fechahoy = datetime.date.today()
@@ -225,6 +226,7 @@ class ManagerSprint(models.Manager):
                         fechahoy = timezone.now()
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
+                        sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
@@ -342,8 +344,42 @@ class ManagerSprint(models.Manager):
         plt.show()
 
 
+    def calcularHorasPendientesProyecto(self, idProyecto):
+        """
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+
+        Returns
+        horas: Horas pendientes del proyecto
+
+        """
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print("No existe el proyecto con el ID dado! " + str(e))
+            return None
+
+        lista = managerHistoriaUsuario.listarHistoriasUsuario(managerHistoriaUsuario, idProyecto)
+
+        horasPendientes = 0 # Horas pendientes del proyecto
+
+        for historia in lista:
+            print(historia)
+            print()
+
+        for historia in lista:
+            if historia.estado != "aceptada" and historia.estado != "cancelada":
+                horasPendientes += historia.estimacion_horas
+                if historia.horas_trabajadas is not None:
+                    if historia.horas_trabajadas < historia.estimacion_horas:
+                        horasPendientes -= historia.horas_trabajadas
+                    else:
+                        horasPendientes -= historia.estimacion_horas
 
 
+        return horasPendientes
 
 
 class ManagerMiembroSprint(models.Manager):

@@ -357,8 +357,9 @@ class ControllerRolesProyectosUsuarios(APIView):
             email=request.GET.get('email', '')
 
             res = Rol.objects.listarRolesInternosPorUsuario(email, idProyecto)
-            queryRol_json = serializers.serialize('json', res)
-            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+            resJson = json.dumps(res)
+            #queryRol_json = serializers.serialize('json', res)
+            return HttpResponse(resJson, content_type='application/json', status=201)
 
         except Exception as e:
             return HttpResponse("Error al obtener roles internos! - " + str(e), status=500)
