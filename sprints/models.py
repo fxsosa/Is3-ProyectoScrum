@@ -9,6 +9,7 @@ from usuarios.models import Usuario
 from historiasDeUsuario_proyecto.models import historiaUsuario
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 class ManagerSprint(models.Manager):
 
@@ -216,6 +217,10 @@ class ManagerSprint(models.Manager):
                             sprint.fecha_inicio = fechahoy
                             sprint.fecha_fin = self.calcularFechaFinal(fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
                             sprint.save()
+                            # Agregamos la cantidad total de horas pendientes del proyecto hasta el momento (para el burndown chart)
+
+
+
                     elif sprint.estado == "En Ejecución":
                         fechahoy = timezone.now()
                         sprint.fecha_fin = fechahoy
@@ -280,6 +285,65 @@ class ManagerSprint(models.Manager):
 
         listaSprints = Sprint.objects.filter(proyecto=idProyecto)
         return listaSprints
+
+
+    def generarBurndownChart(self, idProyecto):
+        """
+        Genera la gráfica del Burndown Chart
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+
+        Returns
+        -------
+
+        """
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print("No existe el proyecto con el ID dado! " + str(e))
+            return None
+
+        listaSprints = Sprint.objects.filter(proyecto=idProyecto, estado="Finalizado").order_by('fecha_inicio')
+
+        print(listaSprints)
+
+        x = []
+        y = []
+
+        contSprints = 0
+        y.append(listaSprints[0].horas_pendientes_inicial)
+        for sprint in listaSprints:
+            y.append(sprint.horas_pendientes_final)
+            contSprints+=1
+
+        # Contaremos desde 0 sprints hasta la cantidad total de sprints finalizados
+        for i in range(0, contSprints+1):
+            x.append(i)
+
+        # Para hacer que el gráfico empiece en (0,0)
+        plt.xlim([0, max(x)])
+        plt.ylim([0, max(y)])
+
+        # Nombre para cada eje
+        plt.xlabel("Sprints")
+        plt.ylabel("Horas pendientes")
+
+        # Nombre de la gráfica
+        plt.title("Burndown Chart")
+
+        # Hacer que el eje x tome valores discretos
+        plt.xticks(x)
+
+        for i in range(0, len(x), 1):
+            plt.plot(x[i:i + 2], y[i:i + 2], 'ro-')
+
+        plt.show()
+
+
+
+
 
 
 class ManagerMiembroSprint(models.Manager):
@@ -686,6 +750,9 @@ class Sprint(models.Model):
     capacidadEquipo = models.IntegerField(null=False)
     estado = models.TextField(max_length=20, default='Creado')
     proyecto = models.ForeignKey(Proyecto, null=False, on_delete=models.CASCADE)
+    # Campos útiles para graficar el burndown chart
+    horas_pendientes_inicial = models.IntegerField(null=True)  # Horas pendientes del proyecto al inicio del Sprint
+    horas_pendientes_final = models.IntegerField(null=True)  # Horas pendientes del proyecto al final del Sprint
 
     objects = ManagerSprint()
 
