@@ -274,6 +274,7 @@ class Proyecto(models.Model):
             ('listar_actividad_historia_usuario', 'Listar actividades de US'),
             ('eliminar_actividad_historia_usuario', 'Eliminar actividad de un US'),
             ('crear_actividad_historia_usuario', 'Crear actividad de un US')
+
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
