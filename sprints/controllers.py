@@ -1,3 +1,5 @@
+import json
+
 import jwt
 from django.http import HttpResponse
 from django.views.generic import CreateView
@@ -6,7 +8,7 @@ from django.core import serializers
 
 import proyectos.models
 from historiasDeUsuario_proyecto.models import historiaUsuario
-from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog
+from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog, ManagerSprint
 from usuarios.models import Usuario
 
 class controllerListarSprints(APIView):
@@ -483,6 +485,33 @@ class controllerListaTipoHU(APIView):
                 return HttpResponse("No se tienen los permisos para listar Tipos de Historias!", status=403)
         except Exception as e:
             return HttpResponse("No se pudieron listar los Tipos de Historia!", status=500)
+
+class controllerBurndownChart(APIView):
+    def get(self, request):
+        """Metodo get para obtener una lista de tipos de US de un sprint
+
+                :param request: Request de la peticion. Contiene como queryParam idProyecto, idSprint
+
+                :return: HttpResponse
+
+                """
+        user = validarRequest(request)
+
+        # Procesamos el request
+        try:
+            idProyecto = request.GET.get('idProyecto', '')
+            proyecto = proyectos.models.Proyecto.objects.get(id=idProyecto)
+            if user.has_perm('proyectos.generar_burndown_chart', obj=proyecto):
+                listaPuntos = ManagerSprint.generarBurndownChart(ManagerSprint, idProyecto)
+                if listaPuntos is not None:
+                    serializer = json.dumps(listaPuntos)
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    return HttpResponse("La lista de puntos del Burndown Chart está vacía! ", status=500)
+            else:
+                return HttpResponse("No se tienen los permisos para generar un Burndown Chart!", status=403)
+        except Exception as e:
+            return HttpResponse("No se pudieron obtener los puntos del Burndown Chart!" + str(e), status=500)
 
 
 def validarRequest(request):

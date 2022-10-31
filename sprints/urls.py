@@ -1,6 +1,6 @@
 from django.urls import path
 from sprints.controllers import controllerSprint, controllerListarSprints, controllerEquipoSprint, \
-    controllerSprintBacklog, controllerEstadoSprint, ListaHUTipo, controllerListaTipoHU
+    controllerSprintBacklog, controllerEstadoSprint, ListaHUTipo, controllerListaTipoHU, controllerBurndownChart
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
@@ -10,7 +10,8 @@ urlpatterns = [
     path('backlog/', controllerSprintBacklog.as_view(), name="sprintBacklog"),
     path('estado', controllerEstadoSprint.as_view(), name="estadoSprint"),
     path('backlog/listar-por-tipo', ListaHUTipo.as_view(), name="listarHUTipo"),
-    path('listar-tipos', controllerListaTipoHU.as_view(), name="listarTipoHU")
+    path('listar-tipos', controllerListaTipoHU.as_view(), name="listarTipoHU"),
+    path('burndown-chart', controllerBurndownChart.as_view(), name="burndownChart")
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

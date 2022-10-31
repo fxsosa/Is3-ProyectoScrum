@@ -288,8 +288,52 @@ class ManagerSprint(models.Manager):
         listaSprints = Sprint.objects.filter(proyecto=idProyecto)
         return listaSprints
 
-
     def generarBurndownChart(self, idProyecto):
+        """
+        Retorna los puntos del Burndown Chart
+        Parameters
+        ----------
+        idProyecto: ID del proyecto
+
+        Returns
+        listaPuntos: Lista de puntos del Burndown Chart
+
+        """
+
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print("No existe el proyecto con el ID dado! " + str(e))
+            return None
+
+        listaSprints = Sprint.objects.filter(proyecto=idProyecto, estado="Finalizado").order_by('fecha_inicio')
+
+        x = []
+        y = []
+
+        contSprints = 0
+        y.append(listaSprints[0].horas_pendientes_inicial)
+        for sprint in listaSprints:
+            y.append(sprint.horas_pendientes_final)
+            contSprints+=1
+
+        # Contaremos desde 0 sprints hasta la cantidad total de sprints finalizados
+        for i in range(0, contSprints+1):
+            x.append(i)
+
+        listaPuntos = []
+        for i in x:
+            listaPuntos.append((i,y[i]))
+
+        #for i in x:
+        #    listaPuntos.append(i)
+        #    listaPuntos.append(y[i])
+
+
+        return listaPuntos
+
+    # Es funcional
+    def generarBurndownChartViejo(self, idProyecto):
         """
         Genera la gráfica del Burndown Chart
 
