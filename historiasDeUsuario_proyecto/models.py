@@ -464,10 +464,6 @@ class managerHistoriaUsuario(models.Manager):
                    historia.actividades.add(x['actividadesus_id'])
 
 
-                # Guardamos los cambios sin crear nueva version en el historial
-                historia.save_without_historical_record()
-
-
                 # Borramos las versiones posteriores
                 aux1 = ultimaVersion.next_record
                 while aux1 is not None:
@@ -727,7 +723,7 @@ class historiaUsuario(models.Model):
     actividades = models.ManyToManyField(ActividadesUS)
 
     # Para registrar los cambios del historial
-    history = HistoricalRecords(m2m_fields=[actividades, ], user_model=Usuario)
+    history = HistoricalRecords(user_model=Usuario, m2m_fields=[actividades])
 
     @property
     def _history_user(self):
