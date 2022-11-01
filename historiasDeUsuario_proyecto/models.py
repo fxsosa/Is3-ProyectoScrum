@@ -671,7 +671,6 @@ class managerActividadesUS(models.Manager):
         """
 
         :param datos: Dict. Los valores que contiene son:
-
         - idHistoria: ID de la Historia de Usuario
 
         :return: QuerySet / None
