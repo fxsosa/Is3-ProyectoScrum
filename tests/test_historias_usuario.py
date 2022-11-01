@@ -4,8 +4,9 @@ import datetime
 import pytz
 
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
-from historiasDeUsuario_proyecto.models import historiaUsuario
+from historiasDeUsuario_proyecto.models import historiaUsuario, ActividadesUS
 from proyectos.models import Proyecto, participante
+from sprints.models import Sprint, Sprint_Miembro_Equipo, SprintBacklog
 from usuarios.models import Usuario
 
 
@@ -372,3 +373,261 @@ def test_restaurarHistorialUS():
     # Verificamos los datos restaurados
     assert str([historia.nombre, historia.descripcion]) == str(["Nombre Original",
                                                                 "Descripcion Original"]), "Error al restaurar una version anterior de US"
+
+
+@pytest.mark.django_db
+def test_crearActividad():
+    user1 = Usuario.objects.create(email='user1@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    proyectoPrueba = Proyecto.objects.create(nombre='Proyecto 1', descripcion='Descripcion 1',
+                                             fechaInicio=None, fechaFin=None, scrumMaster=user1, estado='Creado')
+    idProyecto = proyectoPrueba.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3", ]})
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+    idParticipante = part.id
+    datos = {
+        "nombre": "Nombre de Prueba",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto
+    }
+    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
+    # Extraemos las columnas del tablero kanban
+    listaColumnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=idTipo)
+    actualizado = historiaUsuario.objects.actualizarHistoriaUsuario({"idProyecto": idProyecto,
+                                                                     "idHistoria": historia[0].id,
+                                                                     "idParticipante": user1.id,
+                                                                     "idTipo": idTipo, "nombre": None,
+                                                                     "descripcion": None,
+                                                                     "prioridad_tecnica": None,
+                                                                     "horas_trabajadas": 0,
+                                                                     "prioridad_negocio": None,
+                                                                     "estimacion_horas": None,
+                                                                     "estado": listaColumnas[0].id}, False, user=user1)
+
+    # Creamos un sprint
+    sprintCreado = Sprint.objects.crearSprint(datos={"nombre": "Sprint Prueba",
+                                                     "descripcion": "Descripcion",
+                                                     "idProyecto": idProyecto,
+                                                     "cantidadDias": 40,
+                                                     "capacidadEquipo": 30})
+
+    # Pasamos el proyecto al estado en iniciado
+    Proyecto.objects.iniciarProyecto(datos={"id": proyectoPrueba.id})
+    # Creamos un miembro de equipo y agregamos al sprint
+    # Los datos originales de este miembro de sprint
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprintCreado[0].id,
+        "usuario_id": user1.id
+    }
+    equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
+
+    # Pasamos al estado Planificacion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+    # Pasamos al estado En Ejecucion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+
+    # Agregamos el US al sprint
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=sprintCreado[0].id,
+                                                 idHistoria=historia[0].id)
+
+    # Creamos la actividad
+    actividad = ActividadesUS.objects.crearActividad(datos={"titulo": "Actividad 1",
+                                                            "descripcion": "Descripcion Actividad",
+                                                            "horasTrabajadas": 1,
+                                                            "idHistoria": historia[0].id,
+                                                            "idProyecto": idProyecto,
+                                                            "idSprint": sprintCreado[0].id}, user=user1)
+
+    # Verificamos los datos de la actividad
+    assert str([actividad[0].titulo,
+                actividad[0].descripcion,
+                actividad[0].horasTrabajadas]) == str(["Actividad 1",
+                                                       "Descripcion Actividad",
+                                                       1]), "Error al crear actividad/comentario de US"
+
+
+@pytest.mark.django_db
+def test_eliminarActividad():
+    user1 = Usuario.objects.create(email='user1@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    proyectoPrueba = Proyecto.objects.create(nombre='Proyecto 1', descripcion='Descripcion 1',
+                                             fechaInicio=None, fechaFin=None, scrumMaster=user1, estado='Creado')
+    idProyecto = proyectoPrueba.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3", ]})
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+    idParticipante = part.id
+    datos = {
+        "nombre": "Nombre de Prueba",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto
+    }
+    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
+    # Extraemos las columnas del tablero kanban
+    listaColumnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=idTipo)
+    actualizado = historiaUsuario.objects.actualizarHistoriaUsuario({"idProyecto": idProyecto,
+                                                                     "idHistoria": historia[0].id,
+                                                                     "idParticipante": user1.id,
+                                                                     "idTipo": idTipo, "nombre": None,
+                                                                     "descripcion": None,
+                                                                     "prioridad_tecnica": None,
+                                                                     "horas_trabajadas": 0,
+                                                                     "prioridad_negocio": None,
+                                                                     "estimacion_horas": None,
+                                                                     "estado": listaColumnas[0].id}, False, user=user1)
+
+    # Creamos un sprint
+    sprintCreado = Sprint.objects.crearSprint(datos={"nombre": "Sprint Prueba",
+                                                     "descripcion": "Descripcion",
+                                                     "idProyecto": idProyecto,
+                                                     "cantidadDias": 40,
+                                                     "capacidadEquipo": 30})
+
+    # Pasamos el proyecto al estado en iniciado
+    Proyecto.objects.iniciarProyecto(datos={"id": proyectoPrueba.id})
+    # Creamos un miembro de equipo y agregamos al sprint
+    # Los datos originales de este miembro de sprint
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprintCreado[0].id,
+        "usuario_id": user1.id
+    }
+    equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
+
+    # Pasamos al estado Planificacion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+    # Pasamos al estado En Ejecucion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+
+    # Agregamos el US al sprint
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=sprintCreado[0].id,
+                                                 idHistoria=historia[0].id)
+
+    # Creamos la actividad
+    actividad = ActividadesUS.objects.crearActividad(datos={"titulo": "Actividad 1",
+                                                            "descripcion": "Descripcion Actividad",
+                                                            "horasTrabajadas": 1,
+                                                            "idHistoria": historia[0].id,
+                                                            "idProyecto": idProyecto,
+                                                            "idSprint": sprintCreado[0].id}, user=user1)
+
+
+    # Eliminamos la actividad
+    assert ActividadesUS.objects.eliminarActividad(datos={"idHistoria": historia[0].id,
+                                                          "idActividad": actividad[0].id}) == True\
+        , "Error al eliminar actividad/comentario de US"
+
+
+@pytest.mark.django_db
+def test_listarActividadesUS():
+    user1 = Usuario.objects.create(email='user1@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    user2 = Usuario.objects.create(email='user2@gmail.com', username='Username', nombres='Nombres del Usuario',
+                                   apellidos='Apellidos del Usuario', is_staff=False, is_active=True)
+    proyectoPrueba = Proyecto.objects.create(nombre='Proyecto 1', descripcion='Descripcion 1',
+                                             fechaInicio=None, fechaFin=None, scrumMaster=user1, estado='Creado')
+    idProyecto = proyectoPrueba.id
+    tipo = Tipo_Historia_Usuario.objects.crearTipoHU({"nombre": "Nombre Prueba",
+                                                      "id_proyecto": idProyecto,
+                                                      "columnas": ["Columna 1", "Columna 2", "Columna 3", ]})
+    idTipo = tipo.id
+    idUsuario = user1.id
+    part = participante.objects.crearParticipante({"idUsuario": idUsuario, "idProyecto": idProyecto})
+    idParticipante = part.id
+    datos = {
+        "nombre": "Nombre de Prueba",
+        "descripcion": "Descripcion de Prueba",
+        "prioridad_tecnica": 1,
+        "prioridad_negocio": 2,
+        "estimacion_horas": 10,
+        "idTipo": idTipo,
+        "idParticipante": idParticipante,
+        "idProyecto": idProyecto
+    }
+    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
+    # Extraemos las columnas del tablero kanban
+    listaColumnas = Columna_Tipo_Historia_Usuario.objects.retornarColumnas(id_HU=idTipo)
+    actualizado = historiaUsuario.objects.actualizarHistoriaUsuario({"idProyecto": idProyecto,
+                                                                     "idHistoria": historia[0].id,
+                                                                     "idParticipante": user1.id,
+                                                                     "idTipo": idTipo, "nombre": None,
+                                                                     "descripcion": None,
+                                                                     "prioridad_tecnica": None,
+                                                                     "horas_trabajadas": 0,
+                                                                     "prioridad_negocio": None,
+                                                                     "estimacion_horas": None,
+                                                                     "estado": listaColumnas[0].id}, False, user=user1)
+
+    # Creamos un sprint
+    sprintCreado = Sprint.objects.crearSprint(datos={"nombre": "Sprint Prueba",
+                                                     "descripcion": "Descripcion",
+                                                     "idProyecto": idProyecto,
+                                                     "cantidadDias": 40,
+                                                     "capacidadEquipo": 30})
+
+    # Pasamos el proyecto al estado en iniciado
+    Proyecto.objects.iniciarProyecto(datos={"id": proyectoPrueba.id})
+    # Creamos un miembro de equipo y agregamos al sprint
+    # Los datos originales de este miembro de sprint
+    datos = {
+        "capacidad": 5,
+        "sprint_id": sprintCreado[0].id,
+        "usuario_id": user1.id
+    }
+    equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
+
+    # Pasamos al estado Planificacion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+    # Pasamos al estado En Ejecucion
+    Sprint.objects.cambiarEstado(idProyecto=idProyecto, idSprint=sprintCreado[0].id, opcion="Avanzar")
+
+    # Agregamos el US al sprint
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=idProyecto, idSprint=sprintCreado[0].id,
+                                                 idHistoria=historia[0].id)
+
+    # Creamos la actividad
+    actividad1 = ActividadesUS.objects.crearActividad(datos={"titulo": "Actividad 1",
+                                                            "descripcion": "Descripcion Actividad",
+                                                            "horasTrabajadas": 1,
+                                                            "idHistoria": historia[0].id,
+                                                            "idProyecto": idProyecto,
+                                                            "idSprint": sprintCreado[0].id}, user=user1)
+
+
+    actividad2 = ActividadesUS.objects.crearActividad(datos={"titulo": "Actividad 2",
+                                                            "descripcion": "Descripcion Actividad",
+                                                            "horasTrabajadas": 1,
+                                                            "idHistoria": historia[0].id,
+                                                            "idProyecto": idProyecto,
+                                                            "idSprint": sprintCreado[0].id}, user=user1)
+
+    # Listamos las actividades del US
+    listaActividades = ActividadesUS.objects.listarActividadesUS(datos={"idHistoria": historia[0].id})
+
+    # Verificamos las dos actividades que tendriamos que tener en la lista
+    assert str([listaActividades[0].id, listaActividades[0].titulo,
+                listaActividades[1].id, listaActividades[1].titulo]) == str([actividad1[0].id, "Actividad 1",
+                                                                             actividad2[0].id, "Actividad 2"]), \
+        "Error al listar actividades/comentarios de US"
