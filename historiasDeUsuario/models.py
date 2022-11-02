@@ -36,7 +36,7 @@ class ManejoTipoHU(models.Manager):
         return instanciaTipoHU
 
     def actualizarTipoHU(self, datos):
-        """Función para borrar un tipo de Historia de Usuario
+        """Función para actualizar un tipo de Historia de Usuario
             
             :param datos: datos del request
             :return: null

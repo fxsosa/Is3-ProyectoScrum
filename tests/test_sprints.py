@@ -88,7 +88,7 @@ def test_CrearSprintBacklog():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
     datos = {
         "nombre": "Historia 2",
         "descripcion": "Descripcion de Prueba",
@@ -99,11 +99,13 @@ def test_CrearSprintBacklog():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
 
     Proyecto.objects.iniciarProyecto({"id": proyecto.id})
 
     sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia1[0].id)
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia2[0].id)
     listaHUBacklog = SprintBacklog.objects.listarHistoriasUsuario(proyecto_id=proyecto.id, sprint_id=sprint.id)
     historia1 = historiaUsuario.objects.filter(id=historia1[0].id)
     historia2 = historiaUsuario.objects.filter(id=historia2[0].id)
@@ -165,7 +167,7 @@ def test_ListarTiposHUSprintBacklog():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
     datos = {
         "nombre": "Historia 2",
         "descripcion": "Descripcion de Prueba",
@@ -176,11 +178,13 @@ def test_ListarTiposHUSprintBacklog():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
 
     Proyecto.objects.iniciarProyecto({"id": proyecto.id})
 
     sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia1[0].id)
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia2[0].id)
     listaTiposHU = SprintBacklog.objects.listarTipoHUSprint(idProyecto=proyecto.id, idSprint=sprint.id)
 
     # Verificamos que los ID recibidos de la lista de Tipos, coincidan con los ID de los tipos que cargamos
@@ -238,7 +242,7 @@ def test_ListarHUTipo():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
     datos = {
         "nombre": "Historia 2",
         "descripcion": "Descripcion de Prueba",
@@ -249,11 +253,13 @@ def test_ListarHUTipo():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
 
     Proyecto.objects.iniciarProyecto({"id": proyecto.id})
 
     sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia1[0].id)
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia2[0].id)
     listaHU = SprintBacklog.objects.listarHUTipo(proyecto_id=proyecto.id, sprint_id=sprint.id, tipo_id=tipo.id)
 
     # Verificamos que los US del sprint backlog obtenidos, sean del mismo tipo que el tipo creado
@@ -309,11 +315,12 @@ def test_EliminarHUSprintBacklog():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
 
     Proyecto.objects.iniciarProyecto({"id": proyecto.id})
 
     sprintBacklog = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint.id, opcion="Avanzar")
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia[0].id)
 
     # Verificamos que el metodo nos confirme la eliminacion (Boolean)
     assert SprintBacklog.objects.eliminarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprint.id, idHistoria=historia[0].id) == True, "Error al eliminar HU del Sprint Backlog"
@@ -389,7 +396,9 @@ def test_ModificarMiembroSprint():
     equipo = Sprint_Miembro_Equipo.objects.agregarMiembro(datos=datos)
 
     # Modificamos las capacidad de 5 a 10 para este miembro del sprint
-    equipoActualizado = Sprint_Miembro_Equipo.objects.modificarMiembro({"miembro_equipo_id": equipo.id, "capacidad": 8})
+    equipoActualizado = Sprint_Miembro_Equipo.objects.modificarMiembro({"miembro_equipo_id": equipo.id,
+                                                                        "capacidad": 8,
+                                                                        "sprint_id": sprint.id})
 
     assert str(equipoActualizado.__str__()) == str([equipo.usuario.id, equipo.sprint.id, '8']), "Error al modificar miembro de un Sprint"
 
@@ -463,7 +472,7 @@ def test_obtenerSprint():
     assert str([sprintObtenido[0].id, sprintObtenido[0].fecha_inicio, sprintObtenido[0].fecha_fin,
                 sprintObtenido[0].cantidadDias, sprintObtenido[0].estado,
                 sprintObtenido[0].capacidadEquipo, sprintObtenido[0].proyecto_id]) == str([sprintCreado[0].id,
-                None, None, 30, 'Planificación', 30, proyecto.id]), "Error al obtener un sprint"
+                None, None, 30, 'Creado', 30, proyecto.id])
 
 @pytest.mark.django_db
 def test_eliminarSprint():
@@ -544,7 +553,7 @@ def test_cambiarEstadoSprint():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia1 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
     datos = {
         "nombre": "Historia 2",
         "descripcion": "Descripcion de Prueba",
@@ -555,12 +564,17 @@ def test_cambiarEstadoSprint():
         "idParticipante": idParticipante,
         "idProyecto": idProyecto,
     }
-    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos)
+    historia2 = historiaUsuario.objects.crearHistoriaUsuario(datos=datos, user=user1)
 
     # Actualizamos el estado del proyecto
     Proyecto.objects.iniciarProyecto({"id": idProyecto})
 
-    sprintActualizado = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprintCreado[0].id, opcion="Avanzar")
+    sprintActualizado = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprintCreado[0].id,
+                                                     opcion="Avanzar")
+    sprintActualizado = Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprintCreado[0].id,
+                                                     opcion="Avanzar")
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprintCreado[0].id, idHistoria=historia1[0].id)
+    SprintBacklog.objects.agregarHUSprintBacklog(idProyecto=proyecto.id, idSprint=sprintCreado[0].id, idHistoria=historia2[0].id)
 
     # Verificamos que el estado del Sprint haya cambiado a "En Ejecucion"
     assert str([sprintActualizado[0].id, sprintActualizado[0].fecha_inicio, sprintActualizado[0].fecha_fin,
@@ -607,7 +621,7 @@ def test_listarSprints():
         "capacidadEquipo": 30
     }
     sprint1Creado = Sprint.objects.crearSprint(datos=datosSprint)
-
+    Sprint.objects.cambiarEstado(idProyecto=proyecto.id, idSprint=sprint1Creado[0].id, opcion="Avanzar")
     datosSprint = {
         "idProyecto": proyecto.id,
         "descripcion": "Descripcion de Sprint",
@@ -625,5 +639,5 @@ def test_listarSprints():
                 listaSprints[1].id, listaSprints[1].nombre, listaSprints[1].descripcion,
                 listaSprints[1].cantidadDias, listaSprints[1].capacidadEquipo, listaSprints[1].estado]) == str([
         sprint1Creado[0].id, "Sprint 1", "Descripcion de Sprint", 30, 30, "Planificación",
-        sprint2Creado[0].id, "Sprint 2", "Descripcion de Sprint", 30, 60, "Planificación"]), "Error al listar los " \
+        sprint2Creado[0].id, "Sprint 2", "Descripcion de Sprint", 30, 60, "Creado"]), "Error al listar los " \
                                                                                              "sprints de un proyecto"
