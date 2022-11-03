@@ -227,7 +227,7 @@ class ManagerSprint(models.Manager):
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
                         sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
-                        self.actualizarPrioridadFinal(self, idProyecto, idSprint)
+                        self.actualizarPrioridadFinal(idProyecto, idSprint)
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
