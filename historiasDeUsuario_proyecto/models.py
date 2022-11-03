@@ -545,7 +545,7 @@ class managerActividadesUS(models.Manager):
                 return None
 
             # Verificamos el estado del US
-            if historia.estado == "finalizado" or historia.estado == "cancelado" or historia.estado == "aceptado" or historia.estado is None:
+            if historia.estado == "finalizado" or historia.estado == "cancelado" or historia.estado == "aceptado":
                 print("No puede agregarse actividad cuando el US no esta en ejecucion!")
                 return None
 
@@ -576,11 +576,13 @@ class managerActividadesUS(models.Manager):
                                        horasTrabajadas=horasTrabajadas,
                                        participante=part)
                 # Guardamos las horas trabajadas que se menciona en la actividad
+                if not historia.horas_trabajadas:
+                    historia.horas_trabajadas = 0
                 historia.horas_trabajadas += horasTrabajadas
                 actividad.save()
                 historia.actividades.add(actividad)
                 cambiarMotivoHistorial(historia, "Actividad Agregada")
-
+                historia.save()
                 actividad = ActividadesUS.objects.filter(id=actividad.id)
                 return actividad
             else:

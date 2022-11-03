@@ -210,13 +210,13 @@ class ManagerSprint(models.Manager):
 
 
                             sprint.estado = "En Ejecución"
-                            sprint.horas_pendientes_inicial = self.calcularHorasPendientesProyecto(self, idProyecto)
+                            sprint.horas_pendientes_inicial = self.calcularHorasPendientesProyecto(idProyecto)
 
                             # Agregamos la cantidad de dias de duracion que va a tener el proyecto
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = self.calcularFechaFinal(self, fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
+                            sprint.fecha_fin = self.calcularFechaFinal(fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
                             sprint.save()
                             # Agregamos la cantidad total de horas pendientes del proyecto hasta el momento (para el burndown chart)
 
@@ -226,7 +226,7 @@ class ManagerSprint(models.Manager):
                         fechahoy = timezone.now()
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
-                        sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(self, idProyecto)
+                        sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
                         self.actualizarPrioridadFinal(self, idProyecto, idSprint)
                         sprint.save()
 
