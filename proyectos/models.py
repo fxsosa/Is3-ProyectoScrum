@@ -273,7 +273,8 @@ class Proyecto(models.Model):
             ('obtener_actividad_historia_usuario', 'Obtener una actividad de US'),
             ('listar_actividad_historia_usuario', 'Listar actividades de US'),
             ('eliminar_actividad_historia_usuario', 'Eliminar actividad de un US'),
-            ('crear_actividad_historia_usuario', 'Crear actividad de un US')
+            ('crear_actividad_historia_usuario', 'Crear actividad de un US'),
+            ('generar_burndown_chart', 'Genera la gráfica del Burndown Chart')
 
         )
 # Participante de un proyecto (separado de usuario)
