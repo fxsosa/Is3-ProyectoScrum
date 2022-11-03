@@ -1,3 +1,4 @@
+#!/bin/bash
 ##############################################
 #                                            #
 # Script para la generacion de usuarios de   #
@@ -31,7 +32,7 @@ crearUsuario(){
   echo "Username: $username"
   echo "Es superuser: $is_superuser"
 # Abrimos el shell de python
-python3 manage.py shell<<-CONFIG
+python3 ../manage.py shell<<-CONFIG
 	from django.contrib.auth import get_user_model
 	UserMan=get_user_model()
 	user=UserMan.objects.create_user("$email", password="$contrasenha", nombres="$nombres", apellidos="$apellidos", username="$username")
