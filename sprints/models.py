@@ -227,6 +227,7 @@ class ManagerSprint(models.Manager):
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
                         sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
+                        self.actualizarPrioridadFinal(self, idProyecto, idSprint)
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
@@ -244,6 +245,41 @@ class ManagerSprint(models.Manager):
         except Exception as e:
             print("No se pudo actualizar el estado del sprint! " + str(e))
             return "No se pudo actualizar el estado del sprint! "
+
+
+    def actualizarPrioridadFinal(self, idProyecto, idSprint):
+        """
+        Agregar +1 Sprint trabajado a las historias de usuario
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+        idSprint: ID del Sprint
+
+        Returns None
+        -------
+
+        """
+
+        lista_hu = ManagerSprintBacklog.listarHistoriasUsuario(ManagerSprintBacklog, idProyecto, idSprint)
+
+        # Aumentar cantidad de Sprints Trabajados
+        for hu in lista_hu:
+            if hu.estado != 'aceptada' and hu.estado != 'cancelada':
+                if hu.sprints_trabajados is None: # Si no se trabajó en ningún Sprint previamente
+                   hu.sprints_trabajados = 1
+                else:
+                    hu.sprints_trabajados += 1
+                hu.save()
+
+        # Modificar Prioridad
+        for hu in lista_hu:
+            if hu.estado != 'aceptada' and hu.estado != 'cancelada':
+                hu.prioridad_final = round(0.6 * hu.prioridad_negocio + 0.4 * hu.prioridad_tecnica)
+                hu.prioridad_final += 3*hu.sprints_trabajados
+                hu.save()
+
+
 
 
     def calcularFechaFinal(self, fecha_inicio, cantidadDias):
@@ -288,8 +324,52 @@ class ManagerSprint(models.Manager):
         listaSprints = Sprint.objects.filter(proyecto=idProyecto)
         return listaSprints
 
-
     def generarBurndownChart(self, idProyecto):
+        """
+        Retorna los puntos del Burndown Chart
+        Parameters
+        ----------
+        idProyecto: ID del proyecto
+
+        Returns
+        listaPuntos: Lista de puntos del Burndown Chart
+
+        """
+
+        try:
+            proyecto = Proyecto.objects.get(id=idProyecto)
+        except Proyecto.DoesNotExist as e:
+            print("No existe el proyecto con el ID dado! " + str(e))
+            return None
+
+        listaSprints = Sprint.objects.filter(proyecto=idProyecto, estado="Finalizado").order_by('fecha_inicio')
+
+        x = []
+        y = []
+
+        contSprints = 0
+        y.append(listaSprints[0].horas_pendientes_inicial)
+        for sprint in listaSprints:
+            y.append(sprint.horas_pendientes_final)
+            contSprints+=1
+
+        # Contaremos desde 0 sprints hasta la cantidad total de sprints finalizados
+        for i in range(0, contSprints+1):
+            x.append(i)
+
+        listaPuntos = []
+        for i in x:
+            listaPuntos.append((i,y[i]))
+
+        #for i in x:
+        #    listaPuntos.append(i)
+        #    listaPuntos.append(y[i])
+
+
+        return listaPuntos
+
+    # Es funcional
+    def generarBurndownChartViejo(self, idProyecto):
         """
         Genera la gráfica del Burndown Chart
 
@@ -380,6 +460,8 @@ class ManagerSprint(models.Manager):
 
 
         return horasPendientes
+
+
 
 
 class ManagerMiembroSprint(models.Manager):
