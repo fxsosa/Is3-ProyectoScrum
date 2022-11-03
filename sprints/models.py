@@ -210,13 +210,13 @@ class ManagerSprint(models.Manager):
 
 
                             sprint.estado = "En Ejecución"
-                            sprint.horas_pendientes_inicial = self.calcularHorasPendientesProyecto(idProyecto)
+                            sprint.horas_pendientes_inicial = self.calcularHorasPendientesProyecto(self, idProyecto)
 
                             # Agregamos la cantidad de dias de duracion que va a tener el proyecto
                             # fechahoy = datetime.date.today()
                             fechahoy = timezone.now()
                             sprint.fecha_inicio = fechahoy
-                            sprint.fecha_fin = self.calcularFechaFinal(fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
+                            sprint.fecha_fin = self.calcularFechaFinal(self, fecha_inicio=fechahoy, cantidadDias=sprint.cantidadDias)
                             sprint.save()
                             # Agregamos la cantidad total de horas pendientes del proyecto hasta el momento (para el burndown chart)
 
@@ -226,7 +226,8 @@ class ManagerSprint(models.Manager):
                         fechahoy = timezone.now()
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
-                        sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
+                        sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(self, idProyecto)
+                        self.actualizarPrioridadFinal(self, idProyecto, idSprint)
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
@@ -244,6 +245,41 @@ class ManagerSprint(models.Manager):
         except Exception as e:
             print("No se pudo actualizar el estado del sprint! " + str(e))
             return "No se pudo actualizar el estado del sprint! "
+
+
+    def actualizarPrioridadFinal(self, idProyecto, idSprint):
+        """
+        Agregar +1 Sprint trabajado a las historias de usuario
+
+        Parameters
+        ----------
+        idProyecto: ID del Proyecto
+        idSprint: ID del Sprint
+
+        Returns None
+        -------
+
+        """
+
+        lista_hu = ManagerSprintBacklog.listarHistoriasUsuario(ManagerSprintBacklog, idProyecto, idSprint)
+
+        # Aumentar cantidad de Sprints Trabajados
+        for hu in lista_hu:
+            if hu.estado != 'aceptada' and hu.estado != 'cancelada':
+                if hu.sprints_trabajados is None: # Si no se trabajó en ningún Sprint previamente
+                   hu.sprints_trabajados = 1
+                else:
+                    hu.sprints_trabajados += 1
+                hu.save()
+
+        # Modificar Prioridad
+        for hu in lista_hu:
+            if hu.estado != 'aceptada' and hu.estado != 'cancelada':
+                hu.prioridad_final = round(0.6 * hu.prioridad_negocio + 0.4 * hu.prioridad_tecnica)
+                hu.prioridad_final += 3*hu.sprints_trabajados
+                hu.save()
+
+
 
 
     def calcularFechaFinal(self, fecha_inicio, cantidadDias):
@@ -424,6 +460,8 @@ class ManagerSprint(models.Manager):
 
 
         return horasPendientes
+
+
 
 
 class ManagerMiembroSprint(models.Manager):

@@ -176,6 +176,8 @@ class managerHistoriaUsuario(models.Manager):
                     if datos['prioridad_negocio'] is not None or datos['prioridad_tecnica'] is not None:
                         if historia.prioridad_negocio is not None and historia.prioridad_tecnica is not None:
                             historia.prioridad_final = round(0.6 * historia.prioridad_negocio + 0.4 * historia.prioridad_tecnica)  # Redondea el valor decimal
+                            if historia.sprints_trabajados is not None:
+                                historia.prioridad_final += 3 * historia.sprints_trabajados
 
                     if datos['estimacion_horas'] is not None:
                         historia.estimacion_horas = datos['estimacion_horas']
@@ -718,6 +720,7 @@ class historiaUsuario(models.Model):
     horas_trabajadas = models.IntegerField(null=True)
     prioridad_final = models.IntegerField(null=True)
     estado = models.CharField(max_length=200, null=True)
+    sprints_trabajados = models.IntegerField(null=True) # Cantidad de Sprints en los que se trabajó la Historia
 
     # Para registrar las actividades/comentarios como parte del historial de una version
     actividades = models.ManyToManyField(ActividadesUS)
