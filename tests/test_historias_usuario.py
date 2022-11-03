@@ -282,7 +282,7 @@ def test_listarHistorialUS():
                 historial[0].desarrollador_asignado,
                historial[0].proyecto, historial[0].history_change_reason]) == str([
         historia1[0].id, "Nombre de Prueba", "Descripcion de Prueba", 1, 2, 10,
-        None, proyectoPrueba, None])
+        None, proyectoPrueba, "Creado"])
 
 
 @pytest.mark.django_db
