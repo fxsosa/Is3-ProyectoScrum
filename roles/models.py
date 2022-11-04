@@ -61,7 +61,8 @@ permisosInternos = [
     'proyectos.eliminar_actividad_historia_usuario',
     'proyectos.crear_actividad_historia_usuario',
     'proyectos.listar_actividad_historia_usuario',
-    'proyectos.generar_burndown_chart'
+    'proyectos.generar_burndown_chart',
+    'proyectos.obtener_historial_historia'
 ]
 
 class ManejoRol(models.Manager):
