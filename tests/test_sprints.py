@@ -638,6 +638,6 @@ def test_listarSprints():
                 listaSprints[0].cantidadDias, listaSprints[0].capacidadEquipo, listaSprints[0].estado,
                 listaSprints[1].id, listaSprints[1].nombre, listaSprints[1].descripcion,
                 listaSprints[1].cantidadDias, listaSprints[1].capacidadEquipo, listaSprints[1].estado]) == str([
-        sprint1Creado[0].id, "Sprint 1", "Descripcion de Sprint", 30, 30, "Planificación",
-        sprint2Creado[0].id, "Sprint 2", "Descripcion de Sprint", 30, 60, "Creado"]), "Error al listar los " \
+        sprint2Creado[0].id, "Sprint 2", "Descripcion de Sprint", 30, 60, "Creado",
+        sprint1Creado[0].id, "Sprint 1", "Descripcion de Sprint", 30, 30, "Planificación"]), "Error al listar los " \
                                                                                              "sprints de un proyecto"
