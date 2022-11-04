@@ -227,7 +227,7 @@ class ManagerSprint(models.Manager):
                         sprint.fecha_fin = fechahoy
                         sprint.estado = "Finalizado"
                         sprint.horas_pendientes_final = self.calcularHorasPendientesProyecto(idProyecto)
-                        self.actualizarPrioridadFinal(self, idProyecto, idSprint)
+                        self.actualizarPrioridadFinal(idProyecto, idSprint)
                         sprint.save()
 
                     return Sprint.objects.filter(id=sprint.id)
@@ -321,7 +321,7 @@ class ManagerSprint(models.Manager):
             print("No existe el proyecto con el ID dado! " + str(e))
             return None
 
-        listaSprints = Sprint.objects.filter(proyecto=idProyecto)
+        listaSprints = Sprint.objects.filter(proyecto=idProyecto).order_by('-id')
         return listaSprints
 
     def generarBurndownChart(self, idProyecto):
@@ -564,8 +564,8 @@ class ManagerSprintBacklog(models.Manager):
         # Lista de HU ordenada por prioridad
         #lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id = proyecto_id).order_by('prioridad_tecnica').reverse()
 
-        self.calcularCapacidadSprint(self, sprint_id)
-        self.actualizarPrioridadFinal(self, proyecto_id)
+        self.calcularCapacidadSprint( sprint_id)
+        self.actualizarPrioridadFinal( proyecto_id)
         lista_hu_ordenada = historiaUsuario.objects.filter(proyecto_id=proyecto_id).order_by('prioridad_final').reverse()
 
         sprint = Sprint.objects.get(id=sprint_id)
