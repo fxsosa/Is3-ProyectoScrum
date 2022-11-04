@@ -1,3 +1,4 @@
+import datetime
 import json
 import ast
 import pytest
@@ -24,8 +25,13 @@ def test_controllerProyecto_get():
     user1 = User.objects.create_user(email='user1@email.com', password='abcdefg', username='username1',
                                      nombres='Nombre1', apellidos='Apellido1')
     # Creamos el proyecto de prueba
-    proyectoPrueba = Proyecto.objects.create(nombre='Proyecto 1', descripcion='Descripcion 1', fechaInicio=None,
-                                              fechaFin=None, scrumMaster=user1, estado='Creado')
+    proyectoPrueba = Proyecto.objects.crearProyecto(datos={"nombre": "Proyecto 1",
+                                          "descripcion": "Descripcion 1",
+                                          "fechaInicio": None,
+                                          "fechaFin": None,
+                                          "scrumMaster": user1.email,
+                                          "estado": "planificación"})
+
 
     # Creamos el rol y asignamos al usuario anonimo
     userAnonimo = User.objects.get(email="AnonymousUser")
@@ -45,7 +51,7 @@ def test_controllerProyecto_get():
     assert str([data['pk'], data['fields']['nombre'], data['fields']['descripcion'],
                 data['fields']['fechaInicio'], data['fields']['fechaFin'],
                 data['fields']['estado'], data['fields']['scrumMaster']]) == str([
-        proyectoPrueba.id, "Proyecto 1", "Descripcion 1", None, None, "Creado", user1.id]), \
+        proyectoPrueba.id, "Proyecto 1", "Descripcion 1", None, None, "planificación", user1.id]), \
         "Error en el controller para obtener un proyecto"
 
     # Verificando status del response

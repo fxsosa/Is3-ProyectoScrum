@@ -83,7 +83,7 @@ class managerHistoriaUsuario(models.Manager):
                                   proyecto=proyecto)
             historia.changed_by = user
             historia.save()
-
+            cambiarMotivoHistorial(historia, "Creado")
             historia = historiaUsuario.objects.filter(id=historia.id)
             return historia
         except Exception as e:
@@ -675,7 +675,6 @@ class managerActividadesUS(models.Manager):
         """
 
         :param datos: Dict. Los valores que contiene son:
-
         - idHistoria: ID de la Historia de Usuario
 
         :return: QuerySet / None
