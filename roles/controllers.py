@@ -39,7 +39,7 @@ class ListaRoles(APIView, CreateView):
                 else:
                     return HttpResponse("No se tienen los permisos para listar roles externos", status=403)
             elif tipo == 'Todos':
-                if user.has_perm('proyectos.listar_roles_internos', None) and user.has_perm('soportepermisos.listar_roles_externos', None):
+                if user.has_perm('proyectos.listar_roles_internos', None) and user.has_perm('roles.listar_roles_externos', None):
                     listaRoles = roles.models.Rol.objects.listarRoles()
                 else:
                     return HttpResponse("No se tienen los permisos para listar todos los roles", status=403)
@@ -78,11 +78,12 @@ class Rol(APIView, CreateView):
                     if not user.has_perm('roles.listar_roles_externos', None):
                         # Tipo de rol externo y el user no tiene permiso para rol externo
                         return HttpResponse("No se tiene permiso para obtener roles externos", status=403)
+                """
                 elif tipoRol=='Interno':
                     if not user.has_perm('proyectos.listar_roles_internos', obj=rol.proyecto):
                         # Tipo de rol interno y el user no tiene permiso para rol interno (+ proyecto al que pertenece)
                         return HttpResponse("No se tiene permiso para obtener roles internos", status=403)
-
+                """
                 # Si el usuario tiene el tipo de permiso para el tipo de rol obtenido:
                 # Juntamos los datos del rol y su lista de permisos asociados
                 rolPermisos = list(chain([rol, ], listaPermisos))

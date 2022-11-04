@@ -121,12 +121,13 @@ class controllerProyecto(APIView):
             print(user)
             try:
                 idproyecto = request.GET.get('idProyecto', '')
+                mensaje = request.GET.get('mensaje', '')
                 proyecto = Proyecto.objects.get(id=int(idproyecto))
             except Proyecto.DoesNotExist as e:
                 return HttpResponse("Proyecto no existe:" + str(e), status=400)
 
             if user.has_perm('proyectos.eliminar_proyecto', obj=proyecto):
-                Proyecto.objects.cancelarProyecto(idproyecto)
+                Proyecto.objects.cancelarProyecto(idproyecto, mensaje)
                 return HttpResponse("Cancelación exitosa", status=200)
             else:
                 return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
@@ -356,8 +357,9 @@ class ControllerRolesProyectosUsuarios(APIView):
             email=request.GET.get('email', '')
 
             res = Rol.objects.listarRolesInternosPorUsuario(email, idProyecto)
-            queryRol_json = serializers.serialize('json', res)
-            return HttpResponse(queryRol_json, content_type='application/json', status=201)
+            resJson = json.dumps(res)
+            #queryRol_json = serializers.serialize('json', res)
+            return HttpResponse(resJson, content_type='application/json', status=201)
 
         except Exception as e:
             return HttpResponse("Error al obtener roles internos! - " + str(e), status=500)

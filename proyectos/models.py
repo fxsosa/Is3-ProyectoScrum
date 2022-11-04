@@ -44,7 +44,7 @@ class ManejoProyectos(models.Manager):
         :param datos: Datos de un request.data con el siguiente formato
             {"nombre": String, "descripcion": String, "fechaInicio": DATE, "fechaFin": DATE, "scrumMaster": email, "estado": String}
 
-        :return: None
+        :return: None/Instancia proyecto
         """
 
         nombre = datos['nombre']
@@ -92,7 +92,7 @@ class ManejoProyectos(models.Manager):
         proyecto.save()
         return proyecto
 
-    def cancelarProyecto(self, id_proyecto):
+    def cancelarProyecto(self, id_proyecto, mensaje):
         """
         Método para cancelar un proyecto (eliminación lógica)
 
@@ -102,7 +102,11 @@ class ManejoProyectos(models.Manager):
 
         proyecto = Proyecto.objects.get(id=int(id_proyecto))
         proyecto.estado = "cancelado"
+        proyecto.motivCancelacion = mensaje
+
         proyecto.save()
+
+
 
         listaSprints = sprints.models.Sprint.objects.filter(proyecto_id=proyecto.id)
         if len(listaSprints) > 0:
@@ -214,6 +218,7 @@ class Proyecto(models.Model):
     fechaFin = models.DateTimeField(null=True)
     scrumMaster = models.ForeignKey(Usuario, on_delete=models.PROTECT, null=True) #Evita que se borre, se soluciona cambiando de Scrum Master y luego borrando al usuario
     estado = models.CharField(max_length=30)
+    motivCancelacion = models.CharField(max_length=200, null=True) # Si se cancela el proyecto, aquí se guarda el motivo
 
     objects = ManejoProyectos()
     def __str__(self):
@@ -262,7 +267,16 @@ class Proyecto(models.Model):
             ('modificar_miembro_sprint', 'Modifica los datos de un miembro del Sprint'),
             ('borrar_miembro_sprint', 'Borra a un miembro del equipo del Sprint'),
             ('actualizar_sprint', 'Actualizar/modificar los parametros de un sprint'),
-            ('borrar_historia_sprintbacklog', 'Borrar una historia de usuario del sprint backlog')
+            ('borrar_historia_sprintbacklog', 'Borrar una historia de usuario del sprint backlog'),
+            ('agregar_historia_sprintbacklog', 'Agregar una historia de usuario al sprint backlog'),
+            ('restaurar_historia_usuario', 'Restaurar una historia de usuario a una version anterior'),
+            ('obtener_actividad_historia_usuario', 'Obtener una actividad de US'),
+            ('listar_actividad_historia_usuario', 'Listar actividades de US'),
+            ('eliminar_actividad_historia_usuario', 'Eliminar actividad de un US'),
+            ('crear_actividad_historia_usuario', 'Crear actividad de un US'),
+            ('generar_burndown_chart', 'Genera la gráfica del Burndown Chart'),
+            ('obtener_historial_historia', 'Obtener el historial de la historia de usuario')
+
         )
 # Participante de un proyecto (separado de usuario)
 class participante(models.Model):
