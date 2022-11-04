@@ -83,7 +83,7 @@ class managerHistoriaUsuario(models.Manager):
                                   proyecto=proyecto)
             historia.changed_by = user
             historia.save()
-
+            cambiarMotivoHistorial(historia, "Creado")
             historia = historiaUsuario.objects.filter(id=historia.id)
             return historia
         except Exception as e:
@@ -570,7 +570,7 @@ class managerActividadesUS(models.Manager):
                 return None
 
             # Verificamos los datos de entrada son validos (titulo, descripcion, horasTrabajadas)
-            if not [x for x in (titulo, descripcion, horasTrabajadas) if x is None] and horasTrabajadas > 0:
+            if not [x for x in (titulo, descripcion, horasTrabajadas) if x is None] and int(horasTrabajadas) > 0:
                 actividad = self.model(titulo=titulo,
                                        descripcion=descripcion,
                                        horasTrabajadas=horasTrabajadas,
@@ -578,7 +578,7 @@ class managerActividadesUS(models.Manager):
                 # Guardamos las horas trabajadas que se menciona en la actividad
                 if not historia.horas_trabajadas:
                     historia.horas_trabajadas = 0
-                historia.horas_trabajadas += horasTrabajadas
+                historia.horas_trabajadas += int(horasTrabajadas)
                 actividad.save()
                 historia.actividades.add(actividad)
                 cambiarMotivoHistorial(historia, "Actividad Agregada")
@@ -675,7 +675,6 @@ class managerActividadesUS(models.Manager):
         """
 
         :param datos: Dict. Los valores que contiene son:
-
         - idHistoria: ID de la Historia de Usuario
 
         :return: QuerySet / None

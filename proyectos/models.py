@@ -44,7 +44,7 @@ class ManejoProyectos(models.Manager):
         :param datos: Datos de un request.data con el siguiente formato
             {"nombre": String, "descripcion": String, "fechaInicio": DATE, "fechaFin": DATE, "scrumMaster": email, "estado": String}
 
-        :return: None
+        :return: None/Instancia proyecto
         """
 
         nombre = datos['nombre']
