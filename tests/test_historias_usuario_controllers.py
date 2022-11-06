@@ -69,6 +69,8 @@ def test_controllerListarHistorialUS_get():
     rol = Rol.objects.crearRolExterno(nombre="Rol Externo", descripcion="Descripcion de Rol Externo")
     Rol.objects.agregarPermisoDeObjeto(idRol=rol.id, nombrePermiso="proyectos.obtener_historia_usuario",
                                        objeto=proyectoPrueba)
+    Rol.objects.agregarPermisoDeObjeto(idRol=rol.id, nombrePermiso="proyectos.obtener_historial_historia",
+                                       objeto=proyectoPrueba)
     Rol.objects.asignarRolaUsuario(idRol=rol.id, user=userAnonimo)
 
     # Realizamos el request
@@ -129,6 +131,8 @@ def test_controllerHistorialUS_get():
     userAnonimo = User.objects.get(email="AnonymousUser")
     rol = Rol.objects.crearRolExterno(nombre="Rol Externo", descripcion="Descripcion de Rol Externo")
     Rol.objects.agregarPermisoDeObjeto(idRol=rol.id, nombrePermiso="proyectos.obtener_historia_usuario",
+                                       objeto=proyectoPrueba)
+    Rol.objects.agregarPermisoDeObjeto(idRol=rol.id, nombrePermiso="proyectos.obtener_historial_historia",
                                        objeto=proyectoPrueba)
     Rol.objects.asignarRolaUsuario(idRol=rol.id, user=userAnonimo)
 

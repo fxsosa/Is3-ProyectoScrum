@@ -180,7 +180,7 @@ class controllerListarHistorialUS(APIView):
                 historia = historiaUsuario.objects.get(id=idHistoria)
 
                 # Si no es scrum master ni desarrollador asignado al US
-                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                if not user.has_perm('proyectos.obtener_historial_historia', obj=proyecto):
                     return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
 
                 historial = historiaUsuario.objects.listarHistorialUS(idProyecto=idProyecto, idHistoria=idHistoria)
@@ -225,7 +225,7 @@ class controllerHistorialUS(APIView):
                 historia = historiaUsuario.objects.get(id=idHistoria)
 
                 # Si no es scrum master ni desarrollador asignado al US
-                if proyecto.scrumMaster != user and historia.desarrollador_asignado.usuario != user:
+                if not user.has_perm('proyectos.obtener_historial_historia', obj=proyecto):
                     return HttpResponse("No se tiene acceso al historial de esta historia de usuario!", status=403)
 
                 idVersion = request.GET.get('idVersion', '')
