@@ -18,6 +18,17 @@ metodología SCRUM
     ```
     make abrir-documentacion
     ```
+### Deploy
+- Deploy en el entorno de desarrollo
+    ```
+    make deploy-desarrollo
+    ```
+- Deploy en el entorno de producción
+    ```
+    make deploy-produccion
+    ```
+
+
 
 ### Testeo
 - Para testear el proyecto
