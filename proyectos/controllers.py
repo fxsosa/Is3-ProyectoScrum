@@ -176,14 +176,20 @@ class controllerParticipantes(APIView):
         user = validarRequest(request)
 
         try:
+            idParticipante = request.GET.get('idParticipante', '')
             correo = request.GET.get('correo', '')
-            idProyecto = request.GET.get('idProyecto', '')
-            usuario = Usuario.objects.get(email=correo)
-            proyecto = Proyecto.objects.get(id=idProyecto)
             try:
-                particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
-                serializer = serializers.serialize('json', [particip, ])
-                return HttpResponse(serializer, content_type='application/json', status=200)
+                if correo:
+                    idProyecto = request.GET.get('idProyecto', '')
+                    proyecto = Proyecto.objects.get(id=idProyecto)
+                    usuario = Usuario.objects.get(email=correo)
+                    particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
+                    serializer = serializers.serialize('json', [particip, ])
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    particip = participante.objects.obtenerParticipantePorID(idParticipante=idParticipante)
+                    serializer = serializers.serialize('json', [particip, ])
+                    return HttpResponse(serializer, content_type='application/json', status=200)
             except participante.DoesNotExist as e:
                 return HttpResponse("NoExiste", status=200)
         except Exception as e:

@@ -278,8 +278,8 @@ class managerHistoriaUsuario(models.Manager):
 
         """
         # Define email sender and receiver
-        email_sender = 'proyectoscrum5@gmail.com'
-        email_password = 'ingenieriadesoftware2'
+        email_sender = 'arcafelixperez@gmail.com'
+        email_password = 'jdecbtrptdzoynbx'
         email_receiver = email_destinatario
 
         # Set the subject and body of the email
@@ -300,6 +300,7 @@ class managerHistoriaUsuario(models.Manager):
             smtp.login(email_sender, email_password)
             smtp.sendmail(email_sender, email_receiver, em.as_string())
 
+        print("Mensaje enviado")
 
     def obtenerHistoriaUsuario(self, idProyecto, idHistoria):
         """Retorna la historia de usuario del proyecto dado con el id idHistoria

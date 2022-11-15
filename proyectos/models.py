@@ -180,6 +180,21 @@ class ManejoParticipantes(models.Manager):
 
         return usuarios
 
+    def obtenerParticipantePorID(self, idParticipante):
+
+        particip = participante.objects.get(id=idParticipante)
+
+        print("particip = ", particip)
+        usuario = []
+
+        idUsuario = particip.usuario_id
+        usuarioAgg = Usuario.objects.get(id=int(idUsuario))
+
+        print("usuarios", usuarioAgg)
+
+        return usuarioAgg
+
+
     def borrarParticipante(self, particip):
         """Metodo para eliminar participante de un proyecto
 
