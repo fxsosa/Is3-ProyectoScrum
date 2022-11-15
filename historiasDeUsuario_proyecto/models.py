@@ -278,8 +278,8 @@ class managerHistoriaUsuario(models.Manager):
 
         """
         # Define email sender and receiver
-        email_sender = 'arcafelixperez@gmail.com'
-        email_password = 'jdecbtrptdzoynbx'
+        email_sender = 'proyectoscrum5@gmail.com'
+        email_password = 'ingenieriadesoftware2'
         email_receiver = email_destinatario
 
         # Set the subject and body of the email
