@@ -19,3 +19,9 @@ borrar-usuarios:
 
 limpiar-main:
 	bash './scripts/clean_main.sh'
+
+deploy-desarrollo:
+	bash './scripts/deploy.sh' dev
+
+deploy-produccion:
+	bash './scripts/deploy.sh' prod
