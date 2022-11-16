@@ -15,6 +15,7 @@ from itertools import chain
 import smtplib
 import ssl
 from email.message import EmailMessage
+from threading import Thread
 
 
 
@@ -236,7 +237,11 @@ class managerHistoriaUsuario(models.Manager):
                             titulo = "Nueva Historia de Usuario pendiente de revisión"
                             cuerpo = "El proyecto " + nombreProyecto + " tiene una nueva Historia de Usuario pendiente de revisión"
 
-                            managerHistoriaUsuario.mandarEmail(managerHistoriaUsuario, mail, titulo, cuerpo)
+                            # La operación de envío de email toma tiempo, se usa un hilo para evitar una gran demora
+                            t1 = Thread(target=self.mandarEmail, args=(mail, titulo, cuerpo))
+                            t1.start()
+
+                            #managerHistoriaUsuario.mandarEmail(managerHistoriaUsuario, mail, titulo, cuerpo)
 
 
                             modificado = True
