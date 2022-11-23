@@ -1,13 +1,7 @@
-from django.conf import settings
 from django.db import models
-from django.db.migrations import serializer
 from simple_history.management.commands.populate_history import get_model
 from simple_history.models import HistoricalRecords
-import json
-import proyectos
 import sprints
-import usuarios.models
-from django.core import serializers
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
@@ -16,6 +10,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 from threading import Thread
+from django.utils import timezone
 
 
 
@@ -576,6 +571,7 @@ class managerActividadesUS(models.Manager):
             horasTrabajadas = datos['horasTrabajadas']
             idProyecto = datos['idProyecto']
             idSprint = datos['idSprint']
+            fecha = timezone.now()
 
             # Verificamos el proyecto exista
             try:
@@ -635,7 +631,8 @@ class managerActividadesUS(models.Manager):
                 actividad = self.model(titulo=titulo,
                                        descripcion=descripcion,
                                        horasTrabajadas=horasTrabajadas,
-                                       participante=part)
+                                       participante=part,
+                                       fecha=fecha)
                 # Guardamos las horas trabajadas que se menciona en la actividad
                 if not historia.horas_trabajadas:
                     historia.horas_trabajadas = 0
@@ -762,6 +759,7 @@ class ActividadesUS(models.Model):
     descripcion = models.CharField(max_length=500)
     horasTrabajadas = models.IntegerField(null=True)
     participante = models.ForeignKey(participante, null=True, on_delete=models.SET_NULL)
+    fecha = models.DateTimeField(null=True)
 
     # Aceptado/Rechazado?, depende de si el eliminar es logico/fisico
     estado = models.CharField(max_length=20, null=True)
