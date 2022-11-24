@@ -343,15 +343,19 @@ class ManagerSprint(models.Manager):
             return None
 
         listaSprints = Sprint.objects.filter(proyecto=idProyecto, estado="Finalizado").order_by('fecha_inicio')
+        listaHorasIdeales = []
 
         x = []
         y = []
+
+
 
         contSprints = 0
         y.append(listaSprints[0].horas_pendientes_inicial)
         for sprint in listaSprints:
             y.append(sprint.horas_pendientes_final)
             contSprints+=1
+
 
         # Contaremos desde 0 sprints hasta la cantidad total de sprints finalizados
         for i in range(0, contSprints+1):
@@ -360,6 +364,27 @@ class ManagerSprint(models.Manager):
         listaPuntos = []
         for i in x:
             listaPuntos.append((i,y[i]))
+
+        # Calcular cantidad total de horas ideales en cada backlog
+        horasTotales = 0
+        #listaHorasIdeales.append(listaSprints[0].horas_pendientes_inicial)
+        for sprint in listaSprints:
+            backlog = SprintBacklog.objects.get(idSprint=sprint.id)
+            listaHistoriasBacklog = backlog.historiaUsuario.all()
+            for historia in listaHistoriasBacklog: # Esta línea no funca
+                horasTotales += historia.estimacion_horas
+            listaHorasIdeales.append(horasTotales)
+            horasTotales = 0
+
+
+        horaAnterior = listaSprints[0].horas_pendientes_inicial
+        for i in x:
+            listaPuntos.append((i, horaAnterior))
+            try:
+                horaAnterior = listaSprints[i].horas_pendientes_final - listaHorasIdeales[i]
+            except Exception as e:
+                print("error")
+
 
         #for i in x:
         #    listaPuntos.append(i)
