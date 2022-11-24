@@ -59,7 +59,6 @@ class ManejoProyectos(models.Manager):
 
 
         return proyecto
-    #TODO: Añadir fecha de fin automáticamente cuando el SM finalice el proyecto
 
     def modificarProyecto(self, datos):
         """Metodo para la actualizacion de los parametros de un proyecto
@@ -114,6 +113,27 @@ class ManejoProyectos(models.Manager):
                 sprint.estado = "Cancelado"
                 sprint.save()
 
+    def finalizarProyecto(self, datos):
+        """Metodo para cambiar el estado de proyecto a Finalizado
+
+        :param datos: Diccionario recibido como request.data
+        Contiene "estado" String, y "fechaFin" DATE
+
+        :return: Instancia de Proyecto actualizado
+        """
+        proyecto = Proyecto.objects.get(id=int(datos['id']))
+        proyecto.estado = "Finalizado"
+        proyecto.fechaFin = timezone.now()
+        proyecto.save()
+        return proyecto
+
+
+
+        listaSprints = sprints.models.Sprint.objects.filter(proyecto_id=proyecto.id)
+        if len(listaSprints) > 0:
+            for sprint in listaSprints:
+                sprint.estado = "Cancelado"
+                sprint.save()
 
 class ManejoParticipantes(models.Manager):
     """
@@ -179,6 +199,21 @@ class ManejoParticipantes(models.Manager):
         print("usuarios", usuarios)
 
         return usuarios
+
+    def obtenerParticipantePorID(self, idParticipante):
+
+        particip = participante.objects.get(id=idParticipante)
+
+        print("particip = ", particip)
+        usuario = []
+
+        idUsuario = particip.usuario_id
+        usuarioAgg = Usuario.objects.get(id=int(idUsuario))
+
+        print("usuarios", usuarioAgg)
+
+        return usuarioAgg
+
 
     def borrarParticipante(self, particip):
         """Metodo para eliminar participante de un proyecto
@@ -275,7 +310,9 @@ class Proyecto(models.Model):
             ('eliminar_actividad_historia_usuario', 'Eliminar actividad de un US'),
             ('crear_actividad_historia_usuario', 'Crear actividad de un US'),
             ('generar_burndown_chart', 'Genera la gráfica del Burndown Chart'),
-            ('obtener_historial_historia', 'Obtener el historial de la historia de usuario')
+            ('obtener_historial_historia', 'Obtener el historial de la historia de usuario'),
+            ('finalizar_proyecto', 'Finalizar un proyecto'),
+            ('reasignar_historias', 'Reasignar historias de usuario a otro desarrollador')
 
         )
 # Participante de un proyecto (separado de usuario)
