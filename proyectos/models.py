@@ -311,7 +311,8 @@ class Proyecto(models.Model):
             ('crear_actividad_historia_usuario', 'Crear actividad de un US'),
             ('generar_burndown_chart', 'Genera la gráfica del Burndown Chart'),
             ('obtener_historial_historia', 'Obtener el historial de la historia de usuario'),
-            ('finalizar_proyecto', 'Finalizar un proyecto')
+            ('finalizar_proyecto', 'Finalizar un proyecto'),
+            ('reasignar_historias', 'Reasignar historias de usuario a otro desarrollador')
 
         )
 # Participante de un proyecto (separado de usuario)

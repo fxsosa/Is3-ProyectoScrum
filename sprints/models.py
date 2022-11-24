@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.db import models
 import pytz
 
+import proyectos.models
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import Proyecto
 from usuarios.models import Usuario
@@ -865,6 +866,84 @@ class ManagerSprintBacklog(models.Manager):
                 return False
         except Exception as e:
             print("Error inesperado! " + str(e))
+            return False
+
+
+    def reasignarDesarrolladorUS(self, idProyecto, idSprint, idUsuarioOriginal, idUsuarioNuevo):
+        """Reasigna los US de un usuario (con id idUsuarioOriginal) a otro usuario.
+        Ambos usuarios son miembros del equipo del sprint.
+        Se verifica que el sprint se encuentre actualmente en ejecucion.
+
+        :param idProyecto: ID del proyecto
+        :param idSprint: ID del Sprint
+        :param idUsuarioOriginal: ID del usuario al cual originalmente le pertenecen las US
+        :param idUsuarioNuevo: ID del usuario al cual se le asignan las US
+        :return: Boolean
+        """
+
+        try:
+            try:
+                sprint = Sprint.objects.get(id=idSprint)
+            except Sprint.DoesNotExist as e:
+                print("No existe el sprint el sprint" + str(e))
+                return False
+
+            if sprint.estado != "En Ejecución":
+                print("No se puede reasignar las US en un sprint que no esta en ejecucion!")
+                return False
+
+            try:
+                sprintbacklog = SprintBacklog.objects.get(idSprint=idSprint)
+            except SprintBacklog.DoesNotExist as e:
+                print("No existe el sprintbacklog! " + str(e))
+                return False
+
+            # Verificamos existan los usuarios
+            try:
+                usuarioOriginal=Usuario.objects.get(id=idUsuarioOriginal)
+                usuarioNuevo=Usuario.objects.get(id=idUsuarioNuevo)
+            except Usuario.DoesNotExist as e:
+                print("No existe el usuario con id dado! " + str(e))
+                return False
+
+            # Verificamos que los usuarios sean miembros del equipo del sprint, si alguno de ellos no es miembro de
+            # equipo, se retorna false
+            if not (Sprint_Miembro_Equipo.objects.filter(sprint=sprint, usuario=usuarioOriginal).exists() and Sprint_Miembro_Equipo.objects.filter(sprint=sprint, usuario=usuarioNuevo).exists()):
+                print("No se verifica que ambos usuarios sean miembros del equipo de sprint")
+                return False
+
+            # Obtenemos los participantes
+            try:
+                participanteOriginal=proyectos.models.participante.objects.get(usuario=usuarioOriginal)
+                participanteNuevo=proyectos.models.participante.objects.get(usuario=usuarioNuevo)
+            except proyectos.models.participante.DoesNotExist as e:
+                print("No existen participantes del proyecto" + str(e))
+                return False
+
+
+            try:
+                proyecto = Proyecto.objects.get(id=idProyecto)
+            except Proyecto.DoesNotExist as e:
+                print("No existe el proyecto con el ID dado! " + str(e))
+                return False
+
+            # verificando si existe como sprint del proyecto dado
+            if str(sprint.proyecto.id) == str(idProyecto):
+
+                # Listamos los US del sprint backlog que pertenecen al usuarioOriginal
+                listaUS = sprintbacklog.historiaUsuario.all()
+
+                # Asignamos al usuarioNuevo todos los US obtenidos
+                for itemUS in listaUS.filter(desarrollador_asignado=participanteOriginal):
+                    itemUS.desarrollador_asignado=participanteNuevo
+                    itemUS.save()
+
+                return True
+            else:
+                print("Error al listar US y modificar participante asignado!!")
+                return False
+        except Exception as e:
+            print("Error inesperado: " + str(e))
             return False
 
 
