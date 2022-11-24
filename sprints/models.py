@@ -371,7 +371,7 @@ class ManagerSprint(models.Manager):
         for sprint in listaSprints:
             backlog = SprintBacklog.objects.get(idSprint=sprint.id)
             listaHistoriasBacklog = backlog.historiaUsuario.all()
-            for historia in listaHistoriasBacklog: # Esta línea no funca
+            for historia in listaHistoriasBacklog:
                 horasTotales += historia.estimacion_horas
             listaHorasIdeales.append(horasTotales)
             horasTotales = 0
@@ -381,7 +381,7 @@ class ManagerSprint(models.Manager):
         for i in x:
             listaPuntos.append((i, horaAnterior))
             try:
-                horaAnterior = listaSprints[i].horas_pendientes_final - listaHorasIdeales[i]
+                horaAnterior = listaSprints[i].horas_pendientes_inicial - listaHorasIdeales[i]
             except Exception as e:
                 print("error")
 
