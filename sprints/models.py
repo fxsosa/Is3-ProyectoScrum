@@ -911,21 +911,21 @@ class ManagerSprintBacklog(models.Manager):
             if not (Sprint_Miembro_Equipo.objects.filter(sprint=sprint, usuario=usuarioOriginal).exists() and Sprint_Miembro_Equipo.objects.filter(sprint=sprint, usuario=usuarioNuevo).exists()):
                 print("No se verifica que ambos usuarios sean miembros del equipo de sprint")
                 return False
-
-            # Obtenemos los participantes
-            try:
-                participanteOriginal=proyectos.models.participante.objects.get(usuario=usuarioOriginal)
-                participanteNuevo=proyectos.models.participante.objects.get(usuario=usuarioNuevo)
-            except proyectos.models.participante.DoesNotExist as e:
-                print("No existen participantes del proyecto" + str(e))
-                return False
-
-
             try:
                 proyecto = Proyecto.objects.get(id=idProyecto)
             except Proyecto.DoesNotExist as e:
                 print("No existe el proyecto con el ID dado! " + str(e))
                 return False
+            # Obtenemos los participantes
+            try:
+                participanteOriginal=proyectos.models.participante.objects.get(usuario=usuarioOriginal, proyecto=proyecto)
+                participanteNuevo=proyectos.models.participante.objects.get(usuario=usuarioNuevo, proyecto=proyecto)
+            except proyectos.models.participante.DoesNotExist as e:
+                print("No existen participantes del proyecto" + str(e))
+                return False
+
+
+
 
             # verificando si existe como sprint del proyecto dado
             if str(sprint.proyecto.id) == str(idProyecto):
