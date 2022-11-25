@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from historiasDeUsuario_proyecto.models import historiaUsuario
 import roles
 from roles.models import Rol, permisosInternos
+from sprints.models import Sprint
 from usuarios.models import Usuario
 from proyectos.models import participante
 
@@ -176,14 +177,20 @@ class controllerParticipantes(APIView):
         user = validarRequest(request)
 
         try:
+            idParticipante = request.GET.get('idParticipante', '')
             correo = request.GET.get('correo', '')
-            idProyecto = request.GET.get('idProyecto', '')
-            usuario = Usuario.objects.get(email=correo)
-            proyecto = Proyecto.objects.get(id=idProyecto)
             try:
-                particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
-                serializer = serializers.serialize('json', [particip, ])
-                return HttpResponse(serializer, content_type='application/json', status=200)
+                if correo:
+                    idProyecto = request.GET.get('idProyecto', '')
+                    proyecto = Proyecto.objects.get(id=idProyecto)
+                    usuario = Usuario.objects.get(email=correo)
+                    particip = participante.objects.get(proyecto_id=proyecto, usuario_id=usuario)
+                    serializer = serializers.serialize('json', [particip, ])
+                    return HttpResponse(serializer, content_type='application/json', status=200)
+                else:
+                    particip = participante.objects.obtenerParticipantePorID(idParticipante=idParticipante)
+                    serializer = serializers.serialize('json', [particip, ])
+                    return HttpResponse(serializer, content_type='application/json', status=200)
             except participante.DoesNotExist as e:
                 return HttpResponse("NoExiste", status=200)
         except Exception as e:
@@ -309,6 +316,37 @@ class ControllerProyectoParticipantes2(APIView):
             return HttpResponse(serializer, content_type='application/json', status=200)
         except Exception as e:
             return HttpResponse("Algo salio mal " + str(e), status=500)
+
+class controllerProyectosFinalizado(APIView):
+    """
+    Controlador para finalizar un proyecto
+    """
+    def put(self, request):
+        """
+                Método para iniciar un proyecto
+                :param request: datos del request
+                :return: HttpResponse
+            """
+
+        user = validarRequest(request)
+
+        try:
+            datos = request.data
+            try:
+                proyecto = Proyecto.objects.get(id=int(datos['id']))
+            except Proyecto.DoesNotExist as e:
+                return HttpResponse("Proyecto no existe:" + str(e), status=400)
+            # buscamos si existe un sprint en ejecucion
+            if Sprint.objects.filter(proyecto=proyecto.id, estado="En Ejecución").exists():
+                print("Ya existe un sprint en ejecucion en este proyecto! ")
+                return HttpResponse("Existe un sprint en ejecucion en este proyecto, debe finalizarlo o cancelarlo", status=403)
+            if user.has_perm('proyectos.finalizar_proyecto', obj=proyecto):
+                proyecto = Proyecto.objects.finalizarProyecto(datos)
+                return HttpResponse(proyecto, content_type='application/json', status=200)
+            else:
+                return HttpResponse("El usuario no tiene los permisos suficientes", status=403)
+        except Exception as e:
+            return HttpResponse("Error al actualizar actualizar proyecto: " + str(e), status=500)
 
 # Controlador para iniciar un proyecto individual
 class controllerProyectosInicio(APIView):

@@ -207,8 +207,11 @@ class ControllerUsuarioExistencia(APIView):
             datosUsuario = obtenerUsuarioConToken(token)
             # Preguntar si ya existe el usuario
             userEmail = request.GET.get('email', '')
-            resultadoQueryUsuario = Usuario.objects.filter(email=userEmail)
-
+            userID = request.GET.get('id', '')
+            if userEmail:
+                resultadoQueryUsuario = Usuario.objects.filter(email=userEmail)
+            if userID:
+                resultadoQueryUsuario = Usuario.objects.filter(id=userID)
             # retornar el usuario existente
             if resultadoQueryUsuario:
                 queryUsuario_json = serializers.serialize('json', resultadoQueryUsuario)
