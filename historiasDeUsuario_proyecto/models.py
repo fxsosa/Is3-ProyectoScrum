@@ -1,17 +1,16 @@
-from django.conf import settings
 from django.db import models
-from django.db.migrations import serializer
 from simple_history.management.commands.populate_history import get_model
 from simple_history.models import HistoricalRecords
-import json
-import proyectos
 import sprints
-import usuarios.models
-from django.core import serializers
 from historiasDeUsuario.models import Tipo_Historia_Usuario, Columna_Tipo_Historia_Usuario
 from proyectos.models import participante, Proyecto
 from usuarios.models import Usuario
 from itertools import chain
+import smtplib
+import ssl
+from email.message import EmailMessage
+from threading import Thread
+from django.utils import timezone
 
 
 
@@ -221,6 +220,25 @@ class managerHistoriaUsuario(models.Manager):
                         # verificar si se paso a la ultima columna
                         if columnaOrden == cantidadCol:
                             datos['estado'] = 'finalizada'
+
+                            # Notificar a Scrum Master
+                            proyecto = Proyecto.objects.get(id=idProyecto)
+                            nombreProyecto = proyecto.nombre
+
+                            idScrumMaster = proyecto.scrumMaster_id
+                            scrumMaster = Usuario.objects.get(id=idScrumMaster)
+
+                            mail = scrumMaster.email
+                            titulo = "Nueva Historia de Usuario pendiente de revisión"
+                            cuerpo = "El proyecto " + nombreProyecto + " tiene una nueva Historia de Usuario pendiente de revisión"
+
+                            # La operación de envío de email toma tiempo, se usa un hilo para evitar una gran demora
+                            t1 = Thread(target=self.mandarEmail, args=(mail, titulo, cuerpo))
+                            t1.start()
+
+                            #managerHistoriaUsuario.mandarEmail(managerHistoriaUsuario, mail, titulo, cuerpo)
+
+
                             modificado = True
 
                         if historia.estado != datos['estado']:
@@ -245,6 +263,44 @@ class managerHistoriaUsuario(models.Manager):
         except Exception as e:
             print("error en: ",e)
             return None
+
+    def mandarEmail(self, email_destinatario, asunto, cuerpo):
+        """
+
+        Parameters
+        ----------
+        email_recibe: Cadena con el email del destinatario
+        asunto: Asunto del mail
+        cuerpo: Contenido del mail
+
+        Returns
+        -------
+
+        """
+        # Define email sender and receiver
+        email_sender = 'arcafelixperez@gmail.com'
+        email_password = 'jdecbtrptdzoynbx'
+        email_receiver = email_destinatario
+
+        # Set the subject and body of the email
+        subject = asunto
+        body = cuerpo
+
+        em = EmailMessage()
+        em['From'] = email_sender
+        em['To'] = email_receiver
+        em['Subject'] = subject
+        em.set_content(body)
+
+        # Add SSL (layer of security)
+        context = ssl.create_default_context()
+
+        # Log in and send the email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
+            smtp.login(email_sender, email_password)
+            smtp.sendmail(email_sender, email_receiver, em.as_string())
+
+        print("Mensaje enviado")
 
     def obtenerHistoriaUsuario(self, idProyecto, idHistoria):
         """Retorna la historia de usuario del proyecto dado con el id idHistoria
@@ -515,6 +571,7 @@ class managerActividadesUS(models.Manager):
             horasTrabajadas = datos['horasTrabajadas']
             idProyecto = datos['idProyecto']
             idSprint = datos['idSprint']
+            fecha = timezone.now()
 
             # Verificamos el proyecto exista
             try:
@@ -574,7 +631,8 @@ class managerActividadesUS(models.Manager):
                 actividad = self.model(titulo=titulo,
                                        descripcion=descripcion,
                                        horasTrabajadas=horasTrabajadas,
-                                       participante=part)
+                                       participante=part,
+                                       fecha=fecha)
                 # Guardamos las horas trabajadas que se menciona en la actividad
                 if not historia.horas_trabajadas:
                     historia.horas_trabajadas = 0
@@ -701,6 +759,7 @@ class ActividadesUS(models.Model):
     descripcion = models.CharField(max_length=500)
     horasTrabajadas = models.IntegerField(null=True)
     participante = models.ForeignKey(participante, null=True, on_delete=models.SET_NULL)
+    fecha = models.DateTimeField(null=True)
 
     # Aceptado/Rechazado?, depende de si el eliminar es logico/fisico
     estado = models.CharField(max_length=20, null=True)

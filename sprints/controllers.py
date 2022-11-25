@@ -513,6 +513,41 @@ class controllerBurndownChart(APIView):
         except Exception as e:
             return HttpResponse("No se pudieron obtener los puntos del Burndown Chart!" + str(e), status=500)
 
+class controllerReasignarDesarrollador(APIView):
+
+    def put(self, request):
+        """Metodo para reasignar todas las US de un desarrollador miembro de un sprint, a otro
+        desarrollador miembro del sprint. El sprint debe encontrarse con el estado "En Ejecución"
+
+        :param request: Request. Recibe como datos en el request.data:
+        "idProyecto", "idSprint", "idUsuario1", "idUsuario2")
+
+        :return: HttpResponse
+        """
+
+        user = validarRequest(request)
+
+        try:
+            # Obtenemos el cuerpo de la peticion
+            body = request.data
+            try:
+                proyecto = proyectos.models.Proyecto.objects.get(id=body['idProyecto'])
+            except proyectos.models.Proyecto.DoesNotExist as e:
+                return HttpResponse("No existe el proyecto!", status=500)
+
+            if user.has_perm('proyectos.reasignar_historias', obj=proyecto):
+                if SprintBacklog.objects.reasignarDesarrolladorUS(idProyecto=proyecto.id, idSprint=body['idSprint'], idUsuarioOriginal=body['idUsuario1'], idUsuarioNuevo=body['idUsuario2']):
+                    return HttpResponse("Reasignacion de historias de usuario realizada con exito!", status=200)
+                else:
+                    return HttpResponse("No se pudieron reasignar las historias de usuario del sprint", status=400)
+            else:
+                return HttpResponse("No se tienen los permisos para reasignar historias del sprint!", status=403)
+        except Exception as e:
+            print("Error en el controller! " + str(e))
+            return HttpResponse("No se pudo cambiar el estado del sprint! ", status=500)
+
+
+
 
 def validarRequest(request):
     # Obtenemos los datos del token
