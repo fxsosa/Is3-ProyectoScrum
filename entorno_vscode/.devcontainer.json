@@ -1,0 +1,11 @@
+{
+	"name": "ubuntu",
+	"dockerComposeFile": "../docker-compose.yaml",
+	"service": "ubuntu",
+	"workspaceFolder": "/usr/src/app",
+	"shutdownAction": "stopCompose",
+
+	"extensions": [
+		"mhutchie.git-graph"
+	]
+}

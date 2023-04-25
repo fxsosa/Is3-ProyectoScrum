@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  ubuntu:
+    build: .
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      - ./:/usr/src/app
+      - vscode:/root/.vscode-server/extensions
+      - vscode_insiders:/root/.vscode-server-insiders
+    ports:
+      - 3000:3000
+
+volumes:
+  vscode:
+  vscode_insiders:
