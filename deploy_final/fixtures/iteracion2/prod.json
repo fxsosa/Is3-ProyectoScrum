@@ -1,0 +1,1118 @@
+[
+{
+    "model": "sites.site",
+    "fields": {
+        "domain": "example.com",
+        "name": "example.com"
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "1",
+        "permissions": [
+            [
+                "crear_proyecto",
+                "proyectos",
+                "proyecto"
+            ],
+            [
+                "listar_proyectos",
+                "proyectos",
+                "proyecto"
+            ],
+            [
+                "actualizar_rol_externo",
+                "roles",
+                "rol"
+            ],
+            [
+                "borrar_rol_externo",
+                "roles",
+                "rol"
+            ],
+            [
+                "crear_rol_externo",
+                "roles",
+                "rol"
+            ],
+            [
+                "listar_permisos_externos",
+                "roles",
+                "rol"
+            ],
+            [
+                "listar_roles_externos",
+                "roles",
+                "rol"
+            ],
+            [
+                "listar_permisos",
+                "soportepermisos",
+                "soportepermisos"
+            ],
+            [
+                "modificar_roles_externos_de_usuario",
+                "usuarios",
+                "usuario"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "2_1",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "3_2",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "4_2",
+        "permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "!hWpW50VOVeL97ItG7hgMTrhwjJpeShiWrDjfIV69",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "AnonymousUser",
+        "username": null,
+        "nombres": "",
+        "apellidos": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:01:21.224Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$6pN9TRqrvZ4OtoNV0NcGdu$yU1m/gPVEEXMgL92H/KF0K5DmtfyK4daqSjUSFgbXxc=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojara1999@fpuna.edu.py",
+        "username": "Arturo",
+        "nombres": "Arturo",
+        "apellidos": "Jara",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:35.667Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$anAS57BC7ixzNRHHZXJSgX$bwiXknZQFt45Sh3MVqUp7krR9qv5GhnxXJGX9Bn9xGw=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "alejandroadorno00@fpuna.edu.py",
+        "username": "Ale",
+        "nombres": "Alejandro",
+        "apellidos": "Adorno Quevedo",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:36.663Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$yUbOjrlAM70j79eRKsBbVG$lexjYOXEB7a9qAVRfQcwYn6hbXuuBwv5fllWp/kNpRM=",
+        "last_login": null,
+        "is_superuser": true,
+        "email": "jessicala182@gmail.com",
+        "username": "Jessi",
+        "nombres": "Jessica",
+        "apellidos": "Alarcon",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:37.631Z",
+        "groups": [
+            [
+                "1"
+            ],
+            [
+                "3_2"
+            ],
+            [
+                "4_2"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$7pfZYDtljmqlh92TaLYkxx$KIkKKv0v7x4u+eZwRKiAhtVaC1dcNpKmX5kfc1QZKbc=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "guillepaivag@gmail.com",
+        "username": "Guille",
+        "nombres": "Guillermo",
+        "apellidos": "Paiva",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:38.583Z",
+        "groups": [
+            [
+                "3_2"
+            ],
+            [
+                "4_2"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$4MFiD02oMwXzv5GGa3w410$xqU5SpT3aWoR1Qj0Yi1QTdzlKx/kLALLUhQS8nn6lwU=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojeich@gmail.com",
+        "username": "Arturo",
+        "nombres": "Arturo",
+        "apellidos": "Jara",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:39.589Z",
+        "groups": [
+            [
+                "4_2"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$Bd85nJCPWRcQAMTaUbEIvP$jhZ558aXtscUxc3sOQrT32Mk6LuDuMd1Hvs2BS59ljs=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojara1999@gmail.com",
+        "username": "Arturo",
+        "nombres": "Arturo Gabriel",
+        "apellidos": "Jara Eichenbrenner",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T11:03:40.618Z",
+        "groups": [
+            [
+                "1"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "roles.rol",
+    "pk": 1,
+    "fields": {
+        "nombre": "Nombre Agregar Rol Externo",
+        "tipo": "Externo",
+        "descripcion": "Descripcion Nueva Rol Externo",
+        "rolGrupo": [
+            "1"
+        ],
+        "proyecto": null
+    }
+},
+{
+    "model": "roles.rol",
+    "pk": 2,
+    "fields": {
+        "nombre": "Srum Master",
+        "tipo": "Interno",
+        "descripcion": null,
+        "rolGrupo": [
+            "2_1"
+        ],
+        "proyecto": 1
+    }
+},
+{
+    "model": "roles.rol",
+    "pk": 3,
+    "fields": {
+        "nombre": "Scrum Master",
+        "tipo": "Interno",
+        "descripcion": "Scrum Master general del proyecto",
+        "rolGrupo": [
+            "3_2"
+        ],
+        "proyecto": 2
+    }
+},
+{
+    "model": "roles.rol",
+    "pk": 4,
+    "fields": {
+        "nombre": "Desarrollador",
+        "tipo": "Interno",
+        "descripcion": "Rol de Desarrollador de un Proyecto",
+        "rolGrupo": [
+            "4_2"
+        ],
+        "proyecto": 2
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 1,
+    "fields": {
+        "permission": [
+            "crear_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 2,
+    "fields": {
+        "permission": [
+            "eliminar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 3,
+    "fields": {
+        "permission": [
+            "actualizar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 4,
+    "fields": {
+        "permission": [
+            "archivar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 5,
+    "fields": {
+        "permission": [
+            "cambiar_estado_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 6,
+    "fields": {
+        "permission": [
+            "listar_proyectos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 7,
+    "fields": {
+        "permission": [
+            "iniciar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 8,
+    "fields": {
+        "permission": [
+            "crear_tipo_HU",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 9,
+    "fields": {
+        "permission": [
+            "borrar_tipo_HU",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 10,
+    "fields": {
+        "permission": [
+            "importar_roles_internos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 11,
+    "fields": {
+        "permission": [
+            "agregar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 12,
+    "fields": {
+        "permission": [
+            "modificar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 13,
+    "fields": {
+        "permission": [
+            "borrar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 14,
+    "fields": {
+        "permission": [
+            "listar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 15,
+    "fields": {
+        "permission": [
+            "listar_roles_internos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 16,
+    "fields": {
+        "permission": [
+            "crear_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 17,
+    "fields": {
+        "permission": [
+            "actualizar_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 18,
+    "fields": {
+        "permission": [
+            "borrar_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "1",
+        "group": [
+            "2_1"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 19,
+    "fields": {
+        "permission": [
+            "crear_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 20,
+    "fields": {
+        "permission": [
+            "eliminar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 21,
+    "fields": {
+        "permission": [
+            "actualizar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 22,
+    "fields": {
+        "permission": [
+            "archivar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 23,
+    "fields": {
+        "permission": [
+            "cambiar_estado_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 24,
+    "fields": {
+        "permission": [
+            "listar_proyectos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 25,
+    "fields": {
+        "permission": [
+            "iniciar_proyecto",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 26,
+    "fields": {
+        "permission": [
+            "crear_tipo_HU",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 27,
+    "fields": {
+        "permission": [
+            "borrar_tipo_HU",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 28,
+    "fields": {
+        "permission": [
+            "importar_roles_internos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 29,
+    "fields": {
+        "permission": [
+            "agregar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 30,
+    "fields": {
+        "permission": [
+            "modificar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 31,
+    "fields": {
+        "permission": [
+            "borrar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 32,
+    "fields": {
+        "permission": [
+            "listar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 33,
+    "fields": {
+        "permission": [
+            "listar_roles_internos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 34,
+    "fields": {
+        "permission": [
+            "crear_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 35,
+    "fields": {
+        "permission": [
+            "actualizar_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 36,
+    "fields": {
+        "permission": [
+            "borrar_rol_interno",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "3_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 37,
+    "fields": {
+        "permission": [
+            "listar_proyectos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "4_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 38,
+    "fields": {
+        "permission": [
+            "listar_participante",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "4_2"
+        ]
+    }
+},
+{
+    "model": "guardian.groupobjectpermission",
+    "pk": 39,
+    "fields": {
+        "permission": [
+            "listar_roles_internos",
+            "proyectos",
+            "proyecto"
+        ],
+        "content_type": [
+            "proyectos",
+            "proyecto"
+        ],
+        "object_pk": "2",
+        "group": [
+            "4_2"
+        ]
+    }
+},
+{
+    "model": "proyectos.proyecto",
+    "pk": 1,
+    "fields": {
+        "nombre": "Web banking",
+        "descripcion": "Sistema de Web banking",
+        "fechaInicio": null,
+        "fechaFin": null,
+        "scrumMaster": [
+            "jessicala182@gmail.com"
+        ],
+        "estado": "planificación"
+    }
+},
+{
+    "model": "proyectos.proyecto",
+    "pk": 2,
+    "fields": {
+        "nombre": "Tienda de Mascotas",
+        "descripcion": "Sistema de gestión de inventario de una tienda de mascotas",
+        "fechaInicio": null,
+        "fechaFin": null,
+        "scrumMaster": [
+            "arturojeich@gmail.com"
+        ],
+        "estado": "planificación"
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 1,
+    "fields": {
+        "proyecto": 1,
+        "usuario": [
+            "jessicala182@gmail.com"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 2,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "arturojeich@gmail.com"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 3,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "jessicala182@gmail.com"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 4,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "arturojara1999@fpuna.edu.py"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 5,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "alejandroadorno00@fpuna.edu.py"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 6,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "guillepaivag@gmail.com"
+        ]
+    }
+},
+{
+    "model": "proyectos.participante",
+    "pk": 7,
+    "fields": {
+        "proyecto": 2,
+        "usuario": [
+            "arturojara1999@gmail.com"
+        ]
+    }
+}
+]

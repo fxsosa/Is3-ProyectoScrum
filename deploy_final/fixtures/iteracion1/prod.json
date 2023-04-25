@@ -1,0 +1,117 @@
+[
+{
+    "model": "sites.site",
+    "fields": {
+        "domain": "example.com",
+        "name": "example.com"
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$sZLT0befWwi2q38AIG2pT5$F/Uyg4KOVXaGI5t126fUqqtT/auCBIY0uWRLzy3hcFY=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojara1999@fpuna.edu.py",
+        "username": "Arturo",
+        "nombres": "Arturo",
+        "apellidos": "Jara",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:44.973Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$yJRa8XBKmmioh3fVEdfnQq$JdBvcD0tlrOjKdeT0zKc7p3GlVpzoh7EcLgg5/5/0h8=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "alejandroadorno00@fpuna.edu.py",
+        "username": "Ale",
+        "nombres": "Alejandro",
+        "apellidos": "Adorno Quevedo",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:45.862Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$VXGUC2Y8aPh2N4wql6SYiZ$SySPhtFe477l8dlu7zM2NX+J5TBXmEa222tYvbRitro=",
+        "last_login": null,
+        "is_superuser": true,
+        "email": "jessicala182@gmail.com",
+        "username": "Jessi",
+        "nombres": "Jessica",
+        "apellidos": "Alarcon",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:46.720Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$2luZOu6UfHBBXRySJ27mAp$DMvgfC2uyimP1djQAskAk2Z3dKSCKriwEC8lUzGAQos=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "guillepaivag@gmail.com",
+        "username": "Guille",
+        "nombres": "Guillermo",
+        "apellidos": "Paiva",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:47.574Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$RdyCQkjohIYfqUkGf1s0IE$k2K3hvBjTWRsfrmh0odyuGvAJon8bfvDoZCcKatCWDQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojeich@gmail.com",
+        "username": "Arturo",
+        "nombres": "Arturo",
+        "apellidos": "Jara",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:48.418Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "usuarios.usuario",
+    "fields": {
+        "password": "pbkdf2_sha256$390000$trUPjHbF73fcjNhSAXKI48$sTD4q1gKcKE0KsX3kfuXgh10uuZuh76HBYgXHY/oMB0=",
+        "last_login": null,
+        "is_superuser": false,
+        "email": "arturojara1999@gmail.com",
+        "username": "Arturo",
+        "nombres": "Arturo Gabriel",
+        "apellidos": "Jara Eichenbrenner",
+        "rol": null,
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2022-11-25T01:49:49.258Z",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
