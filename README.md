@@ -1,4 +1,21 @@
 # Sistema de Gestión de Proyectos
+## Ingenieria de Software III
+Pasos para levantar:
+1. Levantar el contenedor
+    ```
+    docker-compose up
+    ```
+2. Abrir una terminal del contenedor
+3. Levantar el servicio de postgresql
+    ```
+    /etc/init.d/postgresql start
+    ```
+4. Correr el makefile
+    ```
+    cd /usr/src/app
+    make deploy-desarrollo
+    ```
+
 ## Ingeniería de Software II
 
 ## Descripción
