@@ -12,10 +12,14 @@ Pasos para levantar:
     ```
 4. Correr el makefile
     ```
-    cd /usr/src/app
-    make deploy-desarrollo
+    cd /usr/src/app/deploy_final
+    deploy dev
     ```
-
+5. Darle enter hasta que salgan las letras rojas, ahi hay que esperar que las migraciones finalizen, se puede verificar de la siguiente manera:
+    ```
+    cat /usr/src/app/deploy_final/outputMigraciones.log
+    ```
+6. Una vez finalizado, ya se puede continuar dandole enter
 ## Ingeniería de Software II
 
 ## Descripción
