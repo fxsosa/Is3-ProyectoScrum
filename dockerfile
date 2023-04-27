@@ -2,7 +2,6 @@ FROM ubuntu:20.04
 
 WORKDIR /usr/src/app
 
-COPY . /usr/src/app
 
 # Actualizando el sistema e instalando lo basico, python, git, make
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git make build-essential libpq-dev python3-dev
@@ -27,6 +26,11 @@ USER root
 
 ## Pip y venv
 RUN apt-get install -y python3-pip python3-venv
+COPY ./requirements.txt /usr/src/app
 
 # instalacion de lo necesario para deployar
 RUN pip install -r requirements.txt
+
+COPY . /usr/src/app
+
+ENTRYPOINT [ "/usr/src/app/entrypoint.sh" ]
