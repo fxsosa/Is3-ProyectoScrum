@@ -9,8 +9,7 @@ services:
       - vscode:/root/.vscode-server/extensions
       - vscode_insiders:/root/.vscode-server-insiders
     ports:
-      - 3000:3000
-
+      - 8080:8080
 volumes:
   vscode:
   vscode_insiders:
