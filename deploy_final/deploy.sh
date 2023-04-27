@@ -217,7 +217,7 @@ deployBackendLocal(){
 	#echo "Imprimiendo lista de Apps: ${listaApps[@]}"
 	pausarPrograma
 
-gnome-terminal -- sh -c '
+nohup bash -c '
 	cd $1
 	listaApps=$@
 #	echo "Argumentos: $listaApps"
@@ -234,7 +234,7 @@ gnome-terminal -- sh -c '
 		python3 manage.py migrate "$nombreApp"
 	done
 	python3 manage.py migrate
-	python3 manage.py runserver' sh "$pathProyecto" "${listaApps[@]}"
+	python3 manage.py runserver' sh "$pathProyecto" "${listaApps[@]}" >> outputMigraciones.log &
 	
 	echo -e "${RED}Espere a que todas las migraciones sean creadas!${RED} ${NC}"
 pausarPrograma
@@ -287,7 +287,7 @@ deployBackendHeroku(){
 	
 	# Cargamos las migraciones a la bd de heroku
 	
-gnome-terminal -- sh -c '
+nohup bash -c '
 	cd $1
 	listaApps=$*
 
@@ -315,7 +315,7 @@ gnome-terminal -- sh -c '
 	python3 manage.py migrate	
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathDirectorio" ${listaApps[@]}
+	read d' sh "$pathDirectorio" ${listaApps[@]} >> outputPython.log &
 
 
 	cd "$pathDirectorio"
@@ -362,7 +362,7 @@ deployFrontendLocal() {
 # Parametros
 local pathProyecto=$1
 
-gnome-terminal -- sh -c "cd $pathProyecto; npm i; npm run serve"
+nohup bash -c "cd $pathProyecto; npm i; npm run serve" >> outputFront.log &
 
 pausarPrograma
 }
@@ -376,7 +376,7 @@ deployFrontendFirebase() {
 	local pathDirectorio=$1
 
 
-gnome-terminal -- sh -c '
+nohup bash -c '
 	cd $1
 	npm i
 	npm run build
@@ -384,7 +384,7 @@ gnome-terminal -- sh -c '
 	firebase -c firebase.json deploy
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathDirectorio"
+	read d' sh "$pathDirectorio" >> outputFirebase.log &
 
 }
 
@@ -516,7 +516,7 @@ cargarFixtureLocal(){
 cargarBDLocal(){
 	local pathProyecto=$1
 
-gnome-terminal -- sh -c '
+nohup bash -c '
 	cd $1
 	echo "Iniciando carga de datos..."
 	chmod +x ./venv/bin/activate
@@ -524,7 +524,7 @@ gnome-terminal -- sh -c '
 	python3 "manage.py" loaddata "./fixtures/prod.json"
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathProyecto"
+	read d' sh "$pathProyecto" >> outputBd.log &
 }
 
 # Descripcion: Pobla la BD remota
