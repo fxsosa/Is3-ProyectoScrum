@@ -10,6 +10,7 @@ services:
       - vscode_insiders:/root/.vscode-server-insiders
     ports:
       - 8080:8080
+      - 8081:8081
 volumes:
   vscode:
   vscode_insiders:
