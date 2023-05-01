@@ -223,6 +223,7 @@ nohup bash -c '
 #	echo "Argumentos: $listaApps"
 	listaApps="${listaApps#* }"
 #	echo "Lista de aplicaciones: $listaApps"
+pausarPrograma
 	chmod +x ./venv/bin/activate
 	. ./venv/bin/activate
 	pip install -r requirements.txt

@@ -9,13 +9,6 @@
 {
   "model": "contenttypes.contenttype",
   "fields": {
-    "app_label": "sites",
-    "model": "site"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
     "app_label": "auth",
     "model": "permission"
   }
@@ -37,13 +30,6 @@
 {
   "model": "contenttypes.contenttype",
   "fields": {
-    "app_label": "sessions",
-    "model": "session"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
     "app_label": "usuarios",
     "model": "usuario"
   }
@@ -51,8 +37,106 @@
 {
   "model": "contenttypes.contenttype",
   "fields": {
+    "app_label": "proyectos",
+    "model": "proyecto"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "proyectos",
+    "model": "participante"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sprints",
+    "model": "sprint_miembro_equipo"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sprints",
+    "model": "sprint"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sprints",
+    "model": "sprintbacklog"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario",
+    "model": "columna_tipo_historia_usuario"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario",
+    "model": "tipo_historia_usuario"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario_proyecto",
+    "model": "historicalhistoriausuario"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario_proyecto",
+    "model": "actividadesus"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario_proyecto",
+    "model": "historiausuario"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "historiasDeUsuario_proyecto",
+    "model": "historicalhistoriausuario_actividades"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "soportepermisos",
+    "model": "soportepermisos"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
     "app_label": "roles",
     "model": "rol"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sites",
+    "model": "site"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
   }
 },
 {
@@ -100,27 +184,6 @@
 {
   "model": "contenttypes.contenttype",
   "fields": {
-    "app_label": "sprints",
-    "model": "sprint"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "sprints",
-    "model": "sprintbacklog"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "sprints",
-    "model": "sprint_miembro_equipo"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
     "app_label": "guardian",
     "model": "groupobjectpermission"
   }
@@ -130,69 +193,6 @@
   "fields": {
     "app_label": "guardian",
     "model": "userobjectpermission"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "soportepermisos",
-    "model": "soportepermisos"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "proyectos",
-    "model": "proyecto"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "proyectos",
-    "model": "participante"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario",
-    "model": "tipo_historia_usuario"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario",
-    "model": "columna_tipo_historia_usuario"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario_proyecto",
-    "model": "actividadesus"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario_proyecto",
-    "model": "historiausuario"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario_proyecto",
-    "model": "historicalhistoriausuario"
-  }
-},
-{
-  "model": "contenttypes.contenttype",
-  "fields": {
-    "app_label": "historiasDeUsuario_proyecto",
-    "model": "historicalhistoriausuario_actividades"
   }
 },
 {
@@ -296,10 +296,10 @@
   "fields": {
     "idSprint": 2,
     "historiaUsuario": [
-      12,
-      14,
       16,
-      17
+      17,
+      12,
+      14
     ]
   }
 },
@@ -776,6 +776,7 @@
     "descripcion": "Actividad 1 para avanzar el primer tablero",
     "horasTrabajadas": 3,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -787,6 +788,7 @@
     "descripcion": "Descripcion del trabajo 1",
     "horasTrabajadas": 5,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -798,6 +800,7 @@
     "descripcion": "Descripcion 2",
     "horasTrabajadas": 3,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -809,6 +812,7 @@
     "descripcion": "Descripcion 3",
     "horasTrabajadas": 6,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -820,6 +824,7 @@
     "descripcion": "Tarea final de esta US",
     "horasTrabajadas": 12,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -831,6 +836,7 @@
     "descripcion": "Descripcion 2",
     "horasTrabajadas": 5,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -842,6 +848,7 @@
     "descripcion": "Tarea cumplida para pasar a despliegue",
     "horasTrabajadas": 10,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -853,6 +860,7 @@
     "descripcion": "Descripcion",
     "horasTrabajadas": 12,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -864,6 +872,7 @@
     "descripcion": "Actividad 1",
     "horasTrabajadas": 3,
     "participante": 15,
+    "fecha": null,
     "estado": null
   }
 },
@@ -875,6 +884,7 @@
     "descripcion": "Descripcion 1",
     "horasTrabajadas": 3,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -886,6 +896,7 @@
     "descripcion": "Descripcion",
     "horasTrabajadas": 3,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -897,6 +908,7 @@
     "descripcion": "Pasamos de revision a mejoras",
     "horasTrabajadas": 6,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -908,6 +920,7 @@
     "descripcion": "Pasamos de mejoras a otra columna",
     "horasTrabajadas": 12,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -919,6 +932,7 @@
     "descripcion": "Descripcion",
     "horasTrabajadas": 7,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -930,6 +944,7 @@
     "descripcion": "Pasamos a la ultima actividad",
     "horasTrabajadas": 2,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -941,6 +956,7 @@
     "descripcion": "Descripcion 1",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -952,6 +968,7 @@
     "descripcion": "Actividad 2",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -963,6 +980,7 @@
     "descripcion": "Actividad 3",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -974,6 +992,7 @@
     "descripcion": "Actividad 4",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -985,6 +1004,7 @@
     "descripcion": "Actividad 5",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -996,6 +1016,7 @@
     "descripcion": "Descripcion 6",
     "horasTrabajadas": 1,
     "participante": 14,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1007,6 +1028,7 @@
     "descripcion": "act1",
     "horasTrabajadas": 3,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1018,6 +1040,7 @@
     "descripcion": "a4",
     "horasTrabajadas": 3,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1029,6 +1052,7 @@
     "descripcion": "a5",
     "horasTrabajadas": 5,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1040,6 +1064,7 @@
     "descripcion": "a6",
     "horasTrabajadas": 2,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1051,6 +1076,7 @@
     "descripcion": "a7",
     "horasTrabajadas": 6,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1062,6 +1088,7 @@
     "descripcion": "a3",
     "horasTrabajadas": 3,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1073,6 +1100,7 @@
     "descripcion": "a9",
     "horasTrabajadas": 7,
     "participante": 17,
+    "fecha": null,
     "estado": null
   }
 },
@@ -1084,7 +1112,128 @@
     "descripcion": "a0",
     "horasTrabajadas": 5,
     "participante": 17,
+    "fecha": null,
     "estado": null
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 1,
+  "fields": {
+    "id": 1,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 22
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 2,
+  "fields": {
+    "id": 2,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 23
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 3,
+  "fields": {
+    "id": 3,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 24
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 4,
+  "fields": {
+    "id": 4,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 25
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 5,
+  "fields": {
+    "id": 5,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 26
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 6,
+  "fields": {
+    "id": 6,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 27
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 7,
+  "fields": {
+    "id": 7,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 28
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 8,
+  "fields": {
+    "id": 8,
+    "history": 1,
+    "historiausuario": 19,
+    "actividadesus": 29
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 9,
+  "fields": {
+    "id": 9,
+    "history": 2,
+    "historiausuario": 23,
+    "actividadesus": 10
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 10,
+  "fields": {
+    "id": 10,
+    "history": 2,
+    "historiausuario": 23,
+    "actividadesus": 11
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 11,
+  "fields": {
+    "id": 11,
+    "history": 2,
+    "historiausuario": 23,
+    "actividadesus": 12
+  }
+},
+{
+  "model": "historiasDeUsuario_proyecto.historicalhistoriausuario_actividades",
+  "pk": 12,
+  "fields": {
+    "id": 12,
+    "history": 2,
+    "historiausuario": 23,
+    "actividadesus": 13
   }
 },
 {
@@ -1560,50 +1709,6 @@
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can add site",
-    "content_type": [
-      "sites",
-      "site"
-    ],
-    "codename": "add_site"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change site",
-    "content_type": [
-      "sites",
-      "site"
-    ],
-    "codename": "change_site"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete site",
-    "content_type": [
-      "sites",
-      "site"
-    ],
-    "codename": "delete_site"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view site",
-    "content_type": [
-      "sites",
-      "site"
-    ],
-    "codename": "view_site"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
     "name": "Can add permission",
     "content_type": [
       "auth",
@@ -1736,50 +1841,6 @@
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can add session",
-    "content_type": [
-      "sessions",
-      "session"
-    ],
-    "codename": "add_session"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change session",
-    "content_type": [
-      "sessions",
-      "session"
-    ],
-    "codename": "change_session"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete session",
-    "content_type": [
-      "sessions",
-      "session"
-    ],
-    "codename": "delete_session"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view session",
-    "content_type": [
-      "sessions",
-      "session"
-    ],
-    "codename": "view_session"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
     "name": "Can add usuario",
     "content_type": [
       "usuarios",
@@ -1830,556 +1891,6 @@
       "usuario"
     ],
     "codename": "modificar_roles_externos_de_usuario"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Listar todos los roles externos del sistema",
-    "content_type": [
-      "roles",
-      "rol"
-    ],
-    "codename": "listar_roles_externos"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Crear nuevo rol externo",
-    "content_type": [
-      "roles",
-      "rol"
-    ],
-    "codename": "crear_rol_externo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Actualizar un rol externo",
-    "content_type": [
-      "roles",
-      "rol"
-    ],
-    "codename": "actualizar_rol_externo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Borrar un rol externo del sistema",
-    "content_type": [
-      "roles",
-      "rol"
-    ],
-    "codename": "borrar_rol_externo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Para listar los permisos de un rol externo",
-    "content_type": [
-      "roles",
-      "rol"
-    ],
-    "codename": "listar_permisos_externos"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add email address",
-    "content_type": [
-      "account",
-      "emailaddress"
-    ],
-    "codename": "add_emailaddress"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change email address",
-    "content_type": [
-      "account",
-      "emailaddress"
-    ],
-    "codename": "change_emailaddress"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete email address",
-    "content_type": [
-      "account",
-      "emailaddress"
-    ],
-    "codename": "delete_emailaddress"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view email address",
-    "content_type": [
-      "account",
-      "emailaddress"
-    ],
-    "codename": "view_emailaddress"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add email confirmation",
-    "content_type": [
-      "account",
-      "emailconfirmation"
-    ],
-    "codename": "add_emailconfirmation"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change email confirmation",
-    "content_type": [
-      "account",
-      "emailconfirmation"
-    ],
-    "codename": "change_emailconfirmation"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete email confirmation",
-    "content_type": [
-      "account",
-      "emailconfirmation"
-    ],
-    "codename": "delete_emailconfirmation"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view email confirmation",
-    "content_type": [
-      "account",
-      "emailconfirmation"
-    ],
-    "codename": "view_emailconfirmation"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add social account",
-    "content_type": [
-      "socialaccount",
-      "socialaccount"
-    ],
-    "codename": "add_socialaccount"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change social account",
-    "content_type": [
-      "socialaccount",
-      "socialaccount"
-    ],
-    "codename": "change_socialaccount"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete social account",
-    "content_type": [
-      "socialaccount",
-      "socialaccount"
-    ],
-    "codename": "delete_socialaccount"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view social account",
-    "content_type": [
-      "socialaccount",
-      "socialaccount"
-    ],
-    "codename": "view_socialaccount"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add social application",
-    "content_type": [
-      "socialaccount",
-      "socialapp"
-    ],
-    "codename": "add_socialapp"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change social application",
-    "content_type": [
-      "socialaccount",
-      "socialapp"
-    ],
-    "codename": "change_socialapp"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete social application",
-    "content_type": [
-      "socialaccount",
-      "socialapp"
-    ],
-    "codename": "delete_socialapp"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view social application",
-    "content_type": [
-      "socialaccount",
-      "socialapp"
-    ],
-    "codename": "view_socialapp"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add social application token",
-    "content_type": [
-      "socialaccount",
-      "socialtoken"
-    ],
-    "codename": "add_socialtoken"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change social application token",
-    "content_type": [
-      "socialaccount",
-      "socialtoken"
-    ],
-    "codename": "change_socialtoken"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete social application token",
-    "content_type": [
-      "socialaccount",
-      "socialtoken"
-    ],
-    "codename": "delete_socialtoken"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view social application token",
-    "content_type": [
-      "socialaccount",
-      "socialtoken"
-    ],
-    "codename": "view_socialtoken"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add log entry",
-    "content_type": [
-      "admin",
-      "logentry"
-    ],
-    "codename": "add_logentry"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change log entry",
-    "content_type": [
-      "admin",
-      "logentry"
-    ],
-    "codename": "change_logentry"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete log entry",
-    "content_type": [
-      "admin",
-      "logentry"
-    ],
-    "codename": "delete_logentry"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view log entry",
-    "content_type": [
-      "admin",
-      "logentry"
-    ],
-    "codename": "view_logentry"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add sprint",
-    "content_type": [
-      "sprints",
-      "sprint"
-    ],
-    "codename": "add_sprint"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change sprint",
-    "content_type": [
-      "sprints",
-      "sprint"
-    ],
-    "codename": "change_sprint"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete sprint",
-    "content_type": [
-      "sprints",
-      "sprint"
-    ],
-    "codename": "delete_sprint"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view sprint",
-    "content_type": [
-      "sprints",
-      "sprint"
-    ],
-    "codename": "view_sprint"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add sprint backlog",
-    "content_type": [
-      "sprints",
-      "sprintbacklog"
-    ],
-    "codename": "add_sprintbacklog"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change sprint backlog",
-    "content_type": [
-      "sprints",
-      "sprintbacklog"
-    ],
-    "codename": "change_sprintbacklog"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete sprint backlog",
-    "content_type": [
-      "sprints",
-      "sprintbacklog"
-    ],
-    "codename": "delete_sprintbacklog"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view sprint backlog",
-    "content_type": [
-      "sprints",
-      "sprintbacklog"
-    ],
-    "codename": "view_sprintbacklog"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add sprint_ miembro_ equipo",
-    "content_type": [
-      "sprints",
-      "sprint_miembro_equipo"
-    ],
-    "codename": "add_sprint_miembro_equipo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change sprint_ miembro_ equipo",
-    "content_type": [
-      "sprints",
-      "sprint_miembro_equipo"
-    ],
-    "codename": "change_sprint_miembro_equipo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete sprint_ miembro_ equipo",
-    "content_type": [
-      "sprints",
-      "sprint_miembro_equipo"
-    ],
-    "codename": "delete_sprint_miembro_equipo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view sprint_ miembro_ equipo",
-    "content_type": [
-      "sprints",
-      "sprint_miembro_equipo"
-    ],
-    "codename": "view_sprint_miembro_equipo"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add group object permission",
-    "content_type": [
-      "guardian",
-      "groupobjectpermission"
-    ],
-    "codename": "add_groupobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change group object permission",
-    "content_type": [
-      "guardian",
-      "groupobjectpermission"
-    ],
-    "codename": "change_groupobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete group object permission",
-    "content_type": [
-      "guardian",
-      "groupobjectpermission"
-    ],
-    "codename": "delete_groupobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view group object permission",
-    "content_type": [
-      "guardian",
-      "groupobjectpermission"
-    ],
-    "codename": "view_groupobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can add user object permission",
-    "content_type": [
-      "guardian",
-      "userobjectpermission"
-    ],
-    "codename": "add_userobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change user object permission",
-    "content_type": [
-      "guardian",
-      "userobjectpermission"
-    ],
-    "codename": "change_userobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete user object permission",
-    "content_type": [
-      "guardian",
-      "userobjectpermission"
-    ],
-    "codename": "delete_userobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view user object permission",
-    "content_type": [
-      "guardian",
-      "userobjectpermission"
-    ],
-    "codename": "view_userobjectpermission"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Listar/ver permisos del sistema",
-    "content_type": [
-      "soportepermisos",
-      "soportepermisos"
-    ],
-    "codename": "listar_permisos"
   }
 },
 {
@@ -2902,6 +2413,39 @@
 {
   "model": "auth.permission",
   "fields": {
+    "name": "Obtener el historial de la historia de usuario",
+    "content_type": [
+      "proyectos",
+      "proyecto"
+    ],
+    "codename": "obtener_historial_historia"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Finalizar un proyecto",
+    "content_type": [
+      "proyectos",
+      "proyecto"
+    ],
+    "codename": "finalizar_proyecto"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Reasignar historias de usuario a otro desarrollador",
+    "content_type": [
+      "proyectos",
+      "proyecto"
+    ],
+    "codename": "reasignar_historias"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
     "name": "Can add participante",
     "content_type": [
       "proyectos",
@@ -2941,6 +2485,182 @@
       "participante"
     ],
     "codename": "view_participante"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add sprint_ miembro_ equipo",
+    "content_type": [
+      "sprints",
+      "sprint_miembro_equipo"
+    ],
+    "codename": "add_sprint_miembro_equipo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change sprint_ miembro_ equipo",
+    "content_type": [
+      "sprints",
+      "sprint_miembro_equipo"
+    ],
+    "codename": "change_sprint_miembro_equipo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete sprint_ miembro_ equipo",
+    "content_type": [
+      "sprints",
+      "sprint_miembro_equipo"
+    ],
+    "codename": "delete_sprint_miembro_equipo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view sprint_ miembro_ equipo",
+    "content_type": [
+      "sprints",
+      "sprint_miembro_equipo"
+    ],
+    "codename": "view_sprint_miembro_equipo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add sprint",
+    "content_type": [
+      "sprints",
+      "sprint"
+    ],
+    "codename": "add_sprint"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change sprint",
+    "content_type": [
+      "sprints",
+      "sprint"
+    ],
+    "codename": "change_sprint"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete sprint",
+    "content_type": [
+      "sprints",
+      "sprint"
+    ],
+    "codename": "delete_sprint"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view sprint",
+    "content_type": [
+      "sprints",
+      "sprint"
+    ],
+    "codename": "view_sprint"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add sprint backlog",
+    "content_type": [
+      "sprints",
+      "sprintbacklog"
+    ],
+    "codename": "add_sprintbacklog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change sprint backlog",
+    "content_type": [
+      "sprints",
+      "sprintbacklog"
+    ],
+    "codename": "change_sprintbacklog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete sprint backlog",
+    "content_type": [
+      "sprints",
+      "sprintbacklog"
+    ],
+    "codename": "delete_sprintbacklog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view sprint backlog",
+    "content_type": [
+      "sprints",
+      "sprintbacklog"
+    ],
+    "codename": "view_sprintbacklog"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add columna_ tipo_ historia_ usuario",
+    "content_type": [
+      "historiasDeUsuario",
+      "columna_tipo_historia_usuario"
+    ],
+    "codename": "add_columna_tipo_historia_usuario"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change columna_ tipo_ historia_ usuario",
+    "content_type": [
+      "historiasDeUsuario",
+      "columna_tipo_historia_usuario"
+    ],
+    "codename": "change_columna_tipo_historia_usuario"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete columna_ tipo_ historia_ usuario",
+    "content_type": [
+      "historiasDeUsuario",
+      "columna_tipo_historia_usuario"
+    ],
+    "codename": "delete_columna_tipo_historia_usuario"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view columna_ tipo_ historia_ usuario",
+    "content_type": [
+      "historiasDeUsuario",
+      "columna_tipo_historia_usuario"
+    ],
+    "codename": "view_columna_tipo_historia_usuario"
   }
 },
 {
@@ -2990,45 +2710,45 @@
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can add columna_ tipo_ historia_ usuario",
+    "name": "Can add historical historia usuario",
     "content_type": [
-      "historiasDeUsuario",
-      "columna_tipo_historia_usuario"
+      "historiasDeUsuario_proyecto",
+      "historicalhistoriausuario"
     ],
-    "codename": "add_columna_tipo_historia_usuario"
+    "codename": "add_historicalhistoriausuario"
   }
 },
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can change columna_ tipo_ historia_ usuario",
+    "name": "Can change historical historia usuario",
     "content_type": [
-      "historiasDeUsuario",
-      "columna_tipo_historia_usuario"
+      "historiasDeUsuario_proyecto",
+      "historicalhistoriausuario"
     ],
-    "codename": "change_columna_tipo_historia_usuario"
+    "codename": "change_historicalhistoriausuario"
   }
 },
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can delete columna_ tipo_ historia_ usuario",
+    "name": "Can delete historical historia usuario",
     "content_type": [
-      "historiasDeUsuario",
-      "columna_tipo_historia_usuario"
+      "historiasDeUsuario_proyecto",
+      "historicalhistoriausuario"
     ],
-    "codename": "delete_columna_tipo_historia_usuario"
+    "codename": "delete_historicalhistoriausuario"
   }
 },
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can view columna_ tipo_ historia_ usuario",
+    "name": "Can view historical historia usuario",
     "content_type": [
-      "historiasDeUsuario",
-      "columna_tipo_historia_usuario"
+      "historiasDeUsuario_proyecto",
+      "historicalhistoriausuario"
     ],
-    "codename": "view_columna_tipo_historia_usuario"
+    "codename": "view_historicalhistoriausuario"
   }
 },
 {
@@ -3122,50 +2842,6 @@
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Can add historical historia usuario",
-    "content_type": [
-      "historiasDeUsuario_proyecto",
-      "historicalhistoriausuario"
-    ],
-    "codename": "add_historicalhistoriausuario"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can change historical historia usuario",
-    "content_type": [
-      "historiasDeUsuario_proyecto",
-      "historicalhistoriausuario"
-    ],
-    "codename": "change_historicalhistoriausuario"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can delete historical historia usuario",
-    "content_type": [
-      "historiasDeUsuario_proyecto",
-      "historicalhistoriausuario"
-    ],
-    "codename": "delete_historicalhistoriausuario"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
-    "name": "Can view historical historia usuario",
-    "content_type": [
-      "historiasDeUsuario_proyecto",
-      "historicalhistoriausuario"
-    ],
-    "codename": "view_historicalhistoriausuario"
-  }
-},
-{
-  "model": "auth.permission",
-  "fields": {
     "name": "Can add HistoricalhistoriaUsuario_actividades",
     "content_type": [
       "historiasDeUsuario_proyecto",
@@ -3210,12 +2886,507 @@
 {
   "model": "auth.permission",
   "fields": {
-    "name": "Obtener el historial de la historia de usuario",
+    "name": "Listar/ver permisos del sistema",
     "content_type": [
-      "proyectos",
-      "proyecto"
+      "soportepermisos",
+      "soportepermisos"
     ],
-    "codename": "obtener_historial_historia"
+    "codename": "listar_permisos"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Listar todos los roles externos del sistema",
+    "content_type": [
+      "roles",
+      "rol"
+    ],
+    "codename": "listar_roles_externos"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Crear nuevo rol externo",
+    "content_type": [
+      "roles",
+      "rol"
+    ],
+    "codename": "crear_rol_externo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Actualizar un rol externo",
+    "content_type": [
+      "roles",
+      "rol"
+    ],
+    "codename": "actualizar_rol_externo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Borrar un rol externo del sistema",
+    "content_type": [
+      "roles",
+      "rol"
+    ],
+    "codename": "borrar_rol_externo"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Para listar los permisos de un rol externo",
+    "content_type": [
+      "roles",
+      "rol"
+    ],
+    "codename": "listar_permisos_externos"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add site",
+    "content_type": [
+      "sites",
+      "site"
+    ],
+    "codename": "add_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change site",
+    "content_type": [
+      "sites",
+      "site"
+    ],
+    "codename": "change_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete site",
+    "content_type": [
+      "sites",
+      "site"
+    ],
+    "codename": "delete_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view site",
+    "content_type": [
+      "sites",
+      "site"
+    ],
+    "codename": "view_site"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add email address",
+    "content_type": [
+      "account",
+      "emailaddress"
+    ],
+    "codename": "add_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change email address",
+    "content_type": [
+      "account",
+      "emailaddress"
+    ],
+    "codename": "change_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete email address",
+    "content_type": [
+      "account",
+      "emailaddress"
+    ],
+    "codename": "delete_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view email address",
+    "content_type": [
+      "account",
+      "emailaddress"
+    ],
+    "codename": "view_emailaddress"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add email confirmation",
+    "content_type": [
+      "account",
+      "emailconfirmation"
+    ],
+    "codename": "add_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change email confirmation",
+    "content_type": [
+      "account",
+      "emailconfirmation"
+    ],
+    "codename": "change_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete email confirmation",
+    "content_type": [
+      "account",
+      "emailconfirmation"
+    ],
+    "codename": "delete_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view email confirmation",
+    "content_type": [
+      "account",
+      "emailconfirmation"
+    ],
+    "codename": "view_emailconfirmation"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add social account",
+    "content_type": [
+      "socialaccount",
+      "socialaccount"
+    ],
+    "codename": "add_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change social account",
+    "content_type": [
+      "socialaccount",
+      "socialaccount"
+    ],
+    "codename": "change_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete social account",
+    "content_type": [
+      "socialaccount",
+      "socialaccount"
+    ],
+    "codename": "delete_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view social account",
+    "content_type": [
+      "socialaccount",
+      "socialaccount"
+    ],
+    "codename": "view_socialaccount"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add social application",
+    "content_type": [
+      "socialaccount",
+      "socialapp"
+    ],
+    "codename": "add_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change social application",
+    "content_type": [
+      "socialaccount",
+      "socialapp"
+    ],
+    "codename": "change_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete social application",
+    "content_type": [
+      "socialaccount",
+      "socialapp"
+    ],
+    "codename": "delete_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view social application",
+    "content_type": [
+      "socialaccount",
+      "socialapp"
+    ],
+    "codename": "view_socialapp"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add social application token",
+    "content_type": [
+      "socialaccount",
+      "socialtoken"
+    ],
+    "codename": "add_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change social application token",
+    "content_type": [
+      "socialaccount",
+      "socialtoken"
+    ],
+    "codename": "change_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete social application token",
+    "content_type": [
+      "socialaccount",
+      "socialtoken"
+    ],
+    "codename": "delete_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view social application token",
+    "content_type": [
+      "socialaccount",
+      "socialtoken"
+    ],
+    "codename": "view_socialtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add group object permission",
+    "content_type": [
+      "guardian",
+      "groupobjectpermission"
+    ],
+    "codename": "add_groupobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change group object permission",
+    "content_type": [
+      "guardian",
+      "groupobjectpermission"
+    ],
+    "codename": "change_groupobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete group object permission",
+    "content_type": [
+      "guardian",
+      "groupobjectpermission"
+    ],
+    "codename": "delete_groupobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view group object permission",
+    "content_type": [
+      "guardian",
+      "groupobjectpermission"
+    ],
+    "codename": "view_groupobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can add user object permission",
+    "content_type": [
+      "guardian",
+      "userobjectpermission"
+    ],
+    "codename": "add_userobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can change user object permission",
+    "content_type": [
+      "guardian",
+      "userobjectpermission"
+    ],
+    "codename": "change_userobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can delete user object permission",
+    "content_type": [
+      "guardian",
+      "userobjectpermission"
+    ],
+    "codename": "delete_userobjectpermission"
+  }
+},
+{
+  "model": "auth.permission",
+  "fields": {
+    "name": "Can view user object permission",
+    "content_type": [
+      "guardian",
+      "userobjectpermission"
+    ],
+    "codename": "view_userobjectpermission"
   }
 },
 {
@@ -3528,6 +3699,90 @@
     "is_active": true,
     "date_joined": "2022-11-04T04:23:34.149Z",
     "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "!9Lke02LVMGsOh2raQmz9uk1CNpfQI7lVVDeGxAR0",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "romi.escobar1615@fpuna.edu.py",
+    "username": "Evelyn (Admin)",
+    "nombres": "Evelyn Romina",
+    "apellidos": "Escobar Gonzalez",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-04-27T16:24:55.912Z",
+    "groups": [
+      [
+        "1"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "!7ywEQcoJzFqnavAbdQQ8Scb876tFLlVDZ3QMRu4B",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "am.ilcar@fpuna.edu.py",
+    "username": "Denis (Admin)",
+    "nombres": "Denis Amilcar",
+    "apellidos": "Gimenez Alvarez",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-04-27T16:26:39.078Z",
+    "groups": [
+      [
+        "1"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "!FaSWfz3U71AIsLRwRQoPOaDtYlCAyB6HNqrxDNum",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "maubriel.py@fpuna.edu.py",
+    "username": "Mauricio (Admin)",
+    "nombres": "Mauricio Gabriel",
+    "apellidos": "González Marín",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-04-27T16:35:55.229Z",
+    "groups": [
+      [
+        "1"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "!9lsfpAVfqaxGliMhm234SMoBjm0ldqu0IckwGKR0",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "fuxesosa@fpuna.edu.py",
+    "username": "Matías (Admin)",
+    "nombres": "Matías",
+    "apellidos": "Sosa",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2023-04-27T16:38:06.183Z",
+    "groups": [
+      [
+        "1"
+      ]
+    ],
     "user_permissions": []
   }
 },

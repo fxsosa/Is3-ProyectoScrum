@@ -13,8 +13,13 @@ Pasos para levantar:
 4. Correr el makefile
     ```
     cd /usr/src/app/deploy_final
-    deploy dev
+    ./deploy.sh dev
     ```
+5. Ingresar 6 luego "y", luego enter hasta que salga "Password:" ahi ingresamos "admin" y luego que salgan letras rojas advirtiendo sobre la migracion, ahi debemos esperar a que termine el proceso de 
+6. Enter
+7. Enter
+8. Enter
+
 5. Darle enter hasta que salgan las letras rojas, ahi hay que esperar que las migraciones finalizen, se puede verificar de la siguiente manera:
     ```
     cat /usr/src/app/deploy_final/outputMigraciones.log
