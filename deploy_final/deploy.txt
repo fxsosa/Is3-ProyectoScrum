@@ -1,0 +1,6 @@
+Deploy Backend: (desde root de ./ProyectoScrum)
+source ./venv/bin/activate
+python3 manage.py runserver
+
+Deploy Frontend: (desde root del ./ProyectoScrumFrontend)
+npm run serve

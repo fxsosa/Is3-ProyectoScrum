@@ -26,5 +26,3 @@ USER root
 
 ## Pip y venv
 RUN apt-get install -y python3-pip python3-venv
-
-COPY . /usr/src/app
