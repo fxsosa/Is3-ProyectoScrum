@@ -1,30 +1,33 @@
 # Sistema de Gestión de Proyectos
 ## Ingenieria de Software III
-Pasos para levantar:
+Pasos para levantar por primera vez:
 1. Levantar el contenedor
     ```
     docker-compose up
     ```
-2. Abrir una terminal del contenedor
-3. Levantar el servicio de postgresql
+2. Abrir una terminal del contenedor(attach terminal)
+3. Correr el deploy.sh
     ```
-    /etc/init.d/postgresql start
+    source /usr/src/app/deploy_final/deploy.sh dev
     ```
-4. Correr el makefile
-    ```
-    cd /usr/src/app/deploy_final
-    ./deploy.sh dev
-    ```
-5. Ingresar 6 luego "y", luego enter hasta que salga "Password:" ahi ingresamos "admin" y luego que salgan letras rojas advirtiendo sobre la migracion, ahi debemos esperar a que termine el proceso de 
-6. Enter
-7. Enter
-8. Enter
-
-5. Darle enter hasta que salgan las letras rojas, ahi hay que esperar que las migraciones finalizen, se puede verificar de la siguiente manera:
-    ```
-    cat /usr/src/app/deploy_final/outputMigraciones.log
-    ```
+5. Ingresar 6 luego "y", luego enter hasta que salga "Password:" ahi ingresamos "admin" y luego hasta que salgan las letras rojas advirtiendo sobre la migracion, ahi debemos esperar a que termine el proceso de migracion, se imprime en el log de outputMigracion.log
 6. Una vez finalizado, ya se puede continuar dandole enter
+7. El proyecto deberia de estar levantado en: localhost:8080
+
+Pasos para levantar luego de la primera vez:
+1. Abrir el venv del backend y luego levantarlo
+    ```
+    source /usr/src/app/deploy_final/ProyectoScrum/venv/bin/activate
+    python3 manage.py runserver
+    ```
+2. Levantar el front
+    ```
+    cd /usr/src/app/deploy_final/ProyectoScrumFrontend
+    npm run serve
+    ```
+3. El proyecto deberia de estar levantado en: localhost:8080
+    
+
 ## Ingeniería de Software II
 
 ## Descripción
