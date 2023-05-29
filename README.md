@@ -8,6 +8,7 @@ Pasos para levantar por primera vez:
 2. Abrir una terminal del contenedor(attach terminal)
 3. Correr el deploy.sh
     ```
+    cd /usr/src/app/deploy_final/
     source /usr/src/app/deploy_final/deploy.sh dev
     ```
 5. Ingresar 6 luego "y", luego enter hasta que salga "Password:" ahi ingresamos "admin" y luego hasta que salgan las letras rojas advirtiendo sobre la migracion, ahi debemos esperar a que termine el proceso de migracion, se imprime en el log de outputMigracion.log
