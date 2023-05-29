@@ -18,6 +18,7 @@ Pasos para levantar luego de la primera vez:
 1. Abrir el venv del backend y luego levantarlo
     ```
     source /usr/src/app/deploy_final/ProyectoScrum/venv/bin/activate
+    cd /usr/src/app/ProyectoScrum
     python3 manage.py runserver
     ```
 2. Levantar el front
