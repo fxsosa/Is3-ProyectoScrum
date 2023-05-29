@@ -12,6 +12,7 @@ services:
     ports:
       - 8080:8080
       - 8081:8081
+      - 8000:8000
 volumes:
   vscode:
   vscode_insiders:
