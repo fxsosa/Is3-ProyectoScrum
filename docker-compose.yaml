@@ -3,7 +3,7 @@ version: '3.8'
 services:
   ubuntu:
     build: .
-    command: /bin/sh -c "/etc/init.d/postgresql start && while sleep 1000; do :; done"
+    command: /bin/sh -c "/etc/init.d/postgresql start && cd /usr/src/app && pip install -r requirements.txt && while sleep 1000; do :; done"
     volumes:
       - ./:/usr/src/app
       - vscode:/root/.vscode-server/extensions
