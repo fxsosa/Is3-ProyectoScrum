@@ -217,13 +217,12 @@ deployBackendLocal(){
 	#echo "Imprimiendo lista de Apps: ${listaApps[@]}"
 	pausarPrograma
 
-nohup bash -c '
+gnome-terminal -- sh -c '
 	cd $1
 	listaApps=$@
 #	echo "Argumentos: $listaApps"
 	listaApps="${listaApps#* }"
 #	echo "Lista de aplicaciones: $listaApps"
-pausarPrograma
 	chmod +x ./venv/bin/activate
 	. ./venv/bin/activate
 	pip install -r requirements.txt
@@ -235,7 +234,7 @@ pausarPrograma
 		python3 manage.py migrate "$nombreApp"
 	done
 	python3 manage.py migrate
-	python3 manage.py runserver' sh "$pathProyecto" "${listaApps[@]}" >> outputMigraciones.log &
+	python3 manage.py runserver' sh "$pathProyecto" "${listaApps[@]}"
 	
 	echo -e "${RED}Espere a que todas las migraciones sean creadas!${RED} ${NC}"
 pausarPrograma
@@ -288,7 +287,7 @@ deployBackendHeroku(){
 	
 	# Cargamos las migraciones a la bd de heroku
 	
-nohup bash -c '
+gnome-terminal -- sh -c '
 	cd $1
 	listaApps=$*
 
@@ -316,7 +315,7 @@ nohup bash -c '
 	python3 manage.py migrate	
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathDirectorio" ${listaApps[@]} >> outputPython.log &
+	read d' sh "$pathDirectorio" ${listaApps[@]}
 
 
 	cd "$pathDirectorio"
@@ -363,7 +362,7 @@ deployFrontendLocal() {
 # Parametros
 local pathProyecto=$1
 
-nohup bash -c "cd $pathProyecto; npm i; npm run serve" >> outputFront.log &
+gnome-terminal -- sh -c "cd $pathProyecto; npm i; npm run serve"
 
 pausarPrograma
 }
@@ -377,7 +376,7 @@ deployFrontendFirebase() {
 	local pathDirectorio=$1
 
 
-nohup bash -c '
+gnome-terminal -- sh -c '
 	cd $1
 	npm i
 	npm run build
@@ -385,7 +384,7 @@ nohup bash -c '
 	firebase -c firebase.json deploy
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathDirectorio" >> outputFirebase.log &
+	read d' sh "$pathDirectorio"
 
 }
 
@@ -517,7 +516,7 @@ cargarFixtureLocal(){
 cargarBDLocal(){
 	local pathProyecto=$1
 
-nohup bash -c '
+gnome-terminal -- sh -c '
 	cd $1
 	echo "Iniciando carga de datos..."
 	chmod +x ./venv/bin/activate
@@ -525,7 +524,7 @@ nohup bash -c '
 	python3 "manage.py" loaddata "./fixtures/prod.json"
 	echo "Proceso finalizado!"
 	echo "Presione enter para cerrar esta ventana!"
-	read d' sh "$pathProyecto" >> outputBd.log &
+	read d' sh "$pathProyecto"
 }
 
 # Descripcion: Pobla la BD remota
@@ -748,5 +747,3 @@ elif [ "$tipoDeploy" == "prod" ]; then
 else
 	error "Opcion de deploy invalida!!"
 fi	
-
-
